@@ -62,28 +62,28 @@ public class DateUtils {
         String result = isCn ? "星期一" : "Monday";
         switch (week) {
             case Calendar.SUNDAY:
-                result = isCn ? "星期日" : "Sunday";
+                result = isCn ? "周日" : "Sunday";
                 break;
             case Calendar.MONDAY:
-                result = isCn ? "星期一" : "Monday";
+                result = isCn ? "周一" : "Monday";
                 break;
             case Calendar.TUESDAY:
-                result = isCn ? "星期二" : "Tuesday";
+                result = isCn ? "周二" : "Tuesday";
                 break;
             case Calendar.WEDNESDAY:
-                result = isCn ? "星期三" : "Wednesday";
+                result = isCn ? "周三" : "Wednesday";
                 break;
             case Calendar.THURSDAY:
-                result = isCn ? "星期四" : "Thursday";
+                result = isCn ? "周四" : "Thursday";
                 break;
             case Calendar.FRIDAY:
-                result = isCn ? "星期五" : "Friday";
+                result = isCn ? "周五" : "Friday";
                 break;
             case Calendar.SATURDAY:
-                result = isCn ? "星期六" : "Saturday";
+                result = isCn ? "周六" : "Saturday";
                 break;
             default:
-                result = isCn ? "星期一" : "Monday";
+                result = isCn ? "周一" : "Monday";
                 break;
         }
         return result;
@@ -188,7 +188,7 @@ public class DateUtils {
      * @描述: 2017年02月23日
      */
     public String getDayOrMonthOrYear1(long time) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年-MM月-dd日");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年 MM月 dd日");
         return sdf.format(new Date(time));
     }
 
@@ -276,7 +276,7 @@ public class DateUtils {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String dateFormat6(long time) {
-        String format1 = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH : mm : ss"));
+        String format1 = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH : mm"));
         return format1;
     }
 

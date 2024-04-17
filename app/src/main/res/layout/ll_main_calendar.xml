@@ -4,7 +4,7 @@
     android:id="@+id/calendar_ll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/shape_radius_8_203141"
+    android:background="@drawable/device_bg_1b1b1b_r5"
     android:orientation="vertical"
     tools:layout_height="@dimen/dp_330"
     tools:layout_width="@dimen/dp_220">

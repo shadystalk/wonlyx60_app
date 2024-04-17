@@ -47,7 +47,6 @@ public class RoomCheckActivity extends AppCompatActivity {
             numRl.setVisibility(View.VISIBLE);
             reset.setVisibility(View.VISIBLE);
             switchBt.setChecked(true);
-            numTv.setText(MainActivity.checkNum+"");
         }
         switchBt.setOnCheckedChangeListener(new SwitchButton.OnCheckedChangeListener() {
             @Override
@@ -56,7 +55,6 @@ public class RoomCheckActivity extends AppCompatActivity {
                     numRl.setVisibility(View.VISIBLE);
                     reset.setVisibility(View.VISIBLE);
                     SPUtil.getInstance(RoomCheckActivity.this).setSettingParam("open",true);
-                    numTv.setText(MainActivity.checkNum+"");
                     MainMsgBean setMsgBean = new  MainMsgBean();
                     setMsgBean.setFlag(9);
                     EventBus.getDefault().post(setMsgBean);
@@ -96,7 +94,6 @@ public class RoomCheckActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == 100) {
-            numTv.setText(MainActivity.checkNum + "");
         }
     }
 
