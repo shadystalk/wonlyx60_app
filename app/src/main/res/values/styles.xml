@@ -23,6 +23,20 @@
         <!-- 半透明 -->
         <item name="android:windowIsTranslucent">true</item>
     </style>
+    <style name="DialogActivity" parent="@style/AppTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
+
+    原文链接：https://blog.csdn.net/johnwcheung/article/details/66972599
     <!--自定义dialog背景全透明无边框theme -->
     <style name="mDialog" parent="android:Theme.Dialog">
         <!-- 背景颜色及透明程度 -->

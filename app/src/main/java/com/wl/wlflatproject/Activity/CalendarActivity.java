@@ -21,24 +21,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-/**
- * @Author: HSL
- * @Time: 2019/7/26 13:57
- * @E-mail: xxx@163.com
- * @Description: 日历~
- */
 public class CalendarActivity extends AppCompatActivity implements CalendarView.OnCalendarSelectListener {
 
     public static final String PARAM = "param";
 
     @BindView(R.id.current_month_tv)
     TextView currentMonthTv;
-    @BindView(R.id.current_week_tv)
-    TextView currentWeekTv;
     @BindView(R.id.current_year_tv)
     TextView currentYearTv;
-    @BindView(R.id.back_iv)
-    ImageView backIv;
     @BindView(R.id.calendar_view)
     CalendarView calendarView;
     @BindView(R.id.lunar_date_tv)
@@ -51,6 +41,10 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
     TextView ganZhiTv;
     @BindView(R.id.location_tv)
     TextView locationTv;
+    @BindView(R.id.last_v)
+    View last_v;
+    @BindView(R.id.next_v)
+    View next_v;
 
     private CalendarParam mParam;
 
@@ -68,14 +62,13 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
         mParam = (CalendarParam) getIntent().getSerializableExtra(PARAM);
         initView();
         hideBottomUIMenu();
+        setFinishOnTouchOutside(true);
     }
 
     private void initView() {
         calendarView.setOnCalendarSelectListener(this);
         //当前月
         currentMonthTv.setText(calendarView.getCurMonth() + "月");
-        //当前周
-        currentWeekTv.setText(DateUtils.getInstance().getWeekday2(System.currentTimeMillis()));
         //当前年
         currentYearTv.setText(calendarView.getCurYear() + "年");
         //猪 贰零壹玖 润 六月 小廿八 己亥 辛未 戊辰
@@ -92,12 +85,21 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
         ganZhiTv.setText(String.format("%s %s %s", lunar[5] + lunar[0] + "年", lunar[6] + "月", lunar[7] + "日"));
         //地点
         locationTv.setText(mParam.location);
+        last_v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calendarView.scrollToPre();
+            }
+        });
+        next_v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calendarView.scrollToNext();
+//                public void scrollToCalendar(int year, int month, int day);//滚动到指定日期
+            }
+        });
     }
 
-    @OnClick(R.id.back_iv)
-    public void onBackClicked() {
-        finish();
-    }
 
     @Override
     public void onCalendarOutOfRange(Calendar calendar) {
@@ -121,7 +123,7 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
         ganZhiTv.setText(String.format("%s %s %s", lunar[5] + lunar[0] + "年", lunar[6] + "月", lunar[7] + "日"));
         //周
         if (calendar.isCurrentDay()) {
-            currentWeekTv.setText(DateUtils.getInstance().getWeekday2(System.currentTimeMillis()));
+//            currentWeekTv.setText(DateUtils.getInstance().getWeekday2(System.currentTimeMillis()));
         } else {
             String weekStr = "周日";
             switch (calendar.getWeek()) {
@@ -148,7 +150,6 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
                     break;
                 default:
             }
-            currentWeekTv.setText(weekStr);
         }
 
     }

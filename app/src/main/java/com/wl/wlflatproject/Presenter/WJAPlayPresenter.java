@@ -41,21 +41,5 @@ public class WJAPlayPresenter{
 
 
 
-    public void getSystemTime() {
-        String path = "https://ums-test.wonlycloud.com:10301/api/aigang/getTimeStamp";
-        OkGo.<String>post(path).execute(new StringCallback() {
-            @Override
-            public void onSuccess(Response<String> response) {
-                TimeBean bean=GsonUtils.GsonToBean(response.body(), TimeBean.class);
-                SystemClock.setCurrentTimeMillis(bean.getData().getMillisecond());
-            }
-
-            @Override
-            public void onError(Response<String> response) {
-            }
-        });
-    }
-
-
 
 }

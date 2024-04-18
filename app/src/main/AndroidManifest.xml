@@ -16,7 +16,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
-        <activity android:name=".Activity.CalendarActivity" />
+        <activity
+            android:theme="@style/DialogActivity"
+            android:name=".Activity.CalendarActivity" />
 
         <activity android:name=".Activity.WeatherActivity" />
         <activity android:name=".Activity.DoorSelectActivity" />

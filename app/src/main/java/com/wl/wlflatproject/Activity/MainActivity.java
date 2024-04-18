@@ -60,6 +60,7 @@ import com.serenegiant.usb.IStatusCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 import com.wl.wlflatproject.Bean.BaseBean;
+import com.wl.wlflatproject.Bean.CalendarParam;
 import com.wl.wlflatproject.Bean.GDFutureWeatherBean;
 import com.wl.wlflatproject.Bean.GDNowWeatherBean;
 import com.wl.wlflatproject.Bean.OpenTvBean;
@@ -229,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
                     mWorkerThreadID = handler.getLooper().getThread().getId();
                     initSerialPort();
                     releaseCamera();
-                    wjaPlayPresenter.getSystemTime();
                     break;
             }
         }
@@ -335,7 +335,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({ R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
+    @OnClick({ R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
             R.id.weather_ll,  R.id.video_iv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -386,32 +386,33 @@ public class MainActivity extends AppCompatActivity {
                     serialPort.sendDate("+CLOSEALWAYSOPEN\r\n".getBytes());
                 }
                 break;
-            case R.id.weather_ll:
-                ConnectivityManager connectivityManager
-                        = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-                if (info != null && info.isAvailable()) {
-                    watherClick = true;
-                    mLocationUtils.startLocation();
-
-                } else {
-                    Toast.makeText(this, "WiFi不可用或已断开", Toast.LENGTH_SHORT).show();
-                }
-                break;
-//            case R.id.calendar_ll:
-//                //日历
-//                if (mAMapLocation == null) {
-//                    Toast.makeText(this, "数据获取中...", Toast.LENGTH_SHORT).show();
-//                    return;
+//            case R.id.weather_ll:
+//                ConnectivityManager connectivityManager
+//                        = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+//                NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+//                if (info != null && info.isAvailable()) {
+//                    watherClick = true;
+//                    mLocationUtils.startLocation();
+//
+//                } else {
+//                    Toast.makeText(this, "WiFi不可用或已断开", Toast.LENGTH_SHORT).show();
 //                }
-//                CalendarParam calendarParam = new CalendarParam();
-//                calendarParam.temp = todayTempTv.getText().toString();
-//                calendarParam.weather = todayWeatherTv.getText().toString();
-//                String city = mAMapLocation.getCity();
-//                String district = mAMapLocation.getDistrict();
-//                calendarParam.location = district == null ? city : district;
-//                CalendarActivity.start(this, calendarParam);
 //                break;
+            case R.id.date_tv:
+            case R.id.calendar_cn_tv:
+                //日历
+                if (mAMapLocation == null) {
+                    Toast.makeText(this, "数据获取中...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                CalendarParam calendarParam = new CalendarParam();
+                calendarParam.temp = todayTempTv.getText().toString();
+                calendarParam.weather = todayWeatherTv.getText().toString();
+                String city = mAMapLocation.getCity();
+                String district = mAMapLocation.getDistrict();
+                calendarParam.location = district == null ? city : district;
+                CalendarActivity.start(this, calendarParam);
+                break;
             default:
         }
     }

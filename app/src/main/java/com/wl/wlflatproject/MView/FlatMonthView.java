@@ -4,19 +4,18 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.text.TextUtils;
 
 import com.haibin.calendarview.Calendar;
 import com.haibin.calendarview.MonthView;
 
-/**
- * @Author: HSL
- * @Time: 2019/7/29 16:52
- * @E-mail: xxx@163.com
- * @Description: 月视图~
- */
+
 public class FlatMonthView extends MonthView {
 
+    private final Path path;
     private int mRadius;
     private Paint mCustomSelectedPaint;
     /**
@@ -27,12 +26,11 @@ public class FlatMonthView extends MonthView {
     public FlatMonthView(Context context) {
         super(context);
         mCustomSelectedPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        mCustomSelectedPaint.setStrokeWidth(2);
-        mCustomSelectedPaint.setStyle(Paint.Style.STROKE);
-        mCustomSelectedPaint.setColor(Color.parseColor("#999999"));
+        mCustomSelectedPaint.setStyle(Paint.Style.FILL);
+        mCustomSelectedPaint.setColor(Color.parseColor("#0F85FD"));
+        path = new Path();
 
-
-        mSolarTermTextPaint.setColor(Color.parseColor("#31ABD3"));
+        mSolarTermTextPaint.setColor(Color.parseColor("#56616C"));
         mSolarTermTextPaint.setAntiAlias(true);
         mSolarTermTextPaint.setTextAlign(Paint.Align.CENTER);
     }
@@ -56,9 +54,8 @@ public class FlatMonthView extends MonthView {
      */
     @Override
     protected boolean onDrawSelected(Canvas canvas, Calendar calendar, int x, int y, boolean hasScheme) {
-        int cx = x + mItemWidth / 2;
-        int cy = y + mItemHeight / 2;
-        canvas.drawCircle(cx, cy, mRadius, calendar.isCurrentDay() ? mSelectedPaint : mCustomSelectedPaint);
+        RectF rect = new RectF(x, y, x+mItemWidth, y+mItemHeight);
+        canvas.drawRoundRect(rect, 10,10,mCustomSelectedPaint);
         return true;
     }
 
@@ -78,9 +75,9 @@ public class FlatMonthView extends MonthView {
         }
         if (isSelected) {
             canvas.drawText(String.valueOf(calendar.getDay()), cx, mTextBaseLine + top,
-                    calendar.isCurrentMonth() && calendar.isCurrentDay() ? mCurDayTextPaint : mSelectTextPaint);
+                     mSelectTextPaint);
             canvas.drawText(calendar.getLunar(), cx, mTextBaseLine + y + mItemHeight / 10,
-                    calendar.isCurrentMonth() && calendar.isCurrentDay() ? mCurDayLunarTextPaint : mSelectedLunarTextPaint);
+                    mSelectedLunarTextPaint);
         } else if (hasScheme) {
             // TODO: 2019/7/29
         } else {

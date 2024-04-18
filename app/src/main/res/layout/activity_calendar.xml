@@ -1,215 +1,185 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Activity.CalendarActivity">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_gravity="center"
+        android:layout_width="694dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_14"
-        android:layout_marginTop="@dimen/dp_14"
-        android:layout_marginRight="@dimen/dp_14"
-        android:background="#253443"
-        android:gravity="center_vertical"
-        android:paddingLeft="@dimen/dp_39"
-        android:paddingTop="@dimen/dp_20"
-        android:paddingBottom="@dimen/dp_10">
+        android:background="@drawable/shape_radius_16_ffffff"
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/current_month_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:text="7月"
-            android:textSize="52dp" />
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/dp_17"
-            android:layout_weight="1"
-            android:orientation="vertical">
-
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="82dp"
+        android:gravity="center_vertical">
             <TextView
-                android:id="@+id/current_week_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="周二"
-                android:textColor="#31ABD3"
-                android:textSize="22dp" />
-
-            <TextView
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="32dp"
+                android:textStyle="bold"
                 android:id="@+id/current_year_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_6"
                 android:includeFontPadding="false"
                 android:text="2019年"
-                android:textColor="#31ABD3"
-                android:textSize="22dp" />
-        </LinearLayout>
+                android:textColor="@color/BLACK"
+                android:textSize="36sp" />
 
+            <TextView
+                android:layout_marginRight="183dp"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:textColor="@color/BLACK"
+                android:id="@+id/current_month_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:text="7月"
+                android:textStyle="bold"
+                android:textSize="36sp" />
+
+
+        <View
+            android:id="@+id/next_v"
+            app:layout_constraintRight_toRightOf="@+id/next"
+            app:layout_constraintLeft_toLeftOf="@+id/next"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"/>
+        <View
+            android:id="@+id/last_v"
+            app:layout_constraintRight_toRightOf="@+id/last"
+            app:layout_constraintLeft_toLeftOf="@+id/last"
+            android:layout_width="80dp"
+            android:layout_height="match_parent"/>
         <ImageView
-            android:id="@+id/back_iv"
-            android:layout_width="@dimen/dp_92"
-            android:layout_height="@dimen/dp_60"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:paddingLeft="@dimen/dp_39"
-            android:paddingRight="@dimen/dp_39"
-            android:src="@drawable/gray_arrow_icon" />
+            android:id="@+id/next"
+            android:layout_marginRight="41dp"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/gray_arrow_icon"
+            android:layout_width="15dp"
+            android:layout_height="26dp"/>
+        <ImageView
+            android:id="@+id/last"
+            app:layout_constraintRight_toLeftOf="@+id/current_month_tv"
+            android:layout_marginRight="128dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:background="@drawable/gray_arrow_left_icon"
+            android:layout_width="15dp"
+            android:layout_height="26dp"/>
 
-    </LinearLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.haibin.calendarview.CalendarView
         android:id="@+id/calendar_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_14"
-        android:layout_marginRight="@dimen/dp_14"
-        android:background="#253443"
-        android:paddingBottom="@dimen/dp_8"
-        app:calendar_height="@dimen/dp_80"
-        app:calendar_padding="@dimen/dp_18"
-        app:current_day_lunar_text_color="@color/white"
-        app:current_day_text_color="@color/white"
-        app:current_month_lunar_text_color="#AAAEB2"
-        app:current_month_text_color="@color/white"
-        app:day_text_size="22dp"
-        app:lunar_text_size="14dp"
+        android:layout_height="467dp"
+        android:background="#ffffff"
+        android:paddingBottom="13dp"
+        app:calendar_height="100dp"
+        app:current_day_lunar_text_color="#86909c"
+        app:current_day_text_color="#1d2129"
+        app:current_month_lunar_text_color="#86909c"
+        app:current_month_text_color="#1d2129"
+        app:day_text_size="32sp"
+        app:lunar_text_size="16sp"
         app:month_view="com.wl.wlflatproject.MView.FlatMonthView"
         app:month_view_auto_select_day="first_day_of_month"
         app:month_view_show_mode="mode_fix"
         app:other_month_lunar_text_color="#56616C"
-        app:other_month_text_color="#56616C"
+        app:other_month_text_color="#c9cdd4"
         app:select_mode="default_mode"
-        app:selected_lunar_text_color="#aaaeb2"
+        app:selected_lunar_text_color="@color/white"
         app:selected_text_color="@color/white"
-        app:selected_theme_color="#31ABD3"
-        app:week_background="#253443"
-        app:week_bar_height="@dimen/dp_65"
+        app:selected_theme_color="#ffffff"
+        app:week_background="#ffffff"
+        app:week_bar_height="50dp"
         app:week_line_background="@color/white"
-        app:week_line_margin="@dimen/dp_38"
-        app:week_text_color="#AAAEB2"
-        app:week_text_size="20dp"
+        app:week_line_margin="20dp"
+        app:week_text_color="#86909c"
+        app:week_text_size="24sp"
         app:week_view="com.wl.wlflatproject.MView.FlatMonthView" />
 
     <LinearLayout
+        android:gravity="center_vertical"
+        android:layout_marginBottom="24dp"
+        android:layout_marginRight="24dp"
+        android:layout_marginLeft="24dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_14"
-        android:layout_marginTop="@dimen/dp_20"
-        android:layout_marginRight="@dimen/dp_14"
-        android:background="#253443"
-        android:orientation="vertical"
-        android:paddingLeft="@dimen/dp_38"
-        android:paddingTop="@dimen/dp_20"
-        android:paddingRight="@dimen/dp_38"
-        android:paddingBottom="@dimen/dp_20">
+        android:layout_height="104dp"
+        android:background="@drawable/shape_radius_16_f2f3f5"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView
+                android:layout_marginLeft="24dp"
                 android:id="@+id/lunar_date_tv"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="农历-四月-初三"
-                android:textColor="#31ABD3"
-                android:textSize="25dp" />
+                android:textColor="#1d2129"
+                android:textSize="24sp" />
 
             <TextView
                 android:id="@+id/temp_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="29℃"
-                android:textColor="#ffffff"
-                android:textSize="25dp" />
+                android:textColor="#4e5969"
+                android:textSize="24sp" />
 
             <TextView
+                android:layout_marginRight="24dp"
                 android:id="@+id/weather_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="17dp"
                 android:text="晴"
-                android:textColor="#AAAEB2"
-                android:textSize="25dp" />
+                android:textColor="#4e5969"
+                android:textSize="24sp" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="14dp">
+            android:layout_height="wrap_content">
 
             <TextView
+                android:layout_marginLeft="24dp"
                 android:id="@+id/gan_zhi_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="己亥猪年 辛未月 辛酉日"
-                android:textColor="#AAAEB2"
-                android:textSize="22dp" />
+                android:textColor="#1d2129"
+                android:textSize="20sp" />
 
             <TextView
+                android:layout_marginRight="24dp"
                 android:id="@+id/location_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="滨江区"
-                android:textColor="#AAAEB2"
-                android:textSize="22dp" />
+                android:textColor="#415969"
+                android:textSize="24sp" />
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_14"
-        android:layout_marginTop="@dimen/dp_16"
-        android:layout_marginRight="@dimen/dp_14"
-        android:background="#253443"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/dp_38"
-        android:paddingTop="@dimen/dp_20"
-        android:paddingRight="@dimen/dp_38"
-        android:paddingBottom="@dimen/dp_20">
-
-        <View
-            android:layout_width="@dimen/dp_184"
-            android:layout_height="@dimen/dp_87"
-            android:background="@drawable/wanglianfang_img" />
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginLeft="@dimen/dp_29"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="一次选择  一生守护"
-                android:textColor="#05A545"
-                android:textSize="28dp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_17"
-                android:includeFontPadding="false"
-                android:text="One choice   Lifetime guard"
-                android:textColor="#AAAEB2"
-                android:textSize="20dp"
-                android:textStyle="bold" />
-        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>
