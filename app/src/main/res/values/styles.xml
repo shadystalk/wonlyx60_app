@@ -7,6 +7,9 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <style name="NoCursorEditTextStyle" parent="@android:style/Widget.EditText">
+        <item name="android:textCursorDrawable">@color/transparent</item>
+    </style >
     <style name="ActionSheetDialogStyle" parent="@android:style/Theme.Dialog">
 
         <!-- 背景透明 -->
@@ -33,10 +36,6 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
-
-    版权声明：本文为博主原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接和本声明。
-
-    原文链接：https://blog.csdn.net/johnwcheung/article/details/66972599
     <!--自定义dialog背景全透明无边框theme -->
     <style name="mDialog" parent="android:Theme.Dialog">
         <!-- 背景颜色及透明程度 -->

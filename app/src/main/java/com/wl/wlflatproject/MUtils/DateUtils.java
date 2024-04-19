@@ -236,6 +236,10 @@ public class DateUtils {
         return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
                 .format(new Date(time));
     }
+    public String dateFormat11(long time) {
+        return new SimpleDateFormat("MM/dd  HH:mm", Locale.getDefault())
+                .format(new Date(time));
+    }
 
     /**
      * @param time

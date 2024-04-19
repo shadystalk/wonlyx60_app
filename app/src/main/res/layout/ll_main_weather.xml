@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--"
-            android:textColor="@color/white"
+            android:textColor="#a2a2a2"
             android:textSize="16sp" />
         <View
             app:layout_constraintBottom_toBottomOf="parent"
@@ -74,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="晴"
-                android:textColor="@color/white"
+                android:textColor="#a2a2a2"
                 android:textSize="32sp" />
             <TextView
                 android:layout_marginLeft="8dp"
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text="11"
-                android:textColor="@color/white"
+                android:textColor="#a2a2a2"
                 android:textSize="32sp" />
 
             <TextView
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:text=" °C"
-                android:textColor="@color/white"
+                android:textColor="#a2a2a2"
                 android:textSize="16sp" />
         </LinearLayout>
         <LinearLayout
@@ -130,16 +130,16 @@
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingRight="16dp">
+
         <TextView
-            android:layout_gravity="center_vertical"
             android:id="@+id/second_weather_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="- · -"
-            android:textSize="14sp"
-            android:textColor="@color/white"
+            android:layout_gravity="center_vertical"
             android:gravity="center"
-            android:layout_centerVertical="true" />
+            android:text="- · -"
+            android:textColor="#a2a2a2"
+            android:textSize="14sp" />
 
         <View
             android:layout_centerVertical="true"
@@ -160,7 +160,7 @@
             android:layout_height="wrap_content"
             android:text="-° /  -°"
             android:textSize="14sp"
-            android:textColor="@color/white"
+            android:textColor="#a2a2a2"
         />
     </RelativeLayout>
 
@@ -179,7 +179,7 @@
             android:layout_height="wrap_content"
             android:text="- · -"
             android:textSize="14sp"
-            android:textColor="@color/white"
+            android:textColor="#a2a2a2"
             android:layout_centerVertical="true"
           />
         <View
@@ -199,7 +199,7 @@
             android:layout_height="wrap_content"
             android:text="-° /  -°"
             android:textSize="14sp"
-            android:textColor="@color/white"
+            android:textColor="#a2a2a2"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true" />
     </RelativeLayout>

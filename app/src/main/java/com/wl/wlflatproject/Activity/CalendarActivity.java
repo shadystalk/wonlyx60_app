@@ -2,10 +2,17 @@ package com.wl.wlflatproject.Activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,7 +31,8 @@ import butterknife.OnClick;
 public class CalendarActivity extends AppCompatActivity implements CalendarView.OnCalendarSelectListener {
 
     public static final String PARAM = "param";
-
+    ScrollView sl = null;
+    LinearLayout ll=null;
     @BindView(R.id.current_month_tv)
     TextView currentMonthTv;
     @BindView(R.id.current_year_tv)
@@ -45,7 +53,8 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
     View last_v;
     @BindView(R.id.next_v)
     View next_v;
-
+    private int currentYear;
+    private int lastSelectYear=0;
     private CalendarParam mParam;
 
     public static void start(Context context, CalendarParam param) {
@@ -66,11 +75,14 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
     }
 
     private void initView() {
+        calendarView.setSelectCalendarRange(1950,1,1,2050,12,31);
         calendarView.setOnCalendarSelectListener(this);
         //当前月
         currentMonthTv.setText(calendarView.getCurMonth() + "月");
         //当前年
         currentYearTv.setText(calendarView.getCurYear() + "年");
+        currentYear=calendarView.getCurYear();
+        lastSelectYear=calendarView.getCurYear();
         //猪 贰零壹玖 润 六月 小廿八 己亥 辛未 戊辰
         String[] lunar = LunarUtils.getLunar(calendarView.getCurYear() + "",
                 calendarView.getCurMonth() + "",
@@ -94,8 +106,61 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
         next_v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(currentYear==2050){
+                    return;
+                }
                 calendarView.scrollToNext();
 //                public void scrollToCalendar(int year, int month, int day);//滚动到指定日期
+            }
+        });
+        currentYearTv.setOnClickListener(new View.OnClickListener() {
+
+            private PopupWindow popupWindow;
+
+            @Override
+            public void onClick(View view) {
+                if(popupWindow==null){
+                    View inflate = View.inflate(CalendarActivity.this, R.layout.data_rc, null);
+                    ll=inflate.findViewById(R.id.date_ll);
+                    sl=inflate.findViewById(R.id.date_sl);
+                    int data=1971;
+                    for(int x=0;x<79;x++){
+                        TextView textView = new TextView(CalendarActivity.this);
+                        textView.setGravity(Gravity.CENTER);
+                        textView.setWidth(172);
+                        textView.setHeight(77);
+                        textView.setText(data+"");
+                        textView.setTextSize(32);
+                        textView.setTextColor(Color.parseColor("#4e5969"));
+                        textView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                String selectYear = textView.getText().toString();
+                                calendarView.scrollToCalendar(Integer.parseInt(selectYear),calendarView.getCurMonth(),calendarView.getCurDay());
+                                popupWindow.dismiss();
+                            }
+                        });
+                        data++;
+                        ll.addView(textView);
+                    }
+                    popupWindow = new PopupWindow(inflate, 202,440, true);
+                }
+                TextView textView= (TextView) ll.getChildAt(currentYear-1971);
+                textView.setTextColor(Color.parseColor("#1d2129"));
+                textView.setBackgroundColor(Color.parseColor("#f2f3f5"));
+                if(lastSelectYear!=currentYear){
+                    TextView textView1= (TextView) ll.getChildAt(lastSelectYear-1971);
+                    textView1.setTextColor(Color.parseColor("#4e5969"));
+                    textView1.setBackgroundColor(Color.parseColor("#ffffff"));
+                }
+                popupWindow.showAsDropDown(currentYearTv,-20,0);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        sl.scrollTo(0,(currentYear-1973)*77);
+                        lastSelectYear=currentYear;
+                    }
+                },500);
             }
         });
     }
@@ -112,6 +177,7 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
         currentMonthTv.setText(calendar.getMonth() + "月");
         //年
         currentYearTv.setText(calendar.getYear() + "年");
+        currentYear=calendar.getYear();
         Calendar lunarCalendar = calendar.getLunarCalendar();
         //猪 贰零壹玖 润 六月 小廿八 己亥 辛未 戊辰
         String[] lunar = LunarUtils.getLunar(calendar.getYear() + "",

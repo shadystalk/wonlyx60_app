@@ -27,7 +27,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -35,8 +37,10 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -76,6 +80,7 @@ import com.wl.wlflatproject.MUtils.HandlerCode;
 import com.wl.wlflatproject.MUtils.LocationUtils;
 import com.wl.wlflatproject.MUtils.LunarUtils;
 import com.wl.wlflatproject.MUtils.RbMqUtils;
+import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
 import com.wl.wlflatproject.MView.SimpleUVCCameraTextureView;
@@ -143,6 +148,8 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout weatherLl;
     @BindView(R.id.date_tv)
     TextView dateTv;
+    @BindView(R.id.message_date)
+    TextView messageDate;
     @BindView(R.id.changKai)
     LinearLayout changKai;
     @BindView(R.id.calendar_cn_tv)
@@ -158,6 +165,10 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout todayTempLl;
     @BindView(R.id.door_select_ll)
     LinearLayout doorSelectLl;
+    @BindView(R.id.message_edit)
+    EditText messageEdit;
+    @BindView(R.id.message_tv)
+    TextView messageTv;
     private int version;
     /* 更新进度条 */
     private ProgressBar mProgress;
@@ -263,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaplayer;
     private List<DeviceFilter> filter;
     private PowerManager.WakeLock wakeLock;
+    private PopupWindow clearPopupWindow;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -332,6 +344,51 @@ public class MainActivity extends AppCompatActivity {
             videoPlayView.setLayoutParams(params);
             videoPlayView.setRotation(-270f);
         }, 1000);
+        messageEdit.setCursorVisible(false);
+        initListener();
+        String messageS=SPUtil.getInstance(MainActivity.this).getSettingParam("message","");
+        String messageDateS=SPUtil.getInstance(MainActivity.this).getSettingParam("message_date","");
+        if(!TextUtils.isEmpty(messageDateS)){
+            messageEdit.setText(messageS);
+            messageDate.setText(messageDateS);
+        }
+    }
+
+    private void initListener() {
+        messageTv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if(clearPopupWindow==null){
+                    View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
+                    clearPopupWindow = new PopupWindow(inflate, 200,70, true);
+                }
+                clearPopupWindow.showAsDropDown(changKai,0,0);
+                return false;
+            }
+        });
+        messageEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(messageEdit.getText().toString().length()!=0){
+                    String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
+                    messageDate.setText(s);
+                    SPUtil.getInstance(MainActivity.this).setSettingParam("message",messageEdit.getText().toString());
+                    SPUtil.getInstance(MainActivity.this).setSettingParam("message_date",s);
+                }else{
+                    messageDate.setText("");
+                }
+            }
+        });
     }
 
 
