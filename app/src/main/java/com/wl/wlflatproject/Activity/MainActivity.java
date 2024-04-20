@@ -305,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
         threads = Executors.newFixedThreadPool(4);
         wjaPlayPresenter = new WJAPlayPresenter();
         handler.sendEmptyMessageDelayed(HEARTBEAT, 1000);
-        doorSelectLl.setVisibility(View.VISIBLE);
         videoIv.setVisibility(View.VISIBLE);
         lockBt.setVisibility(View.VISIBLE);
         dateUtils = DateUtils.getInstance();
@@ -401,11 +400,7 @@ public class MainActivity extends AppCompatActivity {
                  startActivity(intent);
                 break;
             case R.id.fun_view:
-                    if (isPlaying &&doorSelectLl.getVisibility()==View.VISIBLE) {
-                        doorSelectLl.setVisibility(View.GONE);
-                    } else {
-                        doorSelectLl.setVisibility(View.VISIBLE);
-                    }
+
                 break;
             case R.id.lock_bt://开门
                 dialogTime.show();
@@ -1408,7 +1403,6 @@ public class MainActivity extends AppCompatActivity {
                         camera.startPreview();
                     }
                     isPlaying = true;
-                    time.setVisibility(View.GONE);
                     videoPlayView.setVisibility(View.VISIBLE);
                     setFullScreen();
                     handler.removeMessages(LEAVE);
@@ -1435,8 +1429,6 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private synchronized void releaseCamera() {
-        time.setVisibility(View.VISIBLE);
-        doorSelectLl.setVisibility(View.VISIBLE);
         videoPlayView.setVisibility(View.INVISIBLE);
         if (!isPlaying) {
             return;
