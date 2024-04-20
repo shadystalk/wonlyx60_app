@@ -50,4 +50,6 @@
         <item>Time delay shot</item>
         <item>Continuous shooting</item>
     </string-array>
+
+    <string name="setting">设置</string>
 </resources>

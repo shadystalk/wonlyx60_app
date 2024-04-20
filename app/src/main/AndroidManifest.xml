@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
 
-    package="com.wl.wlflatproject"
-    >
+    package="com.wl.wlflatproject">
 
     <!-- android:sharedUserId="android.uid.system" -->
     <!-- 用于进行网络定位 -->
@@ -17,8 +16,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.NoActionBar">
         <activity
-            android:theme="@style/DialogActivity"
-            android:name=".Activity.CalendarActivity" />
+            android:name=".Activity.CalendarActivity"
+            android:theme="@style/DialogActivity" />
 
         <activity android:name=".Activity.WeatherActivity" />
         <activity android:name=".Activity.DoorSelectActivity" />
@@ -31,12 +30,13 @@
 
         <activity android:name=".Activity.ResetActivity" />
         <activity
-            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified"
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.MONKEY" />
                 <category android:name="android.intent.category.LAUNCHER_APP" />
@@ -46,6 +46,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activity.SettingMainActivity" />
+
         <meta-data
             android:name="APP_UUID"
             android:value="61ab68a710464f3c872758e03093afbb" />
@@ -61,6 +63,7 @@
         <meta-data
             android:name="com.amap.api.v2.apikey"
             android:value="52958bd9efbd884b1eea9bfc46f8ed07" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.wl.wlflatproject.fileprovider"
@@ -70,6 +73,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
         <receiver
             android:name=".MService.UpdateReceiver"
             android:enabled="true"
@@ -85,15 +89,23 @@
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver> <!-- 高德地图定位服务 -->
+        </receiver><!-- 高德地图定位服务 -->
+        <receiver android:name=".Activity.SettingMainActivity$TimeReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIME_TICK" />
+                <action android:name="android.intent.action.DATE_CHANGED" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".MService.IdService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.wl.wlflatproject.MService.IdService"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.wl.wlflatproject.MService.IdService" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
 
@@ -124,7 +136,6 @@
     <uses-permission android:name="android.permission.READ_LOGS" />
     <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.DELETE_PACKAGES" />
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
-
 </manifest>

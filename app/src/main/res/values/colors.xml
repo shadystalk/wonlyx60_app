@@ -5,7 +5,11 @@
     <color name="colorAccent">#FF4081</color>
     <color name="white">#ffffff</color>
     <color name="transparent">#00000000</color>
-
+    <color name="mainBgColor">#101010</color>
+    <color name="childBgColor">#232323</color>
+    <color name="white_tran90">#E6FFFFFF</color>
+    <color name="white_tran70">#B3FFFFFF</color>
+    <color name="white_tran8">#14FFFFFF</color>
     <color name="c_333333">#333333</color>
     <color name="c_666666">#666666</color>
     <color name="c_808080">#808080</color>

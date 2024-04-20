@@ -396,7 +396,7 @@ public class MainActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
-                 Intent intent = new Intent(MainActivity.this, SettingActivity1.class);
+                 Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
                  startActivity(intent);
                 break;
             case R.id.fun_view:
