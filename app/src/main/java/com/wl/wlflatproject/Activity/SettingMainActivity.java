@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
+import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.R;
 
@@ -41,9 +42,9 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private SettingGuideAdapter mGuideAdapter;
     private String[] title = {"设备信息", "网络设置", "设备绑定", "系统密码", "设备动态", "系统设置", "遥感设置", "开门机设置", "售后服务", "恢复出厂"};
 
-    private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_device_info, R.mipmap.ic_device_info
-            , R.mipmap.ic_device_info, R.mipmap.ic_device_info, R.mipmap.ic_device_info, R.mipmap.ic_device_info,
-            R.mipmap.ic_device_info, R.mipmap.ic_device_info, R.mipmap.ic_device_info,};
+    private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
+            , R.mipmap.ic_sys_pwd, R.mipmap.ic_device_state, R.mipmap.ic_sys_setting, R.mipmap.ic_bluetooth,
+            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales, R.mipmap.ic_reset};
 
     private Fragment[] fragments = new Fragment[title.length];
 
@@ -156,7 +157,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     break;
                 case 5:
                     // 系统设置
-                    fragment = new DeviceInfoFragment();
+                    fragment = new SystemSettingFragment();
                     fragments[position] = fragment;
                     break;
                 case 6:

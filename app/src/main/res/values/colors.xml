@@ -9,7 +9,13 @@
     <color name="childBgColor">#232323</color>
     <color name="white_tran90">#E6FFFFFF</color>
     <color name="white_tran70">#B3FFFFFF</color>
+    <color name="white_tran60">#99FFFFFF</color>
+    <color name="white_tran50">#80FFFFFF</color>
     <color name="white_tran8">#14FFFFFF</color>
+    <color name="c_f9">#F9F9F9</color>
+    <color name="c_28">#282828</color>
+    <color name="c_1d2129">#1D2129</color>
+    <color name="c_306fff">#306FFF</color>
     <color name="c_333333">#333333</color>
     <color name="c_666666">#666666</color>
     <color name="c_808080">#808080</color>
