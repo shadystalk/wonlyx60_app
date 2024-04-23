@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity {
     TextView messageDate;
     @BindView(R.id.changKai)
     LinearLayout changKai;
+    @BindView(R.id.close_video)
+    LinearLayout closeVideo;
     @BindView(R.id.calendar_cn_tv)
     TextView calendarCnTv;
 
@@ -255,8 +257,6 @@ public class MainActivity extends AppCompatActivity {
     private FileOutputStream fout;
     private PrintWriter printWriter;
     private DateUtils dateUtils;
-    private String msg;
-    private WJAPlayPresenter wjaPlayPresenter;
     private String mTodayCode = "";
     private String mSecondCode = "";
     private String mThirdCode = "";
@@ -303,10 +303,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
         }
         threads = Executors.newFixedThreadPool(4);
-        wjaPlayPresenter = new WJAPlayPresenter();
         handler.sendEmptyMessageDelayed(HEARTBEAT, 1000);
-        videoIv.setVisibility(View.VISIBLE);
-        lockBt.setVisibility(View.VISIBLE);
         dateUtils = DateUtils.getInstance();
         handler.removeMessages(DOWN_LOAD_APK);
         handler.removeMessages(TIME);
@@ -359,9 +356,18 @@ public class MainActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
                 if(clearPopupWindow==null){
                     View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
-                    clearPopupWindow = new PopupWindow(inflate, 200,70, true);
+                    clearPopupWindow = new PopupWindow(inflate, 150,65, true);
+                    inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            messageEdit.setText("");
+                            messageDate.setText("");
+                            clearPopupWindow.dismiss();
+                        }
+                    });
                 }
-                clearPopupWindow.showAsDropDown(changKai,0,0);
+                clearPopupWindow.showAsDropDown(changKai,40,-22);
+
                 return false;
             }
         });
@@ -391,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({ R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
+    @OnClick({R.id.close_video, R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
             R.id.weather_ll,  R.id.video_iv})
     public void onViewClicked(View view) {
         switch (view.getId()) {
@@ -424,10 +430,10 @@ public class MainActivity extends AppCompatActivity {
 //                    Set<Integer> set = deviceList.keySet();
 //                    set.iterator().next();
                     mUSBMonitor.requestPermission(deviceList.get(0));
-                } else {
-                    releaseCamera();
                 }
-
+                break;
+            case R.id.close_video:
+                releaseCamera();
                 break;
             case R.id.changKai:
                 if (changkaiFlag == 1) {
@@ -590,6 +596,7 @@ public class MainActivity extends AppCompatActivity {
                                 case 13://唯一id1
                                     id = split[1];
                                     bean.setDevId(id);
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("DevId",id);
                                     setMq();
                                     break;
                             }
@@ -1042,14 +1049,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void setFullScreen() {
-        hideBottomUIMenu();
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        rl.setLayoutParams(layoutParams);
-        RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        funView.setLayoutParams(layoutParams1);
-        isFull = true;
-    }
 
 
     private void requestPermission() {
@@ -1403,8 +1402,8 @@ public class MainActivity extends AppCompatActivity {
                         camera.startPreview();
                     }
                     isPlaying = true;
+                    closeVideo.setVisibility(View.VISIBLE);
                     videoPlayView.setVisibility(View.VISIBLE);
-                    setFullScreen();
                     handler.removeMessages(LEAVE);
                     handler.sendEmptyMessageDelayed(LEAVE, 120000);
                     wakeLock.acquire();
@@ -1430,6 +1429,7 @@ public class MainActivity extends AppCompatActivity {
 
     private synchronized void releaseCamera() {
         videoPlayView.setVisibility(View.INVISIBLE);
+        closeVideo.setVisibility(View.GONE);
         if (!isPlaying) {
             return;
         }

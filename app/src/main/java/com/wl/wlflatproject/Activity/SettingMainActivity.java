@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
+import com.wl.wlflatproject.Fragment.AfterSaleFragment;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
@@ -40,11 +41,11 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "系统密码", "设备动态", "系统设置", "遥感设置", "开门机设置", "售后服务", "恢复出厂"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置",  "开门机设置", "售后服务"};
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
-            , R.mipmap.ic_sys_pwd, R.mipmap.ic_device_state, R.mipmap.ic_sys_setting, R.mipmap.ic_bluetooth,
-            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales, R.mipmap.ic_reset};
+            ,  R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
+            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales};
 
     private Fragment[] fragments = new Fragment[title.length];
 
@@ -146,38 +147,23 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     fragments[position] = fragment;
                     break;
                 case 3:
-                    // 系统密码
-                    fragment = new DeviceInfoFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 4:
                     // 设备动态
                     fragment = new DeviceInfoFragment();
                     fragments[position] = fragment;
                     break;
-                case 5:
+                case 4:
                     // 系统设置
                     fragment = new SystemSettingFragment();
                     fragments[position] = fragment;
                     break;
-                case 6:
-                    // 遥感设置
-                    fragment = new DeviceInfoFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 7:
+                case 5:
                     // 开门机设置
                     fragment = new DeviceInfoFragment();
                     fragments[position] = fragment;
                     break;
-                case 8:
+                case 6:
                     // 售后服务
-                    fragment = new DeviceInfoFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 9:
-                    // 恢复出厂
-                    fragment = new DeviceInfoFragment();
+                    fragment = new AfterSaleFragment();
                     fragments[position] = fragment;
                     break;
             }

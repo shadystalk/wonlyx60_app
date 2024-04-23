@@ -1,5 +1,6 @@
 package com.wl.wlflatproject.Fragment;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.R;
 
 public class DeviceInfoFragment extends Fragment {
@@ -29,6 +31,21 @@ public class DeviceInfoFragment extends Fragment {
         mSoftwareTv = view.findViewById(R.id.software_version_text);
         mPreviousTv = view.findViewById(R.id.previous_version_text);
         mAfterTv = view.findViewById(R.id.after_version_text);
+        initData();
         return view;
+    }
+
+    public void initData(){
+        String devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
+        mMacTv.setText(devId);
+
+        String packageName = null;
+        try {
+            packageName = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
+            mSoftwareTv.setText(packageName);
+        } catch (PackageManager.NameNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }
