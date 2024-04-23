@@ -44,11 +44,15 @@ public class OpenMachineFragment extends Fragment {
     ConstraintLayout closeTimeCl;
     @BindView(R.id.open_degree_repair_cl)
     ConstraintLayout openDegreeRepairCl;
+    @BindView(R.id.open_degree_repair_tv)
+    TextView openDegreeRepairTv;
+    @BindView(R.id.close_time_tv)
+    TextView closeTimeTv;
     private int open_degree=90;
     private int open_speed=8;
     private int close_speed=4;
-    private int closeTime=5;
-    private int openDegreeRepair=0;
+    private String closeTime="5秒";
+    private String openDegreeRepair="0°";
     private SerialPortUtil serialPort;
     private SerialPortUtil.DataListener dataListener;
     private WaitDialogTime dialogTime;
@@ -72,19 +76,20 @@ public class OpenMachineFragment extends Fragment {
         initOpenDegree();
         initOpenSpeed();
         initCloseSpeed();
-        initCloseTime();
-        initOpenDegreeRepair();
+        initListener();
         listener = new SetDialog.ResultListener() {
             @Override
             public void onResult(String value, int flag) {
                 switch (flag){
                     case 4:
                         serialPort.sendDate(("+OPENWAITTIME:" + value + "\r\n").getBytes());
-                        closeTime=Integer.parseInt(value);
+                        closeTime=value;
+                        closeTimeTv.setText(value);
                         break;
                     case 12:
-                        openDegreeRepair=Integer.parseInt(value);
+                        openDegreeRepair=value;
                         serialPort.sendDate(("+ANGLEREPAIR:" + value + "\r\n").getBytes());
+                        openDegreeRepairTv.setText(value);
                         break;
                 }
                 dialogTime.show();
@@ -100,21 +105,26 @@ public class OpenMachineFragment extends Fragment {
                         switch (Integer.parseInt(split[0])) {
                             case 1://代表开门角度
                                 open_degree = Integer.parseInt(split[1]);
+                                initOpenDegree();
                                 break;
                             case 2://开门等待时间
-                                closeTime = Integer.parseInt(split[1]);
+                                closeTime = split[1]+"秒";
+                                closeTimeTv.setText(split[1]+"秒");
                                 break;
                             case 3://开门速度
                                 open_speed = Integer.parseInt(split[1]);
+                                initOpenSpeed();
                                 break;
                             case 4://关门速度
                                 close_speed = Integer.parseInt(split[1]);
+                                initCloseSpeed();
                                 break;
                             case 9://关门力度
 //                                closePower = split[1];
                                 break;
                             case 10://开门角度修复值
-                                openDegreeRepair = Integer.parseInt(split[1]);
+                                openDegreeRepair = split[1]+"°";
+                                openDegreeRepairTv.setText(split[1]+"°");
                                 break;
                         }
                     }else if (data.contains("AT+LEFTANGLEREPAIR=1")) {
@@ -161,6 +171,86 @@ public class OpenMachineFragment extends Fragment {
         serialPort.addListener(dataListener);
     }
 
+    private void initListener() {
+
+        openDegreeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            dialogTime.show();
+            switch (checkedId) {
+                case R.id.open_degree_90:
+                    serialPort.sendDate(("+OPENANGLE:90\r\n").getBytes());
+                    break;
+                case R.id.open_degree_100:
+                    serialPort.sendDate(("+OPENANGLE:100\r\n").getBytes());
+                    break;
+                case R.id.open_degree_110:
+                    serialPort.sendDate(("+OPENANGLE:110\r\n").getBytes());
+                    break;
+                default:
+                    break;
+            }
+        });
+
+
+        openSpeedGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            dialogTime.show();
+            switch (checkedId) {
+                case R.id.open_speed_low:
+                    serialPort.sendDate(("+OPENSPEED:4\r\n").getBytes());
+                    break;
+                case R.id.open_speed_mid:
+                    serialPort.sendDate(("+OPENSPEED:8\r\n").getBytes());
+                    break;
+                case R.id.open_speed_high:
+                    serialPort.sendDate(("+OPENSPEED:12\r\n").getBytes());
+                    break;
+                default:
+                    break;
+            }
+        });
+
+
+        closeSpeedGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            dialogTime.show();
+            switch (checkedId) {
+                case R.id.close_speed_low:
+                    serialPort.sendDate(("+CLOSESPEED:4\r\n").getBytes());
+                    break;
+                case R.id.close_speed_mid:
+                    serialPort.sendDate(("+CLOSESPEED:8\r\n").getBytes());
+                    break;
+                case R.id.close_speed_high:
+                    serialPort.sendDate(("+CLOSESPEED:12\r\n").getBytes());
+                    break;
+                default:
+                    break;
+            }
+        });
+
+
+        openDegreeRepairCl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (setDialog == null) {
+                    setDialog = new SetDialog(getContext(), R.style.mDialog);
+                    setDialog.setListener(listener);
+                }
+                setDialog.show(12,openDegreeRepair);
+            }
+        });
+
+
+        closeTimeCl.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (setDialog == null) {
+                    setDialog = new SetDialog(getContext(), R.style.mDialog);
+                    setDialog.setListener(listener);
+                }
+                setDialog.show(4,closeTime);
+            }
+        });
+    }
+
     /**
      * 开门角度
      */
@@ -180,23 +270,6 @@ public class OpenMachineFragment extends Fragment {
                 openDegreeGroup.check(R.id.open_degree_90);
                 break;
         }
-
-        openDegreeGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            dialogTime.show();
-            switch (checkedId) {
-                case R.id.open_degree_90:
-                    serialPort.sendDate(("+OPENANGLE:90\r\n").getBytes());
-                    break;
-                case R.id.open_degree_100:
-                    serialPort.sendDate(("+OPENANGLE:100\r\n").getBytes());
-                    break;
-                case R.id.open_degree_110:
-                    serialPort.sendDate(("+OPENANGLE:110\r\n").getBytes());
-                    break;
-                default:
-                    break;
-            }
-        });
     }
     /**
      * 开门速度
@@ -225,22 +298,6 @@ public class OpenMachineFragment extends Fragment {
                 break;
         }
 
-        openSpeedGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            dialogTime.show();
-            switch (checkedId) {
-                case R.id.open_speed_low:
-                    serialPort.sendDate(("+OPENSPEED:4\r\n").getBytes());
-                    break;
-                case R.id.open_speed_mid:
-                    serialPort.sendDate(("+OPENSPEED:8\r\n").getBytes());
-                    break;
-                case R.id.open_speed_high:
-                    serialPort.sendDate(("+OPENSPEED:12\r\n").getBytes());
-                    break;
-                default:
-                    break;
-            }
-        });
     }
     /**
      * 关门速度
@@ -269,55 +326,9 @@ public class OpenMachineFragment extends Fragment {
                 break;
         }
 
-        closeSpeedGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            dialogTime.show();
-            switch (checkedId) {
-                case R.id.close_speed_low:
-                    serialPort.sendDate(("+CLOSESPEED:4\r\n").getBytes());
-                    break;
-                case R.id.close_speed_mid:
-                    serialPort.sendDate(("+CLOSESPEED:8\r\n").getBytes());
-                    break;
-                case R.id.close_speed_high:
-                    serialPort.sendDate(("+CLOSESPEED:12\r\n").getBytes());
-                    break;
-                default:
-                    break;
-            }
-        });
     }
 
 
-    /**
-     * 开门角度修复值
-     */
-    private void initOpenDegreeRepair() {
-        openDegreeRepairCl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (setDialog == null) {
-                    setDialog = new SetDialog(getContext(), R.style.mDialog);
-                    setDialog.setListener(listener);
-                }
-                setDialog.show(12,openDegreeRepair+"");
-            }
-        });
-    }
-    /**
-     * 关门等待时间
-     */
-    private void initCloseTime() {
-        closeTimeCl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (setDialog == null) {
-                    setDialog = new SetDialog(getContext(), R.style.mDialog);
-                    setDialog.setListener(listener);
-                }
-                setDialog.show(4,closeTime+"");
-            }
-        });
-    }
     @Override
     public void onDestroy() {
         super.onDestroy();

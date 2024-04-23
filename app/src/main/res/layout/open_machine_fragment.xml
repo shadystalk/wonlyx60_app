@@ -242,6 +242,7 @@
             android:layout_height="98dp">
 
             <TextView
+                android:id="@+id/close_time_tv"
                 android:text="5秒"
                 android:textColor="@color/white"
                 android:layout_marginLeft="24dp"
@@ -280,7 +281,8 @@
             android:layout_height="98dp">
 
             <TextView
-                android:text="0"
+                android:id="@+id/open_degree_repair_tv"
+                android:text="0°"
                 android:textColor="@color/white"
                 android:layout_marginLeft="24dp"
                 app:layout_constraintLeft_toLeftOf="parent"
