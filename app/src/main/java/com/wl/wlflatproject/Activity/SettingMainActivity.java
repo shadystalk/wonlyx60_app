@@ -21,6 +21,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
 import com.wl.wlflatproject.Fragment.AfterSaleFragment;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
+import com.wl.wlflatproject.Fragment.OpenMachineFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.R;
@@ -58,7 +59,6 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         ButterKnife.bind(this);
         timeReceiver = new TimeReceiver();
         setTime();
-
         initData();
         backIv.setOnClickListener(v -> finish());
     }
@@ -158,7 +158,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     break;
                 case 5:
                     // 开门机设置
-                    fragment = new DeviceInfoFragment();
+                    fragment = new OpenMachineFragment();
                     fragments[position] = fragment;
                     break;
                 case 6:

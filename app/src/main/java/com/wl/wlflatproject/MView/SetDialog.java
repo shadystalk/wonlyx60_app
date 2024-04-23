@@ -13,16 +13,18 @@ import com.wl.wlflatproject.R;
 
 public class SetDialog extends Dialog {
     private NumberPickerView start;
-    private String s[] = new String[]{"67", "72", "77", "82", "87", "92", "97", "102", "107", "112", "117", "122", "127",
-            "132", "137", "142", "147", "152", "157", "162", "167", "172", "177", "182", "187"};//修正角度
+    private String s[] = new String[]{"-20", "-19", "-18", "-17", "-16", "-15", "-14", "-13", "-12", "-11", "-10", "-9", "-8",
+            "-7", "-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"
+            , "12", "13", "14", "15", "16", "17", "18", "19","20"};//修正角度
     private String s1[] = new String[]{"4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"};//速度
 //    private String s2[] = new String[]{"72", "77", "82", "87"};//开门角度
     private String s2[] = new String[]{"小", "适中", "大", "最大"};//开门角度
-    private String s3[] = new String[]{"2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30"};//等待时间
+    private String s3[] = new String[]{"1","2","3", "4", "5","6", "7",  "8","9", "10","11","12","13", "14", "15","16",
+            "17", "18","19","20","21", "22","13", "24", "25","26","27", "28","29", "30"};//等待时间
     private String s4[] = new String[]{"减速一档", "减速二档", "减速三档", "减速关闭"};//关门力度
     private String s5[] = new String[]{"低", "中", "高"};//设置防夹检测范围
     private TextView name;
-    private View back;
+    private Button back;
     private Button complete;
     private String value;
     private ResultListener listener;

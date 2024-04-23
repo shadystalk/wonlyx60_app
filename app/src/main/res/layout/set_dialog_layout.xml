@@ -2,72 +2,92 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="425dp"
+    android:layout_height="451dp"
     android:orientation="vertical">
 
 <LinearLayout
-
-    android:layout_marginBottom="@dimen/dp_50"
-    android:layout_marginTop="@dimen/dp_50"
     android:background="@drawable/shape_radius_4_253445"
     android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <RelativeLayout
-        android:id="@+id/back"
+    android:layout_width="425dp"
+    android:layout_height="451dp">
+
+    <TextView
+        android:layout_marginTop="32dp"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/dialog_name"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/dp_45"
-        android:layout_marginTop="@dimen/dp_20"
-        android:paddingLeft="@dimen/dp_10">
-
-        <ImageView
-            android:layout_width="@dimen/dp_7"
-            android:layout_height="@dimen/dp_14"
-            android:layout_centerVertical="true"
-            android:background="@drawable/back" />
-
-        <TextView
-            android:id="@+id/dialog_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="@dimen/dp_20"
-            android:text="--"
-            android:textColor="#26b275"
-            android:textSize="20dp" />
-    </RelativeLayout>
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:text="--"
+        android:textColor="@color/white"
+        android:textSize="24sp" />
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="280dp">
 
 
     <com.wl.wlflatproject.MView.NumberPickerView
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/start"
-        android:layout_width="@dimen/dp_200"
-        android:layout_height="@dimen/dp_100"
+        android:layout_width="match_parent"
+        android:layout_height="280dp"
         android:contentDescription="picker_hour"
-        app:npv_DividerColor="#56616c"
+        app:npv_DividerColor="#00000000"
         app:npv_HintText=""
         app:npv_RespondChangeInMainThread="true"
         app:npv_ShownCount="5"
-        app:npv_TextColorHint="#27B275"
+        app:npv_TextColorHint="#ffffff"
         app:npv_TextColorNormal="#b3b3b3"
-        app:npv_TextColorSelected="#27B275"
-        app:npv_TextSizeHint="13dp"
-        app:npv_TextSizeNormal="18dp"
-        app:npv_TextSizeSelected="24dp"
+        app:npv_TextColorSelected="#ffffff"
+        app:npv_TextSizeHint="13sp"
+        app:npv_TextSizeNormal="18sp"
+        app:npv_TextSizeSelected="24sp"
         app:npv_WrapSelectorWheel="false" />
-
-    <Button
-        android:id="@+id/complete"
-        android:layout_marginBottom="@dimen/dp_30"
+    
+    
+    <View
+        android:layout_marginRight="27dp"
+        android:layout_marginLeft="27dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/shape_radius_3_16ffffff"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dp_30"
-        android:layout_marginLeft="@dimen/dp_30"
-        android:layout_marginTop="@dimen/dp_30"
-        android:layout_marginRight="@dimen/dp_30"
-        android:background="@drawable/shape_radius_4_26b275"
-        android:text="完成"
-        android:textSize="16dp" />
+        android:layout_height="50dp"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="54dp">
+        <Button
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:id="@+id/back"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_radius_8_20ffffff"
+            android:text="取消"
+            android:textSize="17sp" />
+
+        <Button
+            android:layout_marginRight="32sp"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:id="@+id/complete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_radius_8_306fff"
+            android:text="完成"
+            android:textSize="17sp" />
+
+
+    </LinearLayout>
 
 
 </LinearLayout>
