@@ -11,7 +11,9 @@
     <color name="white_tran70">#B3FFFFFF</color>
     <color name="white_tran60">#99FFFFFF</color>
     <color name="white_tran50">#80FFFFFF</color>
+    <color name="white_tran30">#4DFFFFFF</color>
     <color name="white_tran8">#14FFFFFF</color>
+    <color name="c_4b4b4d">#4B4B4D</color>
     <color name="c_f9">#F9F9F9</color>
     <color name="c_28">#282828</color>
     <color name="c_1d2129">#1D2129</color>

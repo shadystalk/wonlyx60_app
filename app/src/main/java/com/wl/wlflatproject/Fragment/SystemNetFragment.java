@@ -11,6 +11,7 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
+import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -24,6 +25,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,14 +35,21 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.Utils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.lxj.xpopup.XPopup;
+import com.lxj.xpopup.core.BasePopupView;
 import com.wl.wlflatproject.Adapter.WifiAdapter;
 import com.wl.wlflatproject.Bean.AccessPoint;
+import com.wl.wlflatproject.MView.AlarmPopup;
 import com.wl.wlflatproject.MView.WifiInfoPopup;
+import com.wl.wlflatproject.MView.WifiInputPopup;
 import com.wl.wlflatproject.R;
+import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.runtime.Permission;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -96,11 +105,10 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
     ImageView wifiRefreshView;
     private WifiAdapter wifiAdapter;
 
-    private final List<AccessPoint> lastAccessPoints = new ArrayList<>();
-    //wiif列表 系统的
-    private List<ScanResult> scanResults;
-
     private WifiManager wifiManager;
+    private AlarmPopup alarmPopup;
+    private BasePopupView basePopup;
+
 
     @Nullable
     @Override
@@ -126,6 +134,7 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
 
 
         mNetSwitch.setChecked(getWifiEnabled());
+        wifiListGroup.setVisibility(getWifiEnabled() ? View.VISIBLE : View.GONE);
         mNetSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             NetworkUtils.setWifiEnabled(isChecked);
             if (isChecked) {
@@ -155,7 +164,8 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
                 new XPopup.Builder(getContext())
                         .dismissOnTouchOutside(true)
                         .asCustom(new WifiInfoPopup(getContext(), wifiManager.getConnectionInfo(), mCapabilities, ssid -> {
-                            forgetWifiNetwork(removeQuotes(ssid));
+                            boolean remove = forgetWifiNetwork(removeQuotes(ssid));
+                            ToastUtils.showLong(remove + "");
                             wifiManager.disconnect();
 //                            forgetNetwork(wifiManager, wifiManager.getConnectionInfo().getNetworkId());
                             mCurrentWifiCl.setVisibility(View.GONE);
@@ -235,12 +245,14 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
         } else {
             if (isSecured(scanResult)) {
                 //弹窗输入密码
-
+                new XPopup.Builder(getContext()).asCustom(new WifiInputPopup(getContext(), scanResult, (mScanResult, inputString) -> {
+                    connectToWifi(mScanResult, inputString);
+                    wifiAdapter.getData().remove(mScanResult);
+                })).show();
             } else {
                 connectToWifi(scanResult, "");
                 wifiAdapter.remove(i);
             }
-
         }
     }
 
@@ -310,70 +322,40 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
     private class WifiStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            WifiInfo wifiInfo1 = wifiManager.getConnectionInfo();
             if (intent.getAction() != null) {
+                LogUtils.e(intent.getAction() + "---" + wifiInfo1.getSSID());
                 switch (intent.getAction()) {
                     case ConnectivityManager.CONNECTIVITY_ACTION:
                         // 这个监听网络连接的设置，包括wifi和移动数据的打开和关闭。.
                         // 最好用的还是这个监听。
                         // wifi如果打开，关闭，以及连接上可用的连接都会接到监听。
                         // 这个广播的最大弊端是比上边两个广播的反应要慢，如果只是要监听wifi，我觉得还是用上边两个配合比较合适
-
-                        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-                        Log.e("WifiResult", "----wifi info:" + wifiInfo.getSSID() + "," + wifiInfo.getIpAddress());
-                        if (!TextUtils.isEmpty(wifiInfo.getSSID())) {
-                            //获取到连接的信息
-                            if (wifiInfo.getSSID().contains("unknown")) {
-                                //setWifiLableHide();
-                                mCurrentWifiCl.setVisibility(View.GONE);
-                            } else {
-                                mCurrentWifiCl.setVisibility(View.VISIBLE);
-                                mWifiName.setText(removeQuotes(wifiInfo.getSSID()));
-
-                                if ((wifiInfo.getIpAddress() == 0) && (isNetworkAvailable(getContext()) == 2)) {
-                                    //正在连接
-                                    linksPb.setVisibility(View.VISIBLE);
-                                    mConnectIcon.setVisibility(View.GONE);
-                                } else {
-                                    if (isNetworkAvailable(getContext()) == 2) {
-                                        //已连接
-                                        mConnectIcon.setVisibility(View.VISIBLE);
-                                        linksPb.setVisibility(View.GONE);
-//                                        if (wifiPwdPop != null) {
-//                                            wifiPwdPop.dismiss();
-//                                            wifiPwdPop = null;
-//                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            mCurrentWifiCl.setVisibility(View.GONE);
-                        }
-
+                        updateWifiConnection();
                         break;
 
                     case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
                     case "android.net.wifi.CONFIGURED_NETWORKS_CHANGE":
                     case "android.net.wifi.LINK_CONFIGURATION_CHANGED":
-//                        updateAccessPoints();//获取wifi列表加入到wifi显示新的列表
-//                        KLog.d("tangshang=111111" + intent.getAction());
                         break;
                     case WifiManager.NETWORK_STATE_CHANGED_ACTION:
-
-//                        updateAccessPoints();//获取wifi列表加入到wifi显示新的列表
-//                        wifiInfoResult();
-//                        KLog.d("tangshang=22222" + intent.getAction());
+                        updateWifiConnection();
                         break;
                     case WifiManager.SUPPLICANT_STATE_CHANGED_ACTION:
-                        int linkWifiResult = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, 123);
-                        if (linkWifiResult == WifiManager.ERROR_AUTHENTICATING) {
-                            //密码错误
-//                            if (wifiPwdPop != null) {
-//                                wifiPwdPop.stopScanner();
-//                                ToastUtils.showShort("连接失败,请检测密码后重试");
-//                                KLog.a("tangshang==" + connectNetId);
-//                            }
+                        SupplicantState state = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
+                        int supplicantError = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
+                        if (state == SupplicantState.ASSOCIATING && supplicantError == WifiManager.ERROR_AUTHENTICATING) {
+                            // 密码错误
+                            if (basePopup == null || basePopup.isDismiss()) {
+                                basePopup = new XPopup.Builder(getContext())
+                                        .dismissOnTouchOutside(false)
+                                        .asCustom(new AlarmPopup(getContext(), "密码错误", "知道了"));
+                                basePopup.show();
+                            }
                             forgetWifiNetwork(wifiManager.getConnectionInfo().getSSID());
+                        } else if (state == SupplicantState.ASSOCIATING) {
+                            // 正在尝试连接
+                            wifiConnecting();
                         }
                         break;
                     case WifiManager.WIFI_STATE_CHANGED_ACTION:
@@ -418,32 +400,42 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
         if (configurations != null) {
             for (WifiConfiguration config : configurations) {
                 if (config.SSID.equals("\"" + ssid + "\"")) {
-                    result = wifiManager.removeNetwork(config.networkId);
-                    return wifiManager.saveConfiguration();
+                    return wifiManager.removeNetwork(config.networkId);
                 }
             }
         }
         return result;
     }
 
-    /**
-     * 取消连接
-     *
-     * @param manager
-     * @param networkId
-     */
-    public void forgetNetwork(WifiManager manager, int networkId) {
-        if (manager == null) {
-            return;
-        }
-        try {
-            Method forget = manager.getClass().getDeclaredMethod("forget", int.class, Class.forName("android.net.wifi.WifiManager$ActionListener"));
-            if (forget != null) {
-                forget.setAccessible(true);
-                forget.invoke(manager, networkId, null);
+    private void wifiConnecting() {
+        linksPb.setVisibility(View.VISIBLE);
+        mConnectIcon.setVisibility(View.GONE);
+    }
+
+    private void updateWifiConnection() {
+        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+        if (!TextUtils.isEmpty(wifiInfo.getSSID())) {
+            //获取到连接的信息
+            if (wifiInfo.getSSID().contains("unknown")) {
+                mCurrentWifiCl.setVisibility(View.GONE);
+            } else {
+                mCurrentWifiCl.setVisibility(View.VISIBLE);
+                mWifiName.setText(removeQuotes(wifiInfo.getSSID()));
+
+                if ((wifiInfo.getIpAddress() == 0) && (isNetworkAvailable(getContext()) == 2)) {
+                    //正在连接
+                    linksPb.setVisibility(View.VISIBLE);
+                    mConnectIcon.setVisibility(View.GONE);
+                } else {
+                    if (isNetworkAvailable(getContext()) == 2) {
+                        //已连接
+                        mConnectIcon.setVisibility(View.VISIBLE);
+                        linksPb.setVisibility(View.GONE);
+                    }
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else {
+            mCurrentWifiCl.setVisibility(View.GONE);
         }
     }
 

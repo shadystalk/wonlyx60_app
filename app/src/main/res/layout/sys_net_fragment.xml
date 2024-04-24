@@ -159,6 +159,7 @@
                 android:id="@+id/wifi_list_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:constraint_referenced_ids="wifi_list,wifi_list_refresh,
                     choose_wifi,current_wifi_cl" />
         </androidx.constraintlayout.widget.ConstraintLayout>

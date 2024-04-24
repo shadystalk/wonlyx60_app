@@ -11,9 +11,6 @@ import androidx.fragment.app.Fragment;
 import com.wl.wlflatproject.R;
 
 public class AfterSaleFragment extends Fragment {
-    /**
-     * 产品型号，MAC地址，软件版本，前板版本，后板版本
-     */
     private TextView mModelTv, mMacTv, mSoftwareTv, mPreviousTv,mAfterTv;
 
     @Nullable

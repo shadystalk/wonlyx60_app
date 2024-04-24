@@ -17,29 +17,21 @@ import java.util.Set;
 public class CodeDialog extends Dialog {
 
     private Bitmap towCode;
-    public CodeDialog(Context context,String id) {
-        super(context);
-        init(context,id);
-    }
 
-    private void init(Context context,String id) {
+    private void init(Context context,String id,String devType) {
         View mView = LayoutInflater.from(getContext()).inflate(R.layout.code_dialog_layout, null);
         ImageView iv=mView.findViewById(R.id.dialog_code_iv);
         if(towCode==null){
-            towCode = DpUtils.getTowCode(context, "WL025S1-W-L-"+id);
+            towCode = DpUtils.getTowCode(context, devType+id);
 //            towCode = DpUtils.getTowCode(context, "WL025S1-"+ DeviceUtils.getSerialNumber(context));
             iv.setImageBitmap(towCode);
             setContentView(mView);
         }
     }
 
-    public CodeDialog(Context context, int themeResId,String id) {
+    public CodeDialog(Context context, int themeResId,String id,String devType) {
         super(context, themeResId);
-        init(context,id);
+        init(context,id,devType);
     }
 
-    protected CodeDialog(Context context, boolean cancelable, OnCancelListener cancelListener,String id) {
-        super(context, cancelable, cancelListener);
-        init(context,id);
-    }
 }

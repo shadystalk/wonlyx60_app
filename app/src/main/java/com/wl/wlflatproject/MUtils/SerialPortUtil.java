@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import android_serialport_api.SerialPort;
@@ -18,11 +20,10 @@ public class SerialPortUtil {
     public SerialPort mSerialPort;
     public BufferedReader inputStream;
     public OutputStream outputStream;
-    public DataListener listener;
     private static SerialPortUtil mSerialPortUtil = null;
     public boolean flag=true;
     public ExecutorService threads;
-    private SerialPortUtil.DataListener dataListener;
+    private List<DataListener> dataListenerList=new ArrayList<>();
 
 
     public static SerialPortUtil getInstance() {
@@ -78,9 +79,15 @@ public class SerialPortUtil {
     public void setThread(ExecutorService threads){
         this.threads=threads;
     }
+    public void addListener(DataListener listener){
+        dataListenerList.add(listener);
+    }
+    public void removeListener(DataListener listener){
+        dataListenerList.remove(listener);
+    }
     public void readCode(DataListener listener) {
         if (inputStream != null) {
-            this.listener = listener;
+            dataListenerList.add(listener);
             threads.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -90,7 +97,13 @@ public class SerialPortUtil {
                             String s = inputStream.readLine();
                             if (s.length() > 0 && listener != null) {//有数据返回
                                 Log.e("buffer", s);
-                                listener.getData(s);
+                                if(dataListenerList.size()>1){
+                                    for(int x=0;x<dataListenerList.size();x++){
+                                        dataListenerList.get(x).getData(s);
+                                    }
+                                }else{
+                                    listener.getData(s);
+                                }
 
                             }
                         } catch (Exception e) {

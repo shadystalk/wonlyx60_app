@@ -275,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
     private List<DeviceFilter> filter;
     private PowerManager.WakeLock wakeLock;
     private PopupWindow clearPopupWindow;
+    private String devType;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -314,7 +315,7 @@ public class MainActivity extends AppCompatActivity {
         rbmq = new RbMqUtils();
         bean.setAck(0);
         bean.setCmd(0x46);
-        bean.setDevType("WL025S1-W-L");
+        bean.setDevType(devType);
         bean.setDevId(id);
         bean.setSeqId(1);
         bean.setTime(System.currentTimeMillis() / 1000);
@@ -559,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
                                     OpenTvBean bean = new OpenTvBean();
                                     bean.setCmd(0x1009);
                                     bean.setAck(0);
-                                    bean.setDevType("WL025S1-W-L");
+                                    bean.setDevType(devType);
                                     bean.setDevid(id);
                                     bean.setVendor("general");
                                     bean.setSeqid(1);
@@ -596,8 +597,20 @@ public class MainActivity extends AppCompatActivity {
                                 case 13://唯一id1
                                     id = split[1];
                                     bean.setDevId(id);
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam("DevId",id);
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("devId",id);
                                     setMq();
+                                    break;
+                                case 14://前板版本号
+                                    String fVer = split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("fVer",fVer);
+                                    break;
+                                case 15://后板版本号
+                                    String bVer = split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("bVer",bVer);
+                                    break;
+                                case 16://设备型号
+                                    devType=split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("devType",devType);
                                     break;
                             }
                         }else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
@@ -1115,7 +1128,7 @@ public class MainActivity extends AppCompatActivity {
         bodyBean.setVendor_name("general");
         bodyBean.setPlatform("android");
 
-        bodyBean.setEndpoint_type("WL025S1-W-L");
+        bodyBean.setEndpoint_type(devType);
 
         bodyBean.setCurrent_version(version + "");
 
