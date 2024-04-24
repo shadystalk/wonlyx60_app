@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 
 import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
+import com.wl.wlflatproject.MUtils.VersionUtils;
 import com.wl.wlflatproject.R;
 
 public class DeviceInfoFragment extends Fragment {
@@ -45,14 +46,7 @@ public class DeviceInfoFragment extends Fragment {
         mPreviousTv.setText(fVer);
         mAfterTv.setText(bVer);
         mMacTv.setText(devId);
-
-        String packageName = null;
-        try {
-            packageName = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
-            mSoftwareTv.setText(packageName);
-        } catch (PackageManager.NameNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        mSoftwareTv.setText(VersionUtils.getVersionName(getContext()));
 
     }
 }

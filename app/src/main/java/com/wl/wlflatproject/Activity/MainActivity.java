@@ -67,6 +67,7 @@ import com.wl.wlflatproject.Bean.BaseBean;
 import com.wl.wlflatproject.Bean.CalendarParam;
 import com.wl.wlflatproject.Bean.GDFutureWeatherBean;
 import com.wl.wlflatproject.Bean.GDNowWeatherBean;
+import com.wl.wlflatproject.Bean.InfoBean;
 import com.wl.wlflatproject.Bean.OpenTvBean;
 import com.wl.wlflatproject.Bean.SetMsgBean;
 import com.wl.wlflatproject.Bean.StateBean;
@@ -500,6 +501,14 @@ public class MainActivity extends AppCompatActivity {
                 if (baseBean != null) {
                     switch (baseBean.getCmd()) {
                         case 0x1001://通知小管家
+                            break;
+                        case 4103://通知小管家
+                            if(baseBean.getBind()==1){
+                                //绑定成功
+                                InfoBean infoBean = new InfoBean();
+                                infoBean.setCode(1);
+                                EventBus.getDefault().post(infoBean);
+                            }
                             break;
 
                     }
