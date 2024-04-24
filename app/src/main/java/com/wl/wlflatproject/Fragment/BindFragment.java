@@ -3,29 +3,58 @@ package com.wl.wlflatproject.Fragment;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.lzy.okgo.OkGo;
+import com.lzy.okgo.callback.StringCallback;
+import com.lzy.okgo.model.HttpHeaders;
+import com.lzy.okgo.model.Response;
+import com.lzy.okgo.utils.HeaderParser;
+import com.wl.wlflatproject.Bean.InfoBean;
+import com.wl.wlflatproject.Bean.MainMsgBean;
+import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.DpUtils;
+import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
+import com.wl.wlflatproject.MUtils.Utils;
 import com.wl.wlflatproject.R;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
+import okhttp3.Headers;
 
 public class BindFragment extends Fragment {
     @BindView(R.id.code_view)
     ImageView codeView;
+    @BindView(R.id.tv)
+    TextView tv;
+    @BindView(R.id.tv1)
+    TextView tv1;
+    @BindView(R.id.bind_num)
+    TextView bindNum;
+    @BindView(R.id.bind_ll)
+    LinearLayout bindLL;
     private Unbinder unbinder;
+    private String devId;
 
     @Nullable
     @Override
@@ -36,16 +65,60 @@ public class BindFragment extends Fragment {
         return view;
     }
 
-    public void initData(){
-        String devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
+    public void initData() {
+        EventBus.getDefault().register(this);
+        devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
+        devId="BE:00:00:00:00:00:00:00";
         String devType = SPUtil.getInstance(getContext()).getSettingParam("devType", "");
-        Bitmap code = DpUtils.getTowCode(getContext(), devType+devId);
+        Bitmap code = DpUtils.getTowCode(getContext(), devType + "-" + devId);
         codeView.setImageBitmap(code);
+        getInfo();
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(InfoBean bean) {
+        if(bean.getCode()==1){
+            bindVisi(true);
+        }else{
+            bindVisi(false);
+        }
+    }
+    public void getInfo() {
+        if(TextUtils.isEmpty(devId)){
+            return;
+        }
+        OkGo.<String>get(ApiSrevice.searchInfo).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
+            @Override
+            public void onSuccess(Response<String> response) {
+                String s = response.toString();
+                InfoBean infoBean = GsonUtils.GsonToBean(s, InfoBean.class);
+                if(infoBean.getCode()==200  &&  infoBean.getData()!=null){
+                    bindNum.setText(infoBean.getData().getPhone());
+                    bindVisi(true);
+                }else{
+                    Toast.makeText(getContext(),infoBean.getMsg(),Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
+
+    public void bindVisi(boolean isBind){
+        if(isBind){
+            codeView.setVisibility(View.GONE);
+            tv.setVisibility(View.GONE);
+            tv1.setVisibility(View.VISIBLE);
+            bindLL.setVisibility(View.VISIBLE);
+        }else{
+            codeView.setVisibility(View.VISIBLE);
+            tv.setVisibility(View.VISIBLE);
+            tv1.setVisibility(View.GONE);
+            bindLL.setVisibility(View.GONE);
+        }
+    }
     @Override
     public void onDestroy() {
         super.onDestroy();
+        EventBus.getDefault().unregister(this);
         unbinder.unbind();
     }
 }
