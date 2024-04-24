@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/device_tablayout"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:layout_margin="10dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabGravity="start"
+        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorFullWidth="false"
+        app:tabIndicatorHeight="1px"
+        app:tabMaxWidth="160dp"
+        app:tabMinWidth="30dp"
+        app:tabMode="scrollable"
+        app:tabSelectedTextColor="@color/white"
+        app:tabTextAppearance="@style/Device_TextAppearance"
+        app:tabTextColor="#e6ffffff"
+        tools:ignore="MissingClass" />
+    <FrameLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/device_tablayout"
+        android:id="@+id/device_main_framelayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>

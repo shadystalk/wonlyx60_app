@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
 import com.wl.wlflatproject.Fragment.AfterSaleFragment;
 import com.wl.wlflatproject.Fragment.BindFragment;
+import com.wl.wlflatproject.Fragment.DeviceDynamicsFragment;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
 import com.wl.wlflatproject.Fragment.OpenMachineFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
@@ -66,6 +68,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
 
     private void initData() {
+        tabPosition=getIntent().getIntExtra("POSITION",0);
         List<SettingGuideAdapter.GuideBean> guideList = new ArrayList<>();
         for (int i = 0; i < title.length; i++) {
             SettingGuideAdapter.GuideBean guideBean = new SettingGuideAdapter.GuideBean(titleIcon[i], title[i]);
@@ -83,8 +86,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         guideRv.setAdapter(mGuideAdapter);
         guideRv.setLayoutManager(new LinearLayoutManager(this));
 
-        // 默认选中第一个 Tab
-        switchFragment(0);
+        switchFragment(tabPosition);
     }
 
     @Override
@@ -149,7 +151,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     break;
                 case 3:
                     // 设备动态
-                    fragment = new DeviceInfoFragment();
+                    fragment = new DeviceDynamicsFragment();
                     fragments[position] = fragment;
                     break;
                 case 4:

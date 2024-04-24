@@ -171,6 +171,10 @@ public class MainActivity extends AppCompatActivity {
     EditText messageEdit;
     @BindView(R.id.message_tv)
     TextView messageTv;
+
+    @BindView(R.id.view_next)
+    View msgReminderNext;
+
     private int version;
     /* 更新进度条 */
     private ProgressBar mProgress;
@@ -399,7 +403,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @OnClick({R.id.close_video, R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
-            R.id.weather_ll,  R.id.video_iv})
+            R.id.weather_ll,  R.id.video_iv,R.id.view_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
@@ -471,6 +475,11 @@ public class MainActivity extends AppCompatActivity {
                 String district = mAMapLocation.getDistrict();
                 calendarParam.location = district == null ? city : district;
                 CalendarActivity.start(this, calendarParam);
+                break;
+            case R.id.view_next:
+                intent = new Intent(MainActivity.this, SettingMainActivity.class);
+                intent.putExtra("POSITION",3);
+                startActivity(intent);
                 break;
             default:
         }
