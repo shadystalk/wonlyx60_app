@@ -41,14 +41,11 @@ public class DeviceDynamicsFragment extends Fragment {
         tabLayout.addTab(tab.setText("告警消息"));
         fragments[0]=new OpenRecordFragment();
         fragments[1]=new AlarmMsgFragment();
+        showFragment();
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                int pos = tabLayout.getSelectedTabPosition();
-                fragmentTransaction.replace(R.id.device_main_framelayout, fragments[pos]);
-                fragmentTransaction.commit();
+                showFragment();
             }
 
             @Override
@@ -72,5 +69,12 @@ public class DeviceDynamicsFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         unbinder.unbind();
+    }
+    private void  showFragment(){
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        int pos = tabLayout.getSelectedTabPosition();
+        fragmentTransaction.replace(R.id.device_main_framelayout, fragments[pos]);
+        fragmentTransaction.commit();
     }
 }
