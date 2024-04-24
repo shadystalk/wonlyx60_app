@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
 import com.wl.wlflatproject.Fragment.AfterSaleFragment;
+import com.wl.wlflatproject.Fragment.BindFragment;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
 import com.wl.wlflatproject.Fragment.OpenMachineFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
@@ -143,7 +144,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     break;
                 case 2:
                     // 设备绑定
-                    fragment = new DeviceInfoFragment();
+                    fragment = new BindFragment();
                     fragments[position] = fragment;
                     break;
                 case 3:

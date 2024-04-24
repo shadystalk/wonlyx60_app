@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.wl.wlflatproject.MUtils.SPUtil;
+import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.R;
 
 public class DeviceInfoFragment extends Fragment {
@@ -19,6 +20,7 @@ public class DeviceInfoFragment extends Fragment {
      * 产品型号，MAC地址，软件版本，前板版本，后板版本
      */
     private TextView mModelTv, mMacTv, mSoftwareTv, mPreviousTv,mAfterTv;
+    private SerialPortUtil serialPort;
 
     @Nullable
     @Override
@@ -36,7 +38,12 @@ public class DeviceInfoFragment extends Fragment {
     }
 
     public void initData(){
-        String devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
+        SPUtil spUtil = SPUtil.getInstance(getContext());
+        String devId =spUtil.getSettingParam("devId", "");
+        String fVer =spUtil.getSettingParam("fVer", "");
+        String bVer =spUtil.getSettingParam("bVer", "");
+        mPreviousTv.setText(fVer);
+        mAfterTv.setText(bVer);
         mMacTv.setText(devId);
 
         String packageName = null;

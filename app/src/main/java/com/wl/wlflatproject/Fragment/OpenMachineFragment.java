@@ -71,6 +71,7 @@ public class OpenMachineFragment extends Fragment {
 
     public void initData(){
         serialPort = SerialPortUtil.getInstance();
+        serialPort.sendDate("+DATATOPAD\r\n".getBytes());
         if (dialogTime == null)
             dialogTime = new WaitDialogTime(getContext(), android.R.style.Theme_Translucent_NoTitleBar);
         initOpenDegree();
