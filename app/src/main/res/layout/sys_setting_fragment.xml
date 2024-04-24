@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingStart="24dp"
-    android:paddingBottom="4dp"
-    android:paddingEnd="24dp">
+    android:paddingEnd="24dp"
+    android:paddingBottom="4dp">
 
     <TextView
         android:id="@+id/general_settings"
@@ -25,6 +25,7 @@
         android:text="高级设置"
         android:textColor="@color/white_tran50"
         android:textSize="24sp"
+        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/general_settings"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -353,6 +354,7 @@
                 android:text="安全设置"
                 android:textColor="@color/c_f9"
                 android:textSize="20sp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/ringtones_radio_group" />
 
@@ -364,6 +366,7 @@
                 android:text="开门验证"
                 android:textColor="@color/white_tran60"
                 android:textSize="18sp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/safety_settings" />
 
@@ -374,6 +377,7 @@
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_guide_select"
                 android:orientation="horizontal"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/opening_verification">
 
@@ -415,6 +419,7 @@
                 android:text="门口徘徊监测"
                 android:textColor="@color/c_f9"
                 android:textSize="20sp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/verification_radio_group" />
 

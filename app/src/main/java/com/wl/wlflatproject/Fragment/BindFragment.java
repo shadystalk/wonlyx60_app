@@ -68,7 +68,7 @@ public class BindFragment extends Fragment {
     public void initData() {
         EventBus.getDefault().register(this);
         devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
-        devId="BE:00:00:00:00:00:00:00";
+        devId="BE:00:00:00:00:00:DB:BE ";
         String devType = SPUtil.getInstance(getContext()).getSettingParam("devType", "");
         Bitmap code = DpUtils.getTowCode(getContext(), devType + "-" + devId);
         codeView.setImageBitmap(code);
@@ -89,13 +89,13 @@ public class BindFragment extends Fragment {
         OkGo.<String>get(ApiSrevice.searchInfo).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
-                String s = response.toString();
+                String s = response.body().toString();
                 InfoBean infoBean = GsonUtils.GsonToBean(s, InfoBean.class);
                 if(infoBean.getCode()==200  &&  infoBean.getData()!=null){
                     bindNum.setText(infoBean.getData().getPhone());
                     bindVisi(true);
                 }else{
-                    Toast.makeText(getContext(),infoBean.getMsg(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(),infoBean.getMsg(),Toast.LENGTH_LONG).show();
                 }
             }
         });

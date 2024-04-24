@@ -24,6 +24,7 @@ import com.wl.wlflatproject.Fragment.AfterSaleFragment;
 import com.wl.wlflatproject.Fragment.BindFragment;
 import com.wl.wlflatproject.Fragment.DeviceDynamicsFragment;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
+import com.wl.wlflatproject.Fragment.SystemNetFragment;
 import com.wl.wlflatproject.Fragment.OpenMachineFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
@@ -141,7 +142,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     break;
                 case 1:
                     // 网络设置
-                    fragment = new DeviceInfoFragment();
+                    fragment = new SystemNetFragment();
                     fragments[position] = fragment;
                     break;
                 case 2:
