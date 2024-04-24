@@ -1,6 +1,9 @@
 package com.wl.wlflatproject.Fragment;
 
+import static android.media.AudioManager.STREAM_MUSIC;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.BrightnessUtils;
 import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.VolumeUtils;
 import com.wl.wlflatproject.R;
 
 import butterknife.BindView;
@@ -45,6 +49,8 @@ public class SystemSettingFragment extends Fragment {
         unbinder = ButterKnife.bind(this, view);
         initBrightness();
         initDisplay();
+        initVolume();
+        initRingtones();
         return view;
     }
 
@@ -127,13 +133,54 @@ public class SystemSettingFragment extends Fragment {
     }
 
     /**
-     * 初始化
+     * 初始化音量
      */
     private void initVolume() {
+        //当前音量
+        int currentVolume = VolumeUtils.getVolume(STREAM_MUSIC);
+        //最大音量
+        int maxVolume = VolumeUtils.getMaxVolume(STREAM_MUSIC);
+        //最小音量
+        int minVolume = VolumeUtils.getMinVolume(STREAM_MUSIC);
+
+        Log.e("音量", currentVolume + "--" + maxVolume + "--" + minVolume);
+        int level = maxVolume / 3;
+        if (currentVolume == minVolume) {
+            volumeGroup.check(R.id.silent_rb);
+        } else if (currentVolume <= level) {
+            volumeGroup.check(R.id.low_rb);
+        } else if (currentVolume <= 2 * level) {
+            volumeGroup.check(R.id.middle_rb);
+        } else if (currentVolume <= maxVolume) {
+            volumeGroup.check(R.id.high_rb);
+        }
+
+        volumeGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.silent_rb:
+                    VolumeUtils.setVolume(STREAM_MUSIC, minVolume, 0);
+                    break;
+                case R.id.low_rb:
+                    VolumeUtils.setVolume(STREAM_MUSIC, level, 0);
+                    break;
+                case R.id.middle_rb:
+                    VolumeUtils.setVolume(STREAM_MUSIC, 2 * level, 0);
+                    break;
+                case R.id.high_rb:
+                    VolumeUtils.setVolume(STREAM_MUSIC, maxVolume, 0);
+                    break;
+            }
+        });
 
     }
 
+    /**
+     * 铃声初始化
+     */
+    private void initRingtones() {
 
+
+    }
 
 
     @Override
