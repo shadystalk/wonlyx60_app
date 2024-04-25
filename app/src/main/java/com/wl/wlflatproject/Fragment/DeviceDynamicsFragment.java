@@ -36,7 +36,6 @@ public class DeviceDynamicsFragment extends Fragment {
     ViewPager2 viewPager;
 
     private Unbinder unbinder;
-    private Fragment[] fragments = new Fragment[2];
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -46,20 +45,16 @@ public class DeviceDynamicsFragment extends Fragment {
         tabLayout.addTab(tab.setText("开门记录"));
         tab = tabLayout.newTab();
         tabLayout.addTab(tab.setText("告警消息"));
-        fragments[0]=new OpenRecordFragment();
-        fragments[1]=new AlarmMsgFragment();
 
         // 创建适配器
         PagerAdapter adapter = new PagerAdapter(getActivity());
 
         // 添加 Fragment 到适配器
-        adapter.addFragment( fragments[0]);
-        adapter.addFragment( fragments[1]);
+        adapter.addFragment( new OpenRecordFragment());
+        adapter.addFragment(new AlarmMsgFragment());
         // 设置适配器给 ViewPager
         viewPager.setAdapter(adapter);
         viewPager.setOffscreenPageLimit(1);
-        // 关联 TabLayout 和 ViewPager
-//        showFragment();
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -98,11 +93,5 @@ public class DeviceDynamicsFragment extends Fragment {
         super.onDestroy();
         unbinder.unbind();
     }
-    private void  showFragment(){
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        int pos = tabLayout.getSelectedTabPosition();
-        fragmentTransaction.replace(R.id.device_main_framelayout, fragments[pos]);
-        fragmentTransaction.commit();
-    }
+
 }
