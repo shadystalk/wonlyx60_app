@@ -13,8 +13,15 @@ public class ApiSrevice {
     public static String baseUrl = "https://ag-micro.wonlycloud.com:10301";
 
     public static String searchInfo = baseUrl + "/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
+    /**
+     * 开门记录
+     */
+    public static String queryUnlockRecord = baseUrl + "/api/aigang/ten/screen/queryUnlockRecord";
 
-
+    /**
+     * 告警消息
+     */
+    public static String queryAlarmMsg = baseUrl + "//api/aigang/ten/screen/queryAlarmMsg";
     public static HttpHeaders getHeads(Context context) {
         String devId = SPUtil.getInstance(context).getSettingParam("devId", "");
         devId="BE:00:00:00:00:00:DB:BE";
