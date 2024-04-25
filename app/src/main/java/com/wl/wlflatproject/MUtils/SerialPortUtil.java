@@ -68,6 +68,8 @@ public class SerialPortUtil {
 
     //发送数据给串口
     public void sendDate(byte[] writeBytes) {
+        String s = new String(writeBytes);
+        Log.e("send；",s);
         if (outputStream != null) {
             try {
                 outputStream.write(writeBytes);

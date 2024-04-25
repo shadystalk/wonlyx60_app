@@ -45,9 +45,8 @@ public class RbMqUtils {
      * 连接设置
      */
     public void setUpConnectionFactory() {
-        factory.setHost(MQIP);//主机地址
-//        factory.setHost("rmq-test.wonlycloud.com");//灰度1
-//        factory.setHost("1rmq-test.wonlycloud.com");//测试
+//        factory.setHost(MQIP);//主机地址
+        factory.setHost("rmq-test.wonlycloud.com");//测试
 //        factory.setHost("47.99.54.211");//开发
         factory.setPort(5672);// 端口号
         factory.setUsername("android");// 用户名

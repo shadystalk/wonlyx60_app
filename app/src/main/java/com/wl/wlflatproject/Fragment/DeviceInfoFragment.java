@@ -43,6 +43,8 @@ public class DeviceInfoFragment extends Fragment {
         String devId =spUtil.getSettingParam("devId", "");
         String fVer =spUtil.getSettingParam("fVer", "");
         String bVer =spUtil.getSettingParam("bVer", "");
+        String devType = SPUtil.getInstance(getContext()).getSettingParam("devType", "");
+        mModelTv.setText(devType);
         mPreviousTv.setText(fVer);
         mAfterTv.setText(bVer);
         mMacTv.setText(devId);
