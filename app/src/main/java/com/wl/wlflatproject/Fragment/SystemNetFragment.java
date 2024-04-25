@@ -74,6 +74,8 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
      */
     @BindView(R.id.wifi_name)
     TextView mWifiName;
+    @BindView(R.id.choose_wifi)
+    TextView mChooseWifi;
 
     @BindView(R.id.wifi_icon)
     ImageView mConnectIcon;
@@ -84,12 +86,6 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
      */
     @BindView(R.id.wifi_state_iv)
     ImageView wifiStateIv;
-    /**
-     * WiFi列表组合
-     * WiFi关闭时隐藏
-     */
-    @BindView(R.id.wifi_list_group)
-    Group wifiListGroup;
 
     @BindView(R.id.wifi_refresh_pb)
     ProgressBar wifiRefreshPb;
@@ -132,20 +128,18 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
 
 
         mNetSwitch.setChecked(getWifiEnabled());
-        wifiListGroup.setVisibility(getWifiEnabled() ? View.VISIBLE : View.GONE);
+        wifiGroupVisible(getWifiEnabled());
         mNetSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             NetworkUtils.setWifiEnabled(isChecked);
+            wifiGroupVisible(isChecked);
             if (isChecked) {
                 //打开
-                wifiListGroup.setVisibility(View.VISIBLE);
                 updateWifiList();
-            } else {
-                //关闭
-                wifiListGroup.setVisibility(View.GONE);
             }
         });
 
         sendReceiver();
+        updateWifiList();
     }
 
 //    @OnLongClick(R.id.net_settings)
@@ -473,6 +467,19 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         } else {
             return ssid;
         }
+    }
+
+    /**
+     * 布局集合
+     * wifi关闭状态隐藏对应布局
+     *
+     * @param isVisible 是否隐藏
+     */
+    private void wifiGroupVisible(boolean isVisible) {
+        mCurrentWifiCl.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        mChooseWifi.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        wifiRv.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        wifiRefreshView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
 }

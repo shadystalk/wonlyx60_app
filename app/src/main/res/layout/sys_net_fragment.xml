@@ -61,6 +61,7 @@
                 android:paddingTop="30dp"
                 android:paddingEnd="24dp"
                 android:paddingBottom="30dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/net_switch">
 
@@ -124,6 +125,7 @@
                 android:text="选取网络"
                 android:textColor="@color/c_f9"
                 android:textSize="20sp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/current_wifi_cl" />
 
@@ -145,6 +147,7 @@
                 android:layout_height="52dp"
                 android:padding="10dp"
                 android:src="@mipmap/ic_wifi_refresh"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@id/choose_wifi"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/choose_wifi" />
@@ -155,16 +158,12 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/bg_guide_select"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/choose_wifi" />
 
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/wifi_list_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="current_wifi_cl,choose_wifi,wifi_list,wifi_list_refresh" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

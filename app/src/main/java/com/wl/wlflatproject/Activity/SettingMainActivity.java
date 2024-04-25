@@ -46,10 +46,10 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置",  "开门机设置", "售后服务"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务"};
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
-            ,  R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
+            , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
             R.mipmap.ic_door_opener, R.mipmap.ic_after_sales};
 
     private Fragment[] fragments = new Fragment[title.length];
@@ -69,7 +69,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
 
     private void initData() {
-        tabPosition=getIntent().getIntExtra("POSITION",0);
+        tabPosition = getIntent().getIntExtra("POSITION", 0);
         List<SettingGuideAdapter.GuideBean> guideList = new ArrayList<>();
         for (int i = 0; i < title.length; i++) {
             SettingGuideAdapter.GuideBean guideBean = new SettingGuideAdapter.GuideBean(titleIcon[i], title[i]);
@@ -181,6 +181,9 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     }
 
     public class TimeReceiver extends BroadcastReceiver {
+        public TimeReceiver() {
+        }
+
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
