@@ -2,6 +2,7 @@ package com.wl.wlflatproject.MView;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -16,6 +17,7 @@ public class PasswardDialog extends Dialog {
 
     private OnResultListener resultListener;
     private EditText password;
+    private View clean;
 
     public PasswardDialog(Context context) {
         super(context);
@@ -43,6 +45,8 @@ public class PasswardDialog extends Dialog {
         TextView sure = inflate.findViewById(R.id.password_dialog_sure);
 //        ImageView clear = inflate.findViewById(R.id.password_dialog_clear);
         password = inflate.findViewById(R.id.password_dialog_password);
+        password.setInputType(InputType.TYPE_NULL);
+        clean = inflate.findViewById(R.id.clean);
         setContentView(inflate);
         sure.setOnClickListener(view -> {
             String s = password.getText().toString();
@@ -58,6 +62,12 @@ public class PasswardDialog extends Dialog {
         MTextUtils.setEditTextInhibitInputSpaChat(password, 1);
 //        clear.setOnClickListener(view -> password.setText(""));
         cancel.setOnClickListener(view -> dismiss());
+        clean.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                password.setText("");
+            }
+        });
         one.setOnClickListener(v -> {
             // 对话框第1个按钮
             password.append(one.getText().toString());

@@ -21,8 +21,8 @@ public class SetDialog extends Dialog {
     private String s2[] = new String[]{"小", "适中", "大", "最大"};//开门角度
     private String s3[] = new String[]{"1秒","2秒","3秒", "4秒", "5秒","6秒", "7秒",  "8秒","9秒", "10秒","11秒","12秒","13秒", "14秒", "15秒","16秒",
             "17秒", "18秒","19秒","20秒","21秒", "22秒","13秒", "24秒", "25秒","26秒","27秒", "28秒","29秒", "30秒"};//等待时间
-    private String s4[] = new String[]{"减速一档", "减速二档", "减速三档", "减速关闭"};//关门力度
-    private String s5[] = new String[]{"低", "中", "高"};//设置防夹检测范围
+    private String s4[] = new String[]{"1", "2", "3", "4", "5"};//关门力度
+    private String s5[] = new String[]{"1", "2", "3", "4", "5","6"};//设置防夹检测范围
     private TextView name;
     private Button back;
     private Button complete;
@@ -131,7 +131,7 @@ public class SetDialog extends Dialog {
             case 22://防夹等级
                 start.refreshByNewDisplayedValues(s5);
                 start.setValue(getIndex(s5,value));
-                name.setText("设置防夹检测范围");
+                name.setText("防夹力度");
                 break;
         }
         show();

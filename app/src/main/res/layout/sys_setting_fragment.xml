@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:text="通用设置"
         android:textColor="@color/white_tran90"
-        android:textSize="24sp"
+        android:textSize="32sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -24,405 +24,552 @@
         android:layout_marginStart="60dp"
         android:text="高级设置"
         android:textColor="@color/white_tran50"
-        android:textSize="24sp"
+        android:textSize="32sp"
         app:layout_constraintStart_toEndOf="@id/general_settings"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:id="@+id/advanced_view"
+        android:background="@drawable/lock_gray"
+        app:layout_constraintLeft_toRightOf="@+id/advanced_settings"
+        app:layout_constraintBottom_toBottomOf="@+id/advanced_settings"
+        app:layout_constraintTop_toTopOf="@+id/advanced_settings"
+        android:layout_marginLeft="17dp"
+        android:layout_width="20dp"
+        android:layout_height="25dp"/>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/general_settings">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/general_settings_layout"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/general_settings_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/screen_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="屏幕设置"
-                android:textColor="@color/c_f9"
-                android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/brightness_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="亮度设置"
-                android:textColor="@color/white_tran60"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/screen_settings" />
-
-            <TextView
-                android:id="@+id/brightness_value"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="亮度值"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                app:layout_constraintBottom_toBottomOf="@id/brightness_settings"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/brightness_settings" />
-
-            <androidx.appcompat.widget.AppCompatSeekBar
-                android:id="@+id/brightness_bar"
-                android:layout_width="0dp"
-                android:layout_height="80dp"
-                android:layout_marginTop="16dp"
-                android:max="100"
-                android:maxHeight="80dp"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:progress="6"
-                android:progressDrawable="@drawable/custom_seekbar_progress"
-                android:splitTrack="false"
-                android:thumb="@drawable/custom_seekbar_thumb"
-                android:thumbOffset="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/brightness_settings" />
-
-            <TextView
-                android:id="@+id/screen_off_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="熄屏时间"
-                android:textColor="@color/white_tran60"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/brightness_bar" />
-
-
-            <RadioGroup
-                android:id="@+id/screen_off_time_radio_group"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_guide_select"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/screen_off_time">
-
-                <RadioButton
-                    android:id="@+id/time_seconds_15"
+                <TextView
+                    android:id="@+id/screen_settings"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="15秒"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="48dp"
+                    android:text="屏幕设置"
+                    android:textColor="@color/c_f9"
+                    android:textSize="32sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-                <RadioButton
-                    android:id="@+id/time_seconds_30"
+                <TextView
+                    android:id="@+id/brightness_settings"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="30秒"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="亮度设置"
+                    android:textColor="@color/white_tran60"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/screen_settings" />
 
-                <RadioButton
-                    android:id="@+id/time_minute_3"
+                <TextView
+                    android:id="@+id/brightness_value"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="3分钟"
+                    android:layout_height="wrap_content"
+                    android:text="亮度值"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    app:layout_constraintBottom_toBottomOf="@id/brightness_settings"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/brightness_settings" />
 
-                <RadioButton
-                    android:id="@+id/time_minute_10"
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/brightness_bar"
+                    android:layout_width="0dp"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:max="100"
+                    android:maxHeight="80dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:progress="6"
+                    android:progressDrawable="@drawable/custom_seekbar_progress"
+                    android:splitTrack="false"
+                    android:thumb="@drawable/custom_seekbar_thumb"
+                    android:thumbOffset="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/brightness_settings" />
+
+                <TextView
+                    android:id="@+id/screen_off_time"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="10分钟"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="熄屏时间"
+                    android:textColor="@color/white_tran60"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/brightness_bar" />
 
-                <RadioButton
-                    android:id="@+id/time_minute_30"
+
+                <RadioGroup
+                    android:id="@+id/screen_off_time_radio_group"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="30分钟"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-            </RadioGroup>
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_guide_select"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/screen_off_time">
 
-            <TextView
-                android:id="@+id/doorbell_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="门铃设置"
-                android:textColor="@color/c_f9"
-                android:textSize="20sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/screen_off_time_radio_group" />
+                    <RadioButton
+                        android:id="@+id/time_seconds_15"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="15秒"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
 
-            <TextView
-                android:id="@+id/volume_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="音量"
-                android:textColor="@color/white_tran60"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/doorbell_settings" />
+                    <RadioButton
+                        android:id="@+id/time_seconds_30"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="30秒"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
 
-            <RadioGroup
-                android:id="@+id/volume_radio_group"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_guide_select"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/volume_settings">
+                    <RadioButton
+                        android:id="@+id/time_minute_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="3分钟"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
 
-                <RadioButton
-                    android:id="@+id/silent_rb"
+                    <RadioButton
+                        android:id="@+id/time_minute_10"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="10分钟"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/time_minute_30"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="30分钟"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/doorbell_settings"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="静音"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="门铃设置"
+                    android:textColor="@color/c_f9"
+                    android:textSize="32sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/screen_off_time_radio_group" />
 
-                <RadioButton
-                    android:id="@+id/low_rb"
+                <TextView
+                    android:id="@+id/volume_settings"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="低"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="音量"
+                    android:textColor="@color/white_tran60"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/doorbell_settings" />
 
-                <RadioButton
-                    android:id="@+id/middle_rb"
+                <RadioGroup
+                    android:id="@+id/volume_radio_group"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="中"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_guide_select"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/volume_settings">
 
-                <RadioButton
-                    android:id="@+id/high_rb"
+                    <RadioButton
+                        android:id="@+id/silent_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="静音"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/low_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="低"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/middle_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="中"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/high_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="高"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/ringtones_settings"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="高"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-            </RadioGroup>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="门铃铃声"
+                    android:textColor="@color/white_tran60"
+                    android:textSize="24sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/volume_radio_group" />
 
-            <TextView
-                android:id="@+id/ringtones_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="门铃铃声"
-                android:textColor="@color/white_tran60"
-                android:textSize="18sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/volume_radio_group" />
-
-            <RadioGroup
-                android:id="@+id/ringtones_radio_group"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_guide_select"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ringtones_settings">
-
-                <RadioButton
-                    android:id="@+id/ringtones_rb"
+                <RadioGroup
+                    android:id="@+id/ringtones_radio_group"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="叮咚叮咚"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_guide_select"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ringtones_settings">
 
-                <RadioButton
-                    android:id="@+id/ringtones1_rb"
+                    <RadioButton
+                        android:id="@+id/ringtones_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="叮咚叮咚"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/ringtones1_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="默认铃声01"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/ringtones2_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="默认铃声02"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/safety_settings"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="默认铃声01"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="安全设置"
+                    android:textColor="@color/c_f9"
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/ringtones_radio_group" />
 
-                <RadioButton
-                    android:id="@+id/ringtones2_rb"
+                <TextView
+                    android:id="@+id/opening_verification"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="默认铃声02"
-                    android:textColor="@color/white"
-                    android:textSize="18sp" />
-            </RadioGroup>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="开门验证"
+                    android:textColor="@color/white_tran60"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/safety_settings" />
 
-            <TextView
-                android:id="@+id/safety_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="安全设置"
-                android:textColor="@color/c_f9"
-                android:textSize="20sp"
+                <RadioGroup
+                    android:id="@+id/verification_radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_guide_select"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/opening_verification">
+
+                    <RadioButton
+                        android:id="@+id/single_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="单人模式"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+
+                    <RadioButton
+                        android:id="@+id/double_rb"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="双人模式"
+                        android:textColor="@color/white"
+                        android:textSize="18sp" />
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/wander_settings"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:text="门口徘徊监测"
+                    android:textColor="@color/c_f9"
+                    android:textSize="20sp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/verification_radio_group" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+            <LinearLayout
+                android:id="@+id/general_settings_ll"
                 android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ringtones_radio_group" />
-
-            <TextView
-                android:id="@+id/opening_verification"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="开门验证"
-                android:textColor="@color/white_tran60"
-                android:textSize="18sp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/safety_settings" />
-
-            <RadioGroup
-                android:id="@+id/verification_radio_group"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/bg_guide_select"
-                android:orientation="horizontal"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/opening_verification">
-
-                <RadioButton
-                    android:id="@+id/single_rb"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="单人模式"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginTop="47dp"
+                    android:textSize="24sp"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
-
-                <RadioButton
-                    android:id="@+id/double_rb"
+                    android:text="关门力度"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_weight="1"
-                    android:background="@drawable/radio_bg_selector"
-                    android:button="@null"
-                    android:gravity="center"
-                    android:paddingStart="56dp"
-                    android:paddingEnd="56dp"
-                    android:text="双人模式"
+                    android:layout_height="wrap_content"/>
+                <RadioGroup
+                    android:id="@+id/open_power_group"
+                    android:layout_width="wrap_content"
+                    android:layout_height="80dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/bg_guide_select"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/screen_off_time">
+
+                    <RadioButton
+                        android:id="@+id/open_power_1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="1"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                    <RadioButton
+                        android:id="@+id/open_power_2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="2"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+                    <RadioButton
+                        android:id="@+id/open_power_3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="3"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+                    <RadioButton
+                        android:id="@+id/open_power_4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="4"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+                    <RadioButton
+                        android:id="@+id/open_power_5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/radio_bg_selector"
+                        android:button="@null"
+                        android:gravity="center"
+                        android:paddingStart="56dp"
+                        android:paddingEnd="56dp"
+                        android:text="5"
+                        android:textColor="@color/white"
+                        android:textSize="24sp" />
+
+                </RadioGroup>
+
+                <TextView
+                    android:layout_marginTop="32dp"
+                    android:textSize="24sp"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
-            </RadioGroup>
+                    android:text="防夹力度"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/stop_power_cl"
+                    android:background="@drawable/shape_radius_8_2f3241"
+                    android:layout_marginTop="16dp"
+                    android:layout_width="452dp"
+                    android:layout_height="98dp">
 
-            <TextView
-                android:id="@+id/wander_settings"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="门口徘徊监测"
-                android:textColor="@color/c_f9"
-                android:textSize="20sp"
-                android:visibility="gone"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/verification_radio_group" />
+                    <TextView
+                        android:id="@+id/stop_power_tv"
+                        android:text="1"
+                        android:textColor="@color/white"
+                        android:layout_marginLeft="24dp"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:textSize="20sp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
 
+                    <View
+                        android:background="@drawable/jiantou"
+                        android:layout_marginRight="24dp"
+                        app:layout_constraintRight_toRightOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
+        </FrameLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

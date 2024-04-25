@@ -57,7 +57,7 @@
             android:id="@+id/model_text"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="X50 Pro"
+            android:text=""
             android:textColor="@color/white_tran70"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
