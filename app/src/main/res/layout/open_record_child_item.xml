@@ -9,15 +9,17 @@
 
 
     <ImageView
+        android:src="@mipmap/ic_door_open"
         android:id="@+id/img_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
+        android:layout_marginStart="10dp"
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -31,8 +33,8 @@
     <TextView
         android:id="@+id/tv_time"
         android:layout_marginTop="2dp"
-        android:layout_width="25dp"
-        android:layout_height="14dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         tools:text="19:20"
         android:textColor="#99ffffff"
         android:textSize="10sp"
@@ -40,6 +42,9 @@
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
     <TextView
+        android:drawablePadding="8dp"
+        android:gravity="center"
+        android:drawableStart="@mipmap/icon_user"
         android:id="@+id/tv_name"
         android:layout_marginEnd="20dp"
         app:layout_constraintEnd_toEndOf="parent"

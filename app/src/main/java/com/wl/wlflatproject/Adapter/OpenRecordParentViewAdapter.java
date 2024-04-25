@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
 import com.wl.wlflatproject.R;
 
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
  */
 public class OpenRecordParentViewAdapter extends RecyclerView.Adapter<OpenRecordParentViewAdapter.ViewHolder> {
 
-    private List<List<String>> mainListData;
+    private List<OpenRecordMsgBean.OpenRecordMsgDataBean> mainListData;
 
     private Context context;
-    public OpenRecordParentViewAdapter(Context context,List<List<String>> mainListData) {
+    public OpenRecordParentViewAdapter(Context context,List<OpenRecordMsgBean.OpenRecordMsgDataBean> mainListData) {
         this.mainListData = mainListData;
         this.context=context;
     }
@@ -36,11 +37,12 @@ public class OpenRecordParentViewAdapter extends RecyclerView.Adapter<OpenRecord
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // 获取当前位置的子列表
-        List<String> subListData = mainListData.get(position);
+        OpenRecordMsgBean.OpenRecordMsgDataBean data = mainListData.get(position);
+        holder.dateTv.setText(data.getShowDate());
         // 设置子RecyclerView的适配器
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         holder.subRecyclerView.setLayoutManager(layoutManager);
-        holder.subRecyclerView.setAdapter(new OpenRecordChildViewAdapter(subListData));
+        holder.subRecyclerView.setAdapter(new OpenRecordChildViewAdapter(data.getUnlockMsgList()));
     }
 
     @Override

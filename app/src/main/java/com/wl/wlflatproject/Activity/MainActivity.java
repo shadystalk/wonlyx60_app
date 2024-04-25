@@ -49,6 +49,8 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amap.api.location.AMapLocation;
 import com.google.gson.Gson;
@@ -63,6 +65,8 @@ import com.serenegiant.usb.IButtonCallback;
 import com.serenegiant.usb.IStatusCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
+import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
+import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
 import com.wl.wlflatproject.Bean.CalendarParam;
 import com.wl.wlflatproject.Bean.GDFutureWeatherBean;
@@ -74,9 +78,11 @@ import com.wl.wlflatproject.Bean.StateBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
+import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
+import com.wl.wlflatproject.MUtils.HandlerCode;
 import com.wl.wlflatproject.MUtils.LocationUtils;
 import com.wl.wlflatproject.MUtils.LunarUtils;
 import com.wl.wlflatproject.MUtils.RbMqUtils;
@@ -85,11 +91,13 @@ import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
 import com.wl.wlflatproject.MView.SimpleUVCCameraTextureView;
 import com.wl.wlflatproject.MView.WaitDialogTime;
+import com.wl.wlflatproject.Presenter.WJAPlayPresenter;
 import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
-
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -174,8 +182,10 @@ public class MainActivity extends AppCompatActivity {
     TextView messageTv;
 
     @BindView(R.id.view_next)
-    View msgReminderNext;
+    ImageView msgReminderNext;
 
+    @BindView(R.id.recycler_msg)
+    RecyclerView msgRecyclerView;
     private int version;
     /* 更新进度条 */
     private ProgressBar mProgress;
@@ -275,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
     private USBMonitor mUSBMonitor;
     private boolean isPlaying = false;
     private UVCCamera camera;
-    private HashMap<Integer, UsbDevice> deviceList;
+    private HashMap<Integer,UsbDevice> deviceList;
     private MediaPlayer mediaplayer;
     private List<DeviceFilter> filter;
     private PowerManager.WakeLock wakeLock;
@@ -315,7 +325,7 @@ public class MainActivity extends AppCompatActivity {
         handler.removeMessages(TIME);
         if (dialogTime == null)
             dialogTime = new WaitDialogTime(this, android.R.style.Theme_Translucent_NoTitleBar);
-        handler.sendEmptyMessageDelayed(PERMISSION, 3000);
+        handler.sendEmptyMessageDelayed(PERMISSION,3000);
         Log.e("获得Mac地址", id + "");
         rbmq = new RbMqUtils();
         bean.setAck(0);
@@ -339,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
         funView.postDelayed(() -> {
             int width = funView.getMeasuredWidth();
             int height = funView.getMeasuredHeight();
-            videoPlayView.setAspectRatio(height - 10, width);
+            videoPlayView.setAspectRatio(height-10, width);
             ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
             params.width = height;
             params.height = width;
@@ -348,21 +358,77 @@ public class MainActivity extends AppCompatActivity {
         }, 1000);
         messageEdit.setCursorVisible(false);
         initListener();
-        String messageS = SPUtil.getInstance(MainActivity.this).getSettingParam("message", "");
-        String messageDateS = SPUtil.getInstance(MainActivity.this).getSettingParam("message_date", "");
-        if (!TextUtils.isEmpty(messageDateS)) {
+        String messageS=SPUtil.getInstance(MainActivity.this).getSettingParam("message","");
+        String messageDateS=SPUtil.getInstance(MainActivity.this).getSettingParam("message_date","");
+        if(!TextUtils.isEmpty(messageDateS)){
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
         }
+        initMsgData();
+    }
+    public void initMsgData(){
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("vendorName","wja");
+            requestBody.put("pageSize","10");
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
+            @Override
+            public void onSuccess(Response<String> response) {
+                String s = response.body();
+
+                AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
+                if (infoBean.getCode() == 200 && infoBean.getData() != null) {
+                    List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
+                    if (data != null) {
+                        // 创建主RecyclerView的适配器
+                        AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(MainActivity.this, data){
+                            @Override
+                            public void onBindViewHolder(ViewHolder holder, int position) {
+                                super.onBindViewHolder(holder, position);
+                                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)  holder.dateTv.getLayoutParams();
+                                layoutParams.leftMargin=10;
+                                holder.dateTv.setLayoutParams(layoutParams);
+                            }
+                        };
+
+                        // 设置主RecyclerView的布局管理器
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this) {
+                            @Override
+                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            }
+                        };
+                        layoutManager.setAutoMeasureEnabled(true);
+                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        msgRecyclerView.setLayoutManager(layoutManager);
+
+                        // 设置主RecyclerView的适配器
+                        msgRecyclerView.setAdapter(adapter);
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, infoBean.getMsg(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(Response<String> response) {
+                Log.e("XXXXXX","onError=="+response.body());
+                super.onError(response);
+            }
+        });
+
     }
 
     private void initListener() {
         messageTv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (clearPopupWindow == null) {
+                if(clearPopupWindow==null){
                     View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
-                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
+                    clearPopupWindow = new PopupWindow(inflate, 150,65, true);
                     inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -372,7 +438,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-                clearPopupWindow.showAsDropDown(changKai, 40, -22);
+                clearPopupWindow.showAsDropDown(changKai,40,-22);
 
                 return false;
             }
@@ -390,12 +456,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (messageEdit.getText().toString().length() != 0) {
+                if(messageEdit.getText().toString().length()!=0){
                     String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
                     messageDate.setText(s);
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("message", messageEdit.getText().toString());
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("message_date", s);
-                } else {
+                    SPUtil.getInstance(MainActivity.this).setSettingParam("message",messageEdit.getText().toString());
+                    SPUtil.getInstance(MainActivity.this).setSettingParam("message_date",s);
+                }else{
                     messageDate.setText("");
                 }
             }
@@ -403,13 +469,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
-            R.id.weather_ll, R.id.video_iv, R.id.view_next})
+    @OnClick({R.id.close_video, R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
+            R.id.weather_ll,  R.id.video_iv,R.id.view_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
-                Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                startActivity(intent);
+                 Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
+                 startActivity(intent);
                 break;
             case R.id.fun_view:
 
@@ -425,8 +491,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (!isPlaying) {
                     //打开视频
-                    Log.e("usb++", "deviceList" + deviceList.size());
-                    if (deviceList.size() == 0) {
+                    Log.e("usb++","deviceList"+deviceList.size());
+                    if(deviceList.size()==0){
                         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
                     }
                     if (deviceList.size() == 0) {
@@ -479,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.view_next:
                 intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                intent.putExtra("POSITION", 3);
+                intent.putExtra("POSITION",3);
                 startActivity(intent);
                 break;
             default:
@@ -512,7 +578,7 @@ public class MainActivity extends AppCompatActivity {
                         case 0x1001://通知小管家
                             break;
                         case 4103://通知小管家
-                            if (baseBean.getBind() == 1) {
+                            if(baseBean.getBind()==1){
                                 //绑定成功
                                 InfoBean infoBean = new InfoBean();
                                 infoBean.setCode(1);
@@ -615,23 +681,23 @@ public class MainActivity extends AppCompatActivity {
                                 case 13://唯一id1
                                     id = split[1];
                                     bean.setDevId(id);
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam("devId", id);
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("devId",id);
                                     setMq();
                                     break;
                                 case 14://前板版本号
                                     String fVer = split[1];
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam("fVer", fVer);
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("fVer",fVer);
                                     break;
                                 case 15://后板版本号
                                     String bVer = split[1];
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam("bVer", bVer);
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("bVer",bVer);
                                     break;
                                 case 16://设备型号
-                                    devType = split[1];
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam("devType", devType);
+                                    devType=split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam("devType",devType);
                                     break;
                             }
-                        } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
+                        }else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
                             changkaiFlag = 2;
                             if (dialogTime != null & dialogTime.isShowing()) ;
                             dialogTime.dismiss();
@@ -650,7 +716,7 @@ public class MainActivity extends AppCompatActivity {
                         } else if (data.contains("AT+CDWAKE=1")) {    //有人   但是不打开视频
                         } else if (data.contains("AT+CDBELL=1")) {   //门铃
                             Log.e("有人按门铃", "..");
-                            if (deviceList.size() == 0) {
+                            if(deviceList.size()==0){
                                 return;
                             }
                             if (!isPlaying) {
@@ -659,7 +725,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 Set<Integer> set = deviceList.keySet();
                                 set.iterator().next();
-                                mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
+                                mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
                             }
 
                         } else if (data.contains("AT+CDECT=")) {
@@ -671,7 +737,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     } else {//人靠近
                                         Log.e("检测有人", "..");
-                                        if (deviceList.size() == 0) {
+                                        if(deviceList.size()==0){
                                             return;
                                         }
                                         if (!isPlaying) {
@@ -680,7 +746,7 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                             Set<Integer> set = deviceList.keySet();
                                             set.iterator().next();
-                                            mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
+                                            mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
                                         }
                                     }
                                     break;
@@ -751,6 +817,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     /**
      * 初始化日历
      */
@@ -758,7 +825,7 @@ public class MainActivity extends AppCompatActivity {
         DateUtils instance = DateUtils.getInstance();
         //日期
         String dayOrMonthOrYear = instance.getDayOrMonthOrYear1(System.currentTimeMillis());
-        dateTv.setText(dayOrMonthOrYear + "  " + instance.getWeekday(System.currentTimeMillis(), true));
+        dateTv.setText(dayOrMonthOrYear+"  "+instance.getWeekday(System.currentTimeMillis(), true));
         //星期
         //农历
         //猪 贰零壹玖 润 六月 小廿八 己亥 辛未 戊辰
@@ -777,7 +844,7 @@ public class MainActivity extends AppCompatActivity {
         mLocationUtils.startLocation();
         String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear1(System.currentTimeMillis());
         String weekday = dateUtils.getWeekday(System.currentTimeMillis(), true);
-        dateTv.setText(dayOrMonthOrYear + "  " + weekday);
+        dateTv.setText(dayOrMonthOrYear+"  "+weekday);
         hideBottomUIMenu();
     }
 
@@ -869,7 +936,7 @@ public class MainActivity extends AppCompatActivity {
                 if (hour == 0) {
                     //日期
                     String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear1(System.currentTimeMillis());
-                    dateTv.setText(dayOrMonthOrYear + "  " + dateUtils.getWeekday(System.currentTimeMillis(), true));
+                    dateTv.setText(dayOrMonthOrYear+"  "+dateUtils.getWeekday(System.currentTimeMillis(), true));
                     //星期
                     //农历
                     //农历
@@ -952,7 +1019,7 @@ public class MainActivity extends AppCompatActivity {
             boolean night = dateUtils.isNight();
             //当前天气
             GDFutureWeatherBean.ForecastsBean.CastsBean todayWeather = beanCasts.get(0);
-            todayExtentTv.setText("最高 " + todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
+            todayExtentTv.setText("最高 "+todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
 
             //后两天天气
             GDFutureWeatherBean.ForecastsBean.CastsBean secondWeather = beanCasts.get(1);
@@ -1060,7 +1127,7 @@ public class MainActivity extends AppCompatActivity {
             default:
         }
         tvW.setText(date);
-        tv.setText(w + "   " + dayTemp + "/" + nightTemp + "°c");
+        tv.setText(w+"   "+dayTemp + "/" + nightTemp + "°c");
     }
 
     @Override
@@ -1078,6 +1145,7 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+
 
 
     private void requestPermission() {
@@ -1322,6 +1390,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
     public boolean installApp(String apkPath) {
         Process process = null;
         BufferedReader successResult = null;
@@ -1361,6 +1431,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
     //防止断电回滚
     public void Sync() {
         try {
@@ -1390,7 +1462,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
-            Log.e("usb++", "connect");
+            Log.e("usb++","connect");
             queueEvent(new Runnable() {
                 @Override
                 public void run() {
