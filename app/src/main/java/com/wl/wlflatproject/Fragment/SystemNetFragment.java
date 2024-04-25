@@ -126,9 +126,16 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         wifiRv.setLayoutManager(new LinearLayoutManager(mContext));
         wifiRv.setAdapter(wifiAdapter);
 
+        sendReceiver();
 
-        mNetSwitch.setChecked(getWifiEnabled());
-        wifiGroupVisible(getWifiEnabled());
+        if (getWifiEnabled()) {
+            mNetSwitch.setChecked(true);
+            wifiGroupVisible(true);
+            updateWifiList();
+        } else {
+            mNetSwitch.setChecked(false);
+            wifiGroupVisible(false);
+        }
         mNetSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
             NetworkUtils.setWifiEnabled(isChecked);
             wifiGroupVisible(isChecked);
@@ -137,9 +144,6 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                 updateWifiList();
             }
         });
-
-        sendReceiver();
-        updateWifiList();
     }
 
 //    @OnLongClick(R.id.net_settings)
@@ -473,10 +477,12 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
      * 布局集合
      * wifi关闭状态隐藏对应布局
      *
-     * @param isVisible 是否隐藏
+     * @param isVisible 是否可见
      */
     private void wifiGroupVisible(boolean isVisible) {
-        mCurrentWifiCl.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        if (!isVisible){
+            mCurrentWifiCl.setVisibility(View.GONE);
+        }
         mChooseWifi.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         wifiRv.setVisibility(isVisible ? View.VISIBLE : View.GONE);
         wifiRefreshView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
