@@ -95,7 +95,7 @@ public class BindFragment extends Fragment {
                     bindNum.setText(infoBean.getData().getPhone());
                     bindVisi(true);
                 }else{
-                    Toast.makeText(getContext(),infoBean.getMsg(),Toast.LENGTH_LONG).show();
+
                 }
             }
         });

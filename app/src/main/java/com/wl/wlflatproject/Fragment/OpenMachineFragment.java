@@ -80,7 +80,7 @@ public class OpenMachineFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             OpenMachineFragment fragment = (OpenMachineFragment) mFragment.get();
-            if (fragment != null) {
+            if (fragment != null &&fragment.dataListener!=null) {
                 switch (msg.what) {
                     case 0:
                         fragment.dialogTime.dismiss();
@@ -128,13 +128,15 @@ public class OpenMachineFragment extends Fragment {
             public void onResult(String value, int flag) {
                 switch (flag) {
                     case 4:
-                        serialPort.sendDate(("+OPENWAITTIME:" + value + "\r\n").getBytes());
                         closeTime = value;
+                        String[] split1 = closeTime.split("秒");
+                        serialPort.sendDate(("+OPENWAITTIME:" + split1[0] + "\r\n").getBytes());
                         closeTimeTv.setText(value);
                         break;
                     case 12:
                         openDegreeRepair = value;
-                        serialPort.sendDate(("+ANGLEREPAIR:" + value + "\r\n").getBytes());
+                        String[] split = openDegreeRepair.split("°");
+                        serialPort.sendDate(("+ANGLEREPAIR:" + split[0] + "\r\n").getBytes());
                         openDegreeRepairTv.setText(value);
                         break;
                 }
@@ -379,8 +381,9 @@ public class OpenMachineFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         unbinder.unbind();
         serialPort.removeListener(dataListener);
+        dataListener=null;
+        super.onDestroy();
     }
 }

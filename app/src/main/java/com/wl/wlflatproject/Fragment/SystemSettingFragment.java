@@ -100,9 +100,10 @@ public class SystemSettingFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             SystemSettingFragment fragment = (SystemSettingFragment) mFragment.get();
-            if (fragment != null) {
+            if (fragment != null&&fragment.dataListener!=null) {
                 switch (msg.what){
                     case 0:
+                        fragment.dialogTime.dismiss();
                         Toast.makeText(fragment.getContext(),showString,Toast.LENGTH_LONG).show();
                         break;
                     case 9:
@@ -472,6 +473,7 @@ public class SystemSettingFragment extends Fragment {
     public void onDestroyView() {
         unbinder.unbind();
         serialPort.removeListener(dataListener);
+        dataListener=null;
         super.onDestroyView();
     }
 }
