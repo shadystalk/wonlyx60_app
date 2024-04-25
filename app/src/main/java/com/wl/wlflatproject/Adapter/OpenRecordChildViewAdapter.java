@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
 import com.wl.wlflatproject.R;
 
 import java.util.List;
@@ -19,9 +20,9 @@ import java.util.List;
  
 public class OpenRecordChildViewAdapter extends RecyclerView.Adapter<OpenRecordChildViewAdapter.ViewHolder> {
 
-    private List<String> subListData;
+    private List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData;
 
-    public OpenRecordChildViewAdapter(List<String> subListData) {
+    public OpenRecordChildViewAdapter(List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData) {
         this.subListData = subListData;
     }
 
@@ -34,9 +35,54 @@ public class OpenRecordChildViewAdapter extends RecyclerView.Adapter<OpenRecordC
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // 获取当前位置的数据
-        String data = subListData.get(position);
+        OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO data = subListData.get(position);
         // 设置TextView的值
-        holder.timeTv.setText(data);
+        holder.timeTv.setText(data.getShowTime());
+        holder.titleTv.setText(data.getUnlockDescribe());
+        holder.nameTv.setText(data.getUserNote());
+        switch (data.getUnlockMode()){
+            case 0:
+                holder.typeImg.setImageResource(R.mipmap.ic_door_open);
+                break;
+            case 1:
+                //密码
+                holder.typeImg.setImageResource(R.mipmap.ic_psw);
+                break;
+            case 3:
+                //指纹
+                holder.typeImg.setImageResource(R.mipmap.ic_fingerprint);
+                break;
+            case 5:
+                //人脸
+                holder.typeImg.setImageResource(R.mipmap.ic_face);
+                break;
+            case 12:
+                //遥感
+                holder.typeImg.setImageResource(R.mipmap.ic_sensing);
+                break;
+            case 13:
+                //门内
+                holder.typeImg.setImageResource(R.mipmap.ic_door_open);
+                break;
+            case 14:
+                //远程
+                holder.typeImg.setImageResource(R.mipmap.ic_remote);
+                break;
+            case 15:
+                //胁迫密码
+                holder.typeImg.setImageResource(R.mipmap.ic_coercion_psw);
+                break;
+            case 16:
+                //胁迫指纹
+                holder.typeImg.setImageResource(R.mipmap.ic_coercion_fingerprint);
+                break;
+            case 100:
+                //双人
+                holder.typeImg.setImageResource(R.mipmap.ic_double_mode);
+                break;
+            default:
+                break;
+        }
     }
 
     @Override

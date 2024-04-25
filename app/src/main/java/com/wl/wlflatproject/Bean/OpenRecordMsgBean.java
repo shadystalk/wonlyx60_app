@@ -4,12 +4,13 @@ import java.util.List;
 
 /**
  * @Author zhuobaolian
- * @Date 14:47
+ * @Date 15:23
  */
-public class AlarmMsgBean {
+public class OpenRecordMsgBean {
+
 
     private int code;
-    private List<AlarmMsgDataDTO> data;
+    private List<OpenRecordMsgDataBean> data;
     private String msg;
     private String note;
 
@@ -21,11 +22,11 @@ public class AlarmMsgBean {
         this.code = code;
     }
 
-    public List<AlarmMsgDataDTO> getData() {
+    public List<OpenRecordMsgDataBean> getData() {
         return data;
     }
 
-    public void setData(List<AlarmMsgDataDTO> data) {
+    public void setData(List<OpenRecordMsgDataBean> data) {
         this.data = data;
     }
 
@@ -45,17 +46,17 @@ public class AlarmMsgBean {
         this.note = note;
     }
 
-    public static class AlarmMsgDataDTO {
-        private List<AlarmMsgListDTO> alarmMsgList;
+    public static class OpenRecordMsgDataBean {
+        private List<UnlockMsgListDTO> unlockMsgList;
         private String showDate;
-        private long timestamp;
+        private int timestamp;
 
-        public List<AlarmMsgListDTO> getAlarmMsgList() {
-            return alarmMsgList;
+        public List<UnlockMsgListDTO> getUnlockMsgList() {
+            return unlockMsgList;
         }
 
-        public void setAlarmMsgList(List<AlarmMsgListDTO> alarmMsgList) {
-            this.alarmMsgList = alarmMsgList;
+        public void setUnlockMsgList(List<UnlockMsgListDTO> unlockMsgList) {
+            this.unlockMsgList = unlockMsgList;
         }
 
         public String getShowDate() {
@@ -66,53 +67,37 @@ public class AlarmMsgBean {
             this.showDate = showDate;
         }
 
-        public long getTimestamp() {
+        public int getTimestamp() {
             return timestamp;
         }
 
-        public void setTimestamp(long timestamp) {
+        public void setTimestamp(int timestamp) {
             this.timestamp = timestamp;
         }
 
-        public static class AlarmMsgListDTO {
-            private String alarmDescribe;
-            private String alarmId;
-            private String alarmType;
+        public static class UnlockMsgListDTO {
+            private int unlockMode;
             private String date;
             private String deviceId;
-            private String eventId;
             private String imgOrientation;
             private String messageType;
             private String picPath;
             private String showDate;
             private String showTime;
-            private Long timestamp;
+            private int timestamp;
+            private String unlockDescribe;
+            private String unlockId;
+            private String userNote;
             private String vendorName;
             private String videoPath;
             private String week;
 
-            public String getAlarmDescribe() {
-                return alarmDescribe;
+            public int getUnlockMode() {
+                return unlockMode;
             }
 
-            public void setAlarmDescribe(String alarmDescribe) {
-                this.alarmDescribe = alarmDescribe;
-            }
-
-            public String getAlarmId() {
-                return alarmId;
-            }
-
-            public void setAlarmId(String alarmId) {
-                this.alarmId = alarmId;
-            }
-
-            public String getAlarmType() {
-                return alarmType;
-            }
-
-            public void setAlarmType(String alarmType) {
-                this.alarmType = alarmType;
+            public void setUnlockMode(int unlockMode) {
+                this.unlockMode = unlockMode;
             }
 
             public String getDate() {
@@ -129,14 +114,6 @@ public class AlarmMsgBean {
 
             public void setDeviceId(String deviceId) {
                 this.deviceId = deviceId;
-            }
-
-            public String getEventId() {
-                return eventId;
-            }
-
-            public void setEventId(String eventId) {
-                this.eventId = eventId;
             }
 
             public String getImgOrientation() {
@@ -179,12 +156,36 @@ public class AlarmMsgBean {
                 this.showTime = showTime;
             }
 
-            public Long getTimestamp() {
+            public int getTimestamp() {
                 return timestamp;
             }
 
-            public void setTimestamp(Long timestamp) {
+            public void setTimestamp(int timestamp) {
                 this.timestamp = timestamp;
+            }
+
+            public String getUnlockDescribe() {
+                return unlockDescribe;
+            }
+
+            public void setUnlockDescribe(String unlockDescribe) {
+                this.unlockDescribe = unlockDescribe;
+            }
+
+            public String getUnlockId() {
+                return unlockId;
+            }
+
+            public void setUnlockId(String unlockId) {
+                this.unlockId = unlockId;
+            }
+
+            public String getUserNote() {
+                return userNote;
+            }
+
+            public void setUserNote(String userNote) {
+                this.userNote = userNote;
             }
 
             public String getVendorName() {

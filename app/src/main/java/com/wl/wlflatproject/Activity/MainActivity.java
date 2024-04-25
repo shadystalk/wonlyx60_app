@@ -49,6 +49,8 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.amap.api.location.AMapLocation;
 import com.google.gson.Gson;
@@ -63,6 +65,8 @@ import com.serenegiant.usb.IButtonCallback;
 import com.serenegiant.usb.IStatusCallback;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
+import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
+import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
 import com.wl.wlflatproject.Bean.CalendarParam;
 import com.wl.wlflatproject.Bean.GDFutureWeatherBean;
@@ -74,6 +78,7 @@ import com.wl.wlflatproject.Bean.StateBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
+import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
@@ -91,6 +96,9 @@ import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -174,8 +182,10 @@ public class MainActivity extends AppCompatActivity {
     TextView messageTv;
 
     @BindView(R.id.view_next)
-    View msgReminderNext;
+    ImageView msgReminderNext;
 
+    @BindView(R.id.recycler_msg)
+    RecyclerView msgRecyclerView;
     private int version;
     /* 更新进度条 */
     private ProgressBar mProgress;
@@ -354,6 +364,62 @@ public class MainActivity extends AppCompatActivity {
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
         }
+        initMsgData();
+    }
+    public void initMsgData(){
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("vendorName","wja");
+            requestBody.put("pageSize","10");
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
+            @Override
+            public void onSuccess(Response<String> response) {
+                String s = response.body();
+
+                AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
+                if (infoBean.getCode() == 200 && infoBean.getData() != null) {
+                    List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
+                    if (data != null) {
+                        // 创建主RecyclerView的适配器
+                        AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(MainActivity.this, data){
+                            @Override
+                            public void onBindViewHolder(ViewHolder holder, int position) {
+                                super.onBindViewHolder(holder, position);
+                                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)  holder.dateTv.getLayoutParams();
+                                layoutParams.leftMargin=10;
+                                holder.dateTv.setLayoutParams(layoutParams);
+                            }
+                        };
+
+                        // 设置主RecyclerView的布局管理器
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this) {
+                            @Override
+                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            }
+                        };
+                        layoutManager.setAutoMeasureEnabled(true);
+                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        msgRecyclerView.setLayoutManager(layoutManager);
+
+                        // 设置主RecyclerView的适配器
+                        msgRecyclerView.setAdapter(adapter);
+                    }
+                } else {
+                    Toast.makeText(MainActivity.this, infoBean.getMsg(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(Response<String> response) {
+                Log.e("XXXXXX","onError=="+response.body());
+                super.onError(response);
+            }
+        });
+
     }
 
     private void initListener() {

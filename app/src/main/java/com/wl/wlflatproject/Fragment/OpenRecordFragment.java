@@ -1,11 +1,10 @@
 package com.wl.wlflatproject.Fragment;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,11 +18,13 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Adapter.OpenRecordParentViewAdapter;
 import com.wl.wlflatproject.Bean.InfoBean;
+import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
-import com.wl.wlflatproject.MUtils.DpUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
-import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.R;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,50 +47,56 @@ public class OpenRecordFragment extends Fragment {
         return view;
     }
 
-    public void initData(){
-        OkGo.<String>get(ApiSrevice.queryUnlockRecord).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
+
+    public void initData() {
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("vendorName", "wja");
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+        OkGo.<String>post(ApiSrevice.queryUnlockRecord).headers(ApiSrevice.getHeads(getContext())).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
-//                String s = response.toString();
-//                InfoBean infoBean = GsonUtils.GsonToBean(s, InfoBean.class);
-//                if(infoBean.getCode()==200  &&  infoBean.getData()!=null){
-//                    bindNum.setText(infoBean.getData().getPhone());
-//                    bindVisi(true);
-//                }else{
-//                    Toast.makeText(getContext(),infoBean.getMsg(),Toast.LENGTH_SHORT).show();
-//                }
+                if(msgRecyclerView==null){
+                    return;
+                }
+                String s = response.body();
+
+                Log.e("XXXXXX", "onSuccess==" + s);
+                OpenRecordMsgBean infoBean = GsonUtils.GsonToBean(s, OpenRecordMsgBean.class);
+                if (infoBean.getCode() == 200 && infoBean.getData() != null) {
+                    List<OpenRecordMsgBean.OpenRecordMsgDataBean> data = infoBean.getData();
+                    if (data != null) {
+                        // 创建主RecyclerView的适配器
+                        OpenRecordParentViewAdapter adapter = new OpenRecordParentViewAdapter(getActivity(), data);
+
+                        // 设置主RecyclerView的布局管理器
+                        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
+                            @Override
+                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                            }
+                        };
+                        layoutManager.setAutoMeasureEnabled(true);
+                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                        msgRecyclerView.setLayoutManager(layoutManager);
+
+                        // 设置主RecyclerView的适配器
+                        msgRecyclerView.setAdapter(adapter);
+                    }
+                } else {
+                    Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(Response<String> response) {
+                Log.e("XXXXXX", "onError==" + response.body());
+                super.onError(response);
             }
         });
 
-        // 创建主列表数据
-        List<List<String>> mainListData = new ArrayList<>();
-        List<String> subListData1 = new ArrayList<>();
-        subListData1.add("Item 1");
-        subListData1.add("Item 2");
-        subListData1.add("Item 3");
-        mainListData.add(subListData1);
-
-        List<String> subListData2 = new ArrayList<>();
-        subListData2.add("Item 4");
-        subListData2.add("Item 5");
-        mainListData.add(subListData2);
-
-        // 创建主RecyclerView的适配器
-        OpenRecordParentViewAdapter adapter = new OpenRecordParentViewAdapter(getActivity(),mainListData);
-
-        // 设置主RecyclerView的布局管理器
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()){
-            @Override
-            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            }
-        };
-        layoutManager.setAutoMeasureEnabled(true);
-        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        msgRecyclerView.setLayoutManager(layoutManager);
-
-        // 设置主RecyclerView的适配器
-        msgRecyclerView.setAdapter(adapter);
     }
 
     @Override
