@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wl.wlflatproject.MUtils.DpUtils;
 import com.wl.wlflatproject.MUtils.SPUtil;
+import com.wl.wlflatproject.MView.MediaDialog;
 import com.wl.wlflatproject.R;
 
 import butterknife.BindView;
@@ -34,7 +35,10 @@ public class AlarmMsgFragment extends Fragment {
         return view;
     }
 
-    public void initData(){
+    public void initData() {
+        //播放视频
+        //MediaDialog dialog = new MediaDialog(getContext(), "https://vjs.zencdn.net/v/oceans.mp4", false, R.style.mDialog);
+        //dialog.show();
     }
 
     @Override

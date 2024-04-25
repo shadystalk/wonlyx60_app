@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.blankj.utilcode.util.ToastUtils;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.HttpHeaders;
@@ -95,7 +96,7 @@ public class BindFragment extends Fragment {
                     bindNum.setText(infoBean.getData().getPhone());
                     bindVisi(true);
                 }else{
-                    Toast.makeText(getContext(),infoBean.getMsg(),Toast.LENGTH_LONG).show();
+                    ToastUtils.showLong(infoBean.getMsg());
                 }
             }
         });

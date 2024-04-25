@@ -375,7 +375,6 @@ public class SystemSettingFragment extends Fragment {
         //最小音量
         int minVolume = VolumeUtils.getMinVolume(STREAM_MUSIC);
 
-        Log.e("音量", currentVolume + "--" + maxVolume + "--" + minVolume);
         int level = maxVolume / 3;
         if (currentVolume == minVolume) {
             volumeGroup.check(R.id.silent_rb);
