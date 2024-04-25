@@ -1,7 +1,10 @@
 package com.wl.wlflatproject.Fragment;
 
 import static android.media.AudioManager.STREAM_MUSIC;
+import static com.wl.wlflatproject.Constant.Constant.RINGTONES_KEY;
 
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,12 +16,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.BrightnessUtils;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.VolumeUtils;
+import com.wl.wlflatproject.Constant.Constant;
+import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.R;
 
 import butterknife.BindView;
@@ -41,6 +47,10 @@ public class SystemSettingFragment extends Fragment {
     RadioGroup timeGroup;
     @BindView(R.id.volume_radio_group)
     RadioGroup volumeGroup;
+    @BindView(R.id.ringtones_radio_group)
+    RadioGroup ringtonesGroup;
+
+    MediaPlayer mediaPlayer;
 
     @Nullable
     @Override
@@ -178,10 +188,63 @@ public class SystemSettingFragment extends Fragment {
      * 铃声初始化
      */
     private void initRingtones() {
+        mediaPlayer = new MediaPlayer();
+        // 创建 AudioAttributes 对象，并设置音频属性
+        AudioAttributes audioAttributes = new AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC) // 设置音频内容类型为音乐
+                .setUsage(AudioAttributes.USAGE_MEDIA) // 设置音频用途为媒体播放
+                .build();
+        mediaPlayer.setAudioAttributes(audioAttributes);
 
-
+        int select = SPUtil.getInstance(getContext()).getSettingParam(RINGTONES_KEY, 0);
+        switch (select) {
+            case 0:
+                ringtonesGroup.check(R.id.ringtones_rb);
+                break;
+            case 1:
+                ringtonesGroup.check(R.id.ringtones1_rb);
+                break;
+            case 2:
+                ringtonesGroup.check(R.id.ringtones2_rb);
+                break;
+        }
+        ringtonesGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            switch (checkedId) {
+                case R.id.ringtones_rb:
+                    SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 0);
+                    playAudio(Constant.RINGTONES_RES[0]);
+                    break;
+                case R.id.ringtones1_rb:
+                    SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 1);
+                    playAudio(Constant.RINGTONES_RES[1]);
+                    break;
+                case R.id.ringtones2_rb:
+                    SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 2);
+                    playAudio(Constant.RINGTONES_RES[2]);
+                    break;
+            }
+        });
     }
 
+    private void playAudio(@RawRes int audioResId) {
+        try {
+            mediaPlayer.reset();
+            mediaPlayer.setDataSource(getResources().openRawResourceFd(audioResId));
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
 
     @Override
     public void onDestroyView() {

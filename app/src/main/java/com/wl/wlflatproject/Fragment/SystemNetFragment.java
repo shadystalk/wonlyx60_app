@@ -1,6 +1,5 @@
 package com.wl.wlflatproject.Fragment;
 
-import static com.blankj.utilcode.util.NetworkUtils.NetworkType.NETWORK_NO;
 import static com.blankj.utilcode.util.NetworkUtils.getWifiEnabled;
 
 import android.annotation.SuppressLint;
@@ -16,8 +15,8 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,24 +33,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
-import com.blankj.utilcode.util.ToastUtils;
-import com.blankj.utilcode.util.Utils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.core.BasePopupView;
 import com.wl.wlflatproject.Adapter.WifiAdapter;
-import com.wl.wlflatproject.Bean.AccessPoint;
 import com.wl.wlflatproject.MView.AlarmPopup;
 import com.wl.wlflatproject.MView.WifiInfoPopup;
 import com.wl.wlflatproject.MView.WifiInputPopup;
 import com.wl.wlflatproject.R;
-import com.yanzhenjie.permission.AndPermission;
-import com.yanzhenjie.permission.runtime.Permission;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindView;
@@ -64,7 +56,7 @@ import butterknife.Unbinder;
  * 网络设置
  */
 @SuppressLint("MissingPermission")
-public class SystemNetFragment extends Fragment implements Utils.Consumer<NetworkUtils.WifiScanResults>, BaseQuickAdapter.OnItemClickListener {
+public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnItemClickListener {
     private Unbinder unbinder;
 
     @BindView(R.id.wifi_list)
@@ -106,16 +98,22 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
     private WifiAdapter wifiAdapter;
 
     private WifiManager wifiManager;
-    private AlarmPopup alarmPopup;
     private BasePopupView basePopup;
 
+    private Context mContext;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.sys_net_fragment, container, false);
         unbinder = ButterKnife.bind(this, view);
-        wifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         initView();
         return view;
     }
@@ -129,7 +127,7 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
         }
         wifiAdapter = new WifiAdapter(new ArrayList<>());
         wifiAdapter.setOnItemClickListener(this);
-        wifiRv.setLayoutManager(new LinearLayoutManager(getContext()));
+        wifiRv.setLayoutManager(new LinearLayoutManager(mContext));
         wifiRv.setAdapter(wifiAdapter);
 
 
@@ -147,9 +145,15 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
             }
         });
 
-        NetworkUtils.addOnWifiChangedConsumer(this);
         sendReceiver();
     }
+
+//    @OnLongClick(R.id.net_settings)
+//    public boolean onLongClick(View view) {
+//        //系统网络设置
+//        NetworkUtils.openWirelessSettings();
+//        return false;
+//    }
 
 
     @OnClick({R.id.wifi_list_refresh, R.id.wifi_info_iv})
@@ -161,11 +165,10 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
                 break;
             case R.id.wifi_info_iv:
                 //WiFi信息
-                new XPopup.Builder(getContext())
+                new XPopup.Builder(mContext)
                         .dismissOnTouchOutside(true)
-                        .asCustom(new WifiInfoPopup(getContext(), wifiManager.getConnectionInfo(), mCapabilities, ssid -> {
+                        .asCustom(new WifiInfoPopup(mContext, wifiManager.getConnectionInfo(), mCapabilities, ssid -> {
                             boolean remove = forgetWifiNetwork(removeQuotes(ssid));
-                            ToastUtils.showLong(remove + "");
                             wifiManager.disconnect();
 //                            forgetNetwork(wifiManager, wifiManager.getConnectionInfo().getNetworkId());
                             mCurrentWifiCl.setVisibility(View.GONE);
@@ -180,22 +183,18 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
      * 更新WiFi列表
      */
     private void updateWifiList() {
+        wifiManager.startScan();
         refreshView(true);
-        NetworkUtils.WifiScanResults results = NetworkUtils.getWifiScanResult();
-        List<ScanResult> list = results.getFilterResults();
-        WifiInfo info = wifiManager.getConnectionInfo();
-        //WiFi列表移除当前连接的WiFi
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).SSID.equals(removeQuotes(info.getSSID()))) {
-                list.remove(i);
-                break;
-            }
-        }
-        if (wifiAdapter != null) {
-            wifiAdapter.setNewData(list);
-        }
-        refreshView(false);
     }
+
+    Handler handler = new Handler(msg -> {
+        if (msg.what == 1001) {
+            wifiRefreshPb.setVisibility(View.GONE);
+            wifiRefreshView.setVisibility(View.VISIBLE);
+        }
+        return false;
+    });
+
 
     /**
      * 刷新时显示视图
@@ -203,35 +202,24 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
      * @param isRefresh
      */
     private void refreshView(boolean isRefresh) {
-        Log.e("refreshView", isRefresh + "");
-        wifiRefreshPb.setVisibility(isRefresh ? View.VISIBLE : View.GONE);
-        wifiRefreshView.setVisibility(isRefresh ? View.GONE : View.VISIBLE);
+        if (!isRefresh) {
+            //延迟关闭
+            handler.sendEmptyMessageDelayed(1001, 2000);
+        } else {
+            wifiRefreshPb.setVisibility(View.VISIBLE);
+            wifiRefreshView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onDestroyView() {
         unbinder.unbind();
-        NetworkUtils.removeOnWifiChangedConsumer(this);
         stopReceiver();
+        handler.removeCallbacksAndMessages(null);
         super.onDestroyView();
     }
 
     private String mCapabilities = "[WPA2-PSK-CCMP][ESS][WPS]";
-
-    @Override
-    public void accept(NetworkUtils.WifiScanResults wifiScanResults) {
-        List<ScanResult> list = wifiScanResults.getFilterResults();
-        WifiInfo info = wifiManager.getConnectionInfo();
-        //WiFi列表移除当前连接的WiFi
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).SSID.equals(removeQuotes(info.getSSID()))) {
-                mCapabilities = list.get(i).capabilities;
-                list.remove(i);
-                break;
-            }
-        }
-        wifiAdapter.setNewData(list);
-    }
 
     @Override
     public void onItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
@@ -245,7 +233,7 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
         } else {
             if (isSecured(scanResult)) {
                 //弹窗输入密码
-                new XPopup.Builder(getContext()).asCustom(new WifiInputPopup(getContext(), scanResult, (mScanResult, inputString) -> {
+                new XPopup.Builder(mContext).asCustom(new WifiInputPopup(mContext, scanResult, (mScanResult, inputString) -> {
                     connectToWifi(mScanResult, inputString);
                     wifiAdapter.getData().remove(mScanResult);
                 })).show();
@@ -306,12 +294,12 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
         filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         wifiStateReceiver = new WifiStateReceiver();
-        getContext().registerReceiver(wifiStateReceiver, filter);
+        mContext.registerReceiver(wifiStateReceiver, filter);
     }
 
     private void stopReceiver() {
         if (wifiStateReceiver != null) {
-            getContext().unregisterReceiver(wifiStateReceiver);
+            mContext.unregisterReceiver(wifiStateReceiver);
             wifiStateReceiver = null;
         }
     }
@@ -322,9 +310,7 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
     private class WifiStateReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            WifiInfo wifiInfo1 = wifiManager.getConnectionInfo();
             if (intent.getAction() != null) {
-                LogUtils.e(intent.getAction() + "---" + wifiInfo1.getSSID());
                 switch (intent.getAction()) {
                     case ConnectivityManager.CONNECTIVITY_ACTION:
                         // 这个监听网络连接的设置，包括wifi和移动数据的打开和关闭。.
@@ -337,6 +323,7 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
                     case WifiManager.SCAN_RESULTS_AVAILABLE_ACTION:
                     case "android.net.wifi.CONFIGURED_NETWORKS_CHANGE":
                     case "android.net.wifi.LINK_CONFIGURATION_CHANGED":
+                        scanWifiResult(wifiManager.getScanResults());
                         break;
                     case WifiManager.NETWORK_STATE_CHANGED_ACTION:
                         updateWifiConnection();
@@ -347,9 +334,9 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
                         if (state == SupplicantState.ASSOCIATING && supplicantError == WifiManager.ERROR_AUTHENTICATING) {
                             // 密码错误
                             if (basePopup == null || basePopup.isDismiss()) {
-                                basePopup = new XPopup.Builder(getContext())
+                                basePopup = new XPopup.Builder(mContext)
                                         .dismissOnTouchOutside(false)
-                                        .asCustom(new AlarmPopup(getContext(), "密码错误", "知道了"));
+                                        .asCustom(new AlarmPopup(mContext, "密码错误", "知道了"));
                                 basePopup.show();
                             }
                             forgetWifiNetwork(wifiManager.getConnectionInfo().getSSID());
@@ -407,9 +394,29 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
         return result;
     }
 
+    /**
+     * wifi正在连接
+     */
     private void wifiConnecting() {
         linksPb.setVisibility(View.VISIBLE);
         mConnectIcon.setVisibility(View.GONE);
+    }
+
+    private synchronized void scanWifiResult(List<ScanResult> results) {
+        WifiInfo info = wifiManager.getConnectionInfo();
+        //WiFi列表移除当前连接的WiFi
+        Iterator<ScanResult> resultIterator = results.iterator();
+        while (resultIterator.hasNext()) {
+            ScanResult result = resultIterator.next();
+            if (TextUtils.isEmpty(result.SSID)) {
+                resultIterator.remove();
+            } else if (result.SSID.equals(removeQuotes(info.getSSID()))) {
+                mCapabilities = result.capabilities;
+                resultIterator.remove();
+            }
+        }
+        wifiAdapter.setNewData(results);
+        refreshView(false);
     }
 
     private void updateWifiConnection() {
@@ -422,12 +429,12 @@ public class SystemNetFragment extends Fragment implements Utils.Consumer<Networ
                 mCurrentWifiCl.setVisibility(View.VISIBLE);
                 mWifiName.setText(removeQuotes(wifiInfo.getSSID()));
 
-                if ((wifiInfo.getIpAddress() == 0) && (isNetworkAvailable(getContext()) == 2)) {
+                if ((wifiInfo.getIpAddress() == 0) && (isNetworkAvailable(mContext) == 2)) {
                     //正在连接
                     linksPb.setVisibility(View.VISIBLE);
                     mConnectIcon.setVisibility(View.GONE);
                 } else {
-                    if (isNetworkAvailable(getContext()) == 2) {
+                    if (isNetworkAvailable(mContext) == 2) {
                         //已连接
                         mConnectIcon.setVisibility(View.VISIBLE);
                         linksPb.setVisibility(View.GONE);

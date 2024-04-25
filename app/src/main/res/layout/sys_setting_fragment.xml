@@ -25,7 +25,6 @@
         android:text="高级设置"
         android:textColor="@color/white_tran50"
         android:textSize="24sp"
-        android:visibility="gone"
         app:layout_constraintStart_toEndOf="@id/general_settings"
         app:layout_constraintTop_toTopOf="parent" />
 

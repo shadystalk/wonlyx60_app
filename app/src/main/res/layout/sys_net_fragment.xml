@@ -20,6 +20,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/net_settings">
@@ -32,7 +33,7 @@
                 android:id="@+id/net_wifi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 android:text="无线网络"
                 android:textColor="@color/c_f9"
                 android:textSize="20sp"
@@ -140,28 +141,30 @@
 
             <ImageView
                 android:id="@+id/wifi_list_refresh"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_marginEnd="10dp"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:padding="10dp"
                 android:src="@mipmap/ic_wifi_refresh"
                 app:layout_constraintBottom_toBottomOf="@id/choose_wifi"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/choose_wifi" />
 
-            <androidx.recyclerview.widget.RecyclerView
+            <com.wl.wlflatproject.MView.ConflictRecyclerView
                 android:id="@+id/wifi_list"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_guide_select"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/choose_wifi" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/wifi_list_group"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
-                app:constraint_referenced_ids="wifi_list,wifi_list_refresh,
-                    choose_wifi,current_wifi_cl" />
+                app:constraint_referenced_ids="current_wifi_cl,choose_wifi,wifi_list,wifi_list_refresh" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
