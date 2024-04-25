@@ -17,14 +17,22 @@
         app:tabGravity="start"
         app:tabIndicatorAnimationMode="elastic"
         app:tabIndicatorFullWidth="false"
-        app:tabIndicatorHeight="1px"
+        app:tabIndicatorHeight="0dp"
         app:tabMaxWidth="160dp"
         app:tabMinWidth="30dp"
         app:tabMode="scrollable"
-        app:tabSelectedTextColor="@color/white"
+        app:tabSelectedTextColor="#e6ffffff"
         app:tabTextAppearance="@style/Device_TextAppearance"
-        app:tabTextColor="#e6ffffff"
+        app:tabTextColor="#80ffffff"
         tools:ignore="MissingClass" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/device_tablayout" />
     <FrameLayout
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
@@ -34,5 +42,5 @@
         android:id="@+id/device_main_framelayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:visibility="visible" />
+        android:visibility="gone" />
 </androidx.constraintlayout.widget.ConstraintLayout>

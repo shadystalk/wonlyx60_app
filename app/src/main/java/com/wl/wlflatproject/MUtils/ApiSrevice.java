@@ -21,7 +21,7 @@ public class ApiSrevice {
     /**
      * 告警消息
      */
-    public static String queryAlarmMsg = baseUrl + "//api/aigang/ten/screen/queryAlarmMsg";
+    public static String queryAlarmMsg = baseUrl + "/api/aigang/ten/screen/queryAlarmMsg";
     public static HttpHeaders getHeads(Context context) {
         String devId = SPUtil.getInstance(context).getSettingParam("devId", "");
         devId="BE:00:00:00:00:00:DB:BE";

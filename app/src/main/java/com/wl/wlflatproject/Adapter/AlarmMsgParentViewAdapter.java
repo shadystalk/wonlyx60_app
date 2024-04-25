@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.R;
 
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
  */
 public class AlarmMsgParentViewAdapter extends RecyclerView.Adapter<AlarmMsgParentViewAdapter.ViewHolder> {
 
-    private List<List<String>> mainListData;
+    private List<AlarmMsgBean.AlarmMsgDataDTO> mainListData;
 
     private Context context;
-    public AlarmMsgParentViewAdapter(Context context, List<List<String>> mainListData) {
+    public AlarmMsgParentViewAdapter(Context context, List<AlarmMsgBean.AlarmMsgDataDTO> mainListData) {
         this.mainListData = mainListData;
         this.context=context;
     }
@@ -36,11 +37,12 @@ public class AlarmMsgParentViewAdapter extends RecyclerView.Adapter<AlarmMsgPare
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         // 获取当前位置的子列表
-        List<String> subListData = mainListData.get(position);
+        AlarmMsgBean.AlarmMsgDataDTO subListData = mainListData.get(position);
+        holder.dateTv.setText(subListData.getShowDate());
         // 设置子RecyclerView的适配器
         LinearLayoutManager layoutManager = new LinearLayoutManager(context);
         holder.subRecyclerView.setLayoutManager(layoutManager);
-        holder.subRecyclerView.setAdapter(new OpenRecordChildViewAdapter(subListData));
+        holder.subRecyclerView.setAdapter(new AlarmMsgChildViewAdapter(subListData.getAlarmMsgList()));
     }
 
     @Override
