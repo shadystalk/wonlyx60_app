@@ -27,8 +27,8 @@ public class AlarmMsgChildViewAdapter extends RecyclerView.Adapter<AlarmMsgChild
     /**
      * 告警消息列表
      */
-    private List<AlarmMsgBean.AlarmMsgDataDTO.AlarmMsgListDTO> subListData;
-    private Context context;
+    private final List<AlarmMsgBean.AlarmMsgDataDTO.AlarmMsgListDTO> subListData;
+    private final Context context;
 
     public AlarmMsgChildViewAdapter(Context context,List<AlarmMsgBean.AlarmMsgDataDTO.AlarmMsgListDTO> subListData) {
         this.context=context;
