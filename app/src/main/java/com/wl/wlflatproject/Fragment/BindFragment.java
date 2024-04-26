@@ -58,7 +58,6 @@ public class BindFragment extends Fragment {
     public void initData() {
         EventBus.getDefault().register(this);
         devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
-        devId="BE:00:00:00:00:00:DB:BE ";
         String devType = SPUtil.getInstance(getContext()).getSettingParam("devType", "");
         Bitmap code = DpUtils.getTowCode(getContext(), devType + "-" + devId);
         codeView.setImageBitmap(code);
@@ -85,7 +84,7 @@ public class BindFragment extends Fragment {
                     bindNum.setText(infoBean.getData().getPhone());
                     bindVisi(true);
                 }else{
-                    ToastUtils.showLong(infoBean.getMsg());
+
                 }
             }
         });

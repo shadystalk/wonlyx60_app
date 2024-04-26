@@ -69,25 +69,25 @@ public class OpenMachineFragment extends Fragment {
         @Override
         public void handleMessage(Message msg) {
             OpenMachineFragment fragment = (OpenMachineFragment) mFragment.get();
-            if (fragment != null) {
+            if (fragment != null &&fragment.dataListener!=null) {
                 switch (msg.what) {
                     case 0:
                         fragment.dialogTime.dismiss();
                         Toast.makeText(fragment.getContext(), showString, Toast.LENGTH_LONG).show();
                         break;
-                    case 1:
+                    case 1://开门角度
                         fragment.initOpenDegree();
                         break;
-                    case 2:
+                    case 2://开门等待时间
                         fragment.closeTimeTv.setText(fragment.closeTime);
                         break;
-                    case 3:
+                    case 3://开门速度
                         fragment.initOpenSpeed();
                         break;
-                    case 4:
+                    case 4://关门速度
                         fragment.initCloseSpeed();
                         break;
-                    case 10:
+                    case 10://开门角度修复值
                         fragment.openDegreeRepairTv.setText(fragment.openDegreeRepair);
                         break;
                 }
@@ -117,13 +117,15 @@ public class OpenMachineFragment extends Fragment {
             public void onResult(String value, int flag) {
                 switch (flag) {
                     case 4:
-                        serialPort.sendDate(("+OPENWAITTIME:" + value + "\r\n").getBytes());
                         closeTime = value;
+                        String[] split1 = closeTime.split("秒");
+                        serialPort.sendDate(("+OPENWAITTIME:" + split1[0] + "\r\n").getBytes());
                         closeTimeTv.setText(value);
                         break;
                     case 12:
                         openDegreeRepair = value;
-                        serialPort.sendDate(("+ANGLEREPAIR:" + value + "\r\n").getBytes());
+                        String[] split = openDegreeRepair.split("°");
+                        serialPort.sendDate(("+ANGLEREPAIR:" + split[0] + "\r\n").getBytes());
                         openDegreeRepairTv.setText(value);
                         break;
                 }
@@ -368,8 +370,9 @@ public class OpenMachineFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         unbinder.unbind();
         serialPort.removeListener(dataListener);
+        dataListener=null;
+        super.onDestroy();
     }
 }

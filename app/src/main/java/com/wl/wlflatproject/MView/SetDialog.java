@@ -22,7 +22,7 @@ public class SetDialog extends Dialog {
     private String s3[] = new String[]{"1秒","2秒","3秒", "4秒", "5秒","6秒", "7秒",  "8秒","9秒", "10秒","11秒","12秒","13秒", "14秒", "15秒","16秒",
             "17秒", "18秒","19秒","20秒","21秒", "22秒","13秒", "24秒", "25秒","26秒","27秒", "28秒","29秒", "30秒"};//等待时间
     private String s4[] = new String[]{"1", "2", "3", "4", "5"};//关门力度
-    private String s5[] = new String[]{"1", "2", "3", "4", "5","6"};//设置防夹检测范围
+    private String s5[] = new String[]{"1", "2", "3", "4", "5","6","7","8","9","10"};//设置防夹检测范围
     private TextView name;
     private Button back;
     private Button complete;
