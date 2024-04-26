@@ -9,7 +9,6 @@
         android:id="@+id/device_tablayout"
         android:layout_width="0dp"
         android:layout_height="54dp"
-        android:layout_margin="10dp"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

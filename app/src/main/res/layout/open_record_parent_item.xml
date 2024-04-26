@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:text="今日 周三"
         android:textColor="#99ffffff"
-        android:textSize="12sp"
+        android:textSize="16sp"
         />
     <androidx.recyclerview.widget.RecyclerView
         android:layout_marginTop="8dp"

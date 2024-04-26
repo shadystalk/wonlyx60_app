@@ -15,11 +15,15 @@ import com.wl.wlflatproject.R;
 import java.util.List;
 
 /**
+ * 开门记录一级适配器
  * @Author zhuobaolian
  * @Date 15:15
  */
 public class OpenRecordParentViewAdapter extends RecyclerView.Adapter<OpenRecordParentViewAdapter.ViewHolder> {
 
+    /**
+     * 开门记录数据
+     */
     private List<OpenRecordMsgBean.OpenRecordMsgDataBean> mainListData;
 
     private Context context;
@@ -30,7 +34,6 @@ public class OpenRecordParentViewAdapter extends RecyclerView.Adapter<OpenRecord
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.open_record_parent_item, null, false);
-
         return new ViewHolder(view);
     }
 
@@ -47,7 +50,7 @@ public class OpenRecordParentViewAdapter extends RecyclerView.Adapter<OpenRecord
 
     @Override
     public int getItemCount() {
-        return mainListData.size();
+        return mainListData==null?0:mainListData.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

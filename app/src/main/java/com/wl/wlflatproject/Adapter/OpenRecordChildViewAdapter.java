@@ -9,17 +9,23 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
+import com.wl.wlflatproject.Bean.OpenRecordType;
 import com.wl.wlflatproject.R;
 
 import java.util.List;
 
 /**
+ * 开门记录二级适配器
  * @Author zhuobaolian
  * @Date 15:17
  */
  
 public class OpenRecordChildViewAdapter extends RecyclerView.Adapter<OpenRecordChildViewAdapter.ViewHolder> {
 
+
+    /**
+     * 开门记录二级数据
+     */
     private List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData;
 
     public OpenRecordChildViewAdapter(List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData) {
@@ -40,43 +46,43 @@ public class OpenRecordChildViewAdapter extends RecyclerView.Adapter<OpenRecordC
         holder.timeTv.setText(data.getShowTime());
         holder.titleTv.setText(data.getUnlockDescribe());
         holder.nameTv.setText(data.getUserNote());
+
+        //开锁方式
         switch (data.getUnlockMode()){
-            case 0:
+            case OpenRecordType.DOOR_OPEN:
+            case OpenRecordType.IN_DOOR_OPEN:
+                //门开
                 holder.typeImg.setImageResource(R.mipmap.ic_door_open);
                 break;
-            case 1:
+            case OpenRecordType.PSW_OPEN:
                 //密码
                 holder.typeImg.setImageResource(R.mipmap.ic_psw);
                 break;
-            case 3:
+            case OpenRecordType.FINGERPRINT_OPEN:
                 //指纹
                 holder.typeImg.setImageResource(R.mipmap.ic_fingerprint);
                 break;
-            case 5:
+            case OpenRecordType.FACE_OPEN:
                 //人脸
                 holder.typeImg.setImageResource(R.mipmap.ic_face);
                 break;
-            case 12:
+            case OpenRecordType.SENSING_OPEN:
                 //遥感
                 holder.typeImg.setImageResource(R.mipmap.ic_sensing);
                 break;
-            case 13:
-                //门内
-                holder.typeImg.setImageResource(R.mipmap.ic_door_open);
-                break;
-            case 14:
+            case OpenRecordType.REMOTE_OPEN:
                 //远程
                 holder.typeImg.setImageResource(R.mipmap.ic_remote);
                 break;
-            case 15:
+            case OpenRecordType.COERCION_PSW_OPEN:
                 //胁迫密码
                 holder.typeImg.setImageResource(R.mipmap.ic_coercion_psw);
                 break;
-            case 16:
+            case OpenRecordType.COERCION_FINGERPRINT_OPEN:
                 //胁迫指纹
                 holder.typeImg.setImageResource(R.mipmap.ic_coercion_fingerprint);
                 break;
-            case 100:
+            case OpenRecordType.DOUBLE_MODE_OPEN:
                 //双人
                 holder.typeImg.setImageResource(R.mipmap.ic_double_mode);
                 break;
@@ -87,7 +93,7 @@ public class OpenRecordChildViewAdapter extends RecyclerView.Adapter<OpenRecordC
 
     @Override
     public int getItemCount() {
-        return subListData.size();
+        return subListData==null?0:subListData.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

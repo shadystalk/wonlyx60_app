@@ -17,27 +17,29 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Adapter.OpenRecordParentViewAdapter;
-import com.wl.wlflatproject.Bean.InfoBean;
 import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.R;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/**
+ * 开门记录页面
+ *  * @Author zhuobaolian
+ *  * @Date 15:17
+ */
 public class OpenRecordFragment extends Fragment {
     @BindView(R.id.recycler_view_open_record)
     RecyclerView msgRecyclerView;
     private Unbinder unbinder;
-
+    private final static int SUCCESS_CODE=200;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,30 +50,33 @@ public class OpenRecordFragment extends Fragment {
     }
 
 
+    /**
+     * 请求开门记录数据
+     */
     public void initData() {
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("vendorName", "wja");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+        e.printStackTrace();
         }
         OkGo.<String>post(ApiSrevice.queryUnlockRecord).headers(ApiSrevice.getHeads(getContext())).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 if(msgRecyclerView==null){
+                    //拿到结果的时候，页面可能已经销毁了，
                     return;
                 }
                 String s = response.body();
-
-                Log.e("XXXXXX", "onSuccess==" + s);
                 OpenRecordMsgBean infoBean = GsonUtils.GsonToBean(s, OpenRecordMsgBean.class);
-                if (infoBean.getCode() == 200 && infoBean.getData() != null) {
+                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
+                    //请求成功、解析数据
                     List<OpenRecordMsgBean.OpenRecordMsgDataBean> data = infoBean.getData();
                     if (data != null) {
                         // 创建主RecyclerView的适配器
                         OpenRecordParentViewAdapter adapter = new OpenRecordParentViewAdapter(getActivity(), data);
 
-                        // 设置主RecyclerView的布局管理器
+                        // 设置主RecyclerView的布局管理器，这里是为了保证二级的recycleView能够正常展示
                         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
                             @Override
                             public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -92,7 +97,7 @@ public class OpenRecordFragment extends Fragment {
 
             @Override
             public void onError(Response<String> response) {
-                Log.e("XXXXXX", "onError==" + response.body());
+                Toast.makeText(getContext(), "数据请求失败，请稍后再试", Toast.LENGTH_SHORT).show();
                 super.onError(response);
             }
         });

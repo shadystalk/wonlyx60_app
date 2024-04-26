@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_marginTop="1dp"
     android:layout_width="match_parent"
-    android:layout_height="51dp"
+    android:layout_height="54dp"
     android:background="@drawable/shape_radius_3_232324">
 
 
@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="#ffffffff"
-        android:textSize="12sp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="远程开锁" />
@@ -29,14 +29,15 @@
         android:layout_height="wrap_content"
         tools:text="19:20"
         android:textColor="#99ffffff"
-        android:textSize="10sp"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tv_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
     <ImageView
+        android:padding="10dp"
         android:src="@mipmap/ic_video"
         android:id="@+id/img_video"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -45,9 +46,10 @@
         />
 
     <ImageView
+        android:padding="10dp"
         android:src="@mipmap/ic_open_pic"
         android:id="@+id/img_pic"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintEnd_toStartOf="@+id/img_video"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"

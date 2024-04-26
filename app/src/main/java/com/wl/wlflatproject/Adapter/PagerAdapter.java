@@ -2,22 +2,17 @@ package com.wl.wlflatproject.Adapter;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-
-import com.wl.wlflatproject.Fragment.AlarmMsgFragment;
-import com.wl.wlflatproject.Fragment.OpenRecordFragment;
-
-/**
- * @Author zhuobaolian
- * @Date 17:23
- */
 import androidx.annotation.NonNull;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * viewPaper搭配fragment的适配器
+ * @Author zhuobaolian
+ * @Date 17:23
+ */
 public class PagerAdapter extends FragmentStateAdapter {
 
     private final List<Fragment> fragmentList = new ArrayList<>();
@@ -41,6 +36,9 @@ public class PagerAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
+        if(fragmentList==null){
+            return 0;
+        }
         return fragmentList.size();
     }
 }
