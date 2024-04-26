@@ -47,6 +47,10 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private SettingGuideAdapter mGuideAdapter;
     private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务"};
+    /**
+     * tag默认key
+     */
+    public static final String POSITION_PARAM_KEY = "POSITION";
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
@@ -69,7 +73,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
 
     private void initData() {
-        tabPosition = getIntent().getIntExtra("POSITION", 0);
+        tabPosition = getIntent().getIntExtra(POSITION_PARAM_KEY, 0);
         List<SettingGuideAdapter.GuideBean> guideList = new ArrayList<>();
         for (int i = 0; i < title.length; i++) {
             SettingGuideAdapter.GuideBean guideBean = new SettingGuideAdapter.GuideBean(titleIcon[i], title[i]);
@@ -86,7 +90,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         }
         guideRv.setAdapter(mGuideAdapter);
         guideRv.setLayoutManager(new LinearLayoutManager(this));
-
+        //设置默认打开的tag
         switchFragment(tabPosition);
     }
 
@@ -103,6 +107,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     @Override
     protected void onResume() {
         super.onResume();
+        //注册时间变化广播
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_TIME_CHANGED);
         filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
@@ -113,6 +118,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     @Override
     protected void onPause() {
         super.onPause();
+        //广播解绑
         unregisterReceiver(timeReceiver);
     }
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -35,6 +36,8 @@ import butterknife.Unbinder;
 public class AlarmMsgFragment extends Fragment {
     @BindView(R.id.recycler_view_alarm_msg)
     RecyclerView alarmMsgRy;
+    @BindView(R.id.tv_empty)
+    TextView emptyTv;
     private Unbinder unbinder;
     private final static int SUCCESS_CODE=200;
 
@@ -70,22 +73,28 @@ public class AlarmMsgFragment extends Fragment {
                 if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
-                        // 创建主RecyclerView的适配器
-                        AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(getActivity(), data);
+                        if(data.size()!=0) {
+                            // 创建主RecyclerView的适配器
+                            AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(getActivity(), data);
 
-                        // 设置主RecyclerView的布局管理器,这里是为了保证二级的recycleView能够正常展示
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
-                            @Override
-                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-                                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            }
-                        };
-                        layoutManager.setAutoMeasureEnabled(true);
-                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        alarmMsgRy.setLayoutManager(layoutManager);
-
-                        // 设置主RecyclerView的适配器
-                        alarmMsgRy.setAdapter(adapter);
+                            // 设置主RecyclerView的布局管理器,这里是为了保证二级的recycleView能够正常展示
+                            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
+                                @Override
+                                public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                                    return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                }
+                            };
+                            layoutManager.setAutoMeasureEnabled(true);
+                            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                            alarmMsgRy.setLayoutManager(layoutManager);
+                            emptyTv.setVisibility(View.GONE);
+                            // 设置主RecyclerView的适配器
+                            alarmMsgRy.setAdapter(adapter);
+                        }else {
+                            emptyTv.setVisibility(View.VISIBLE);
+                        }
+                    }else {
+                        emptyTv.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();

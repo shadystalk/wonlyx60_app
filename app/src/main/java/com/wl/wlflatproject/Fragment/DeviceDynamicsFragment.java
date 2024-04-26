@@ -1,25 +1,17 @@
 package com.wl.wlflatproject.Fragment;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.wl.wlflatproject.Adapter.PagerAdapter;
-import com.wl.wlflatproject.MUtils.DpUtils;
-import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.R;
 
 import butterknife.BindView;
@@ -37,6 +29,7 @@ public class DeviceDynamicsFragment extends Fragment {
     @BindView(R.id.view_pager)
     ViewPager2 viewPager;
 
+    private final static String[] FRAGMENT_TITLE={"开门记录","告警消息"};
     private Unbinder unbinder;
     @Nullable
     @Override
@@ -44,9 +37,9 @@ public class DeviceDynamicsFragment extends Fragment {
         View view = inflater.inflate(R.layout.device_dynamic_fragment, container, false);
         unbinder = ButterKnife.bind(this, view);
         TabLayout.Tab tab = tabLayout.newTab();
-        tabLayout.addTab(tab.setText("开门记录"));
+        tabLayout.addTab(tab.setText(FRAGMENT_TITLE[0]));
         tab = tabLayout.newTab();
-        tabLayout.addTab(tab.setText("告警消息"));
+        tabLayout.addTab(tab.setText(FRAGMENT_TITLE[1]));
 
         // 创建适配器
         PagerAdapter adapter = new PagerAdapter(getActivity());

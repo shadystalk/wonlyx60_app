@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,13 +25,14 @@ public class OpenRecordParentViewAdapter extends RecyclerView.Adapter<OpenRecord
     /**
      * 开门记录数据
      */
-    private List<OpenRecordMsgBean.OpenRecordMsgDataBean> mainListData;
+    private final List<OpenRecordMsgBean.OpenRecordMsgDataBean> mainListData;
 
-    private Context context;
+    private final Context context;
     public OpenRecordParentViewAdapter(Context context,List<OpenRecordMsgBean.OpenRecordMsgDataBean> mainListData) {
         this.mainListData = mainListData;
         this.context=context;
     }
+    @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.open_record_parent_item, null, false);

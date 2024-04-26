@@ -26,7 +26,7 @@ public class OpenRecordChildViewAdapter extends RecyclerView.Adapter<OpenRecordC
     /**
      * 开门记录二级数据
      */
-    private List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData;
+    private final List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData;
 
     public OpenRecordChildViewAdapter(List<OpenRecordMsgBean.OpenRecordMsgDataBean.UnlockMsgListDTO> subListData) {
         this.subListData = subListData;
