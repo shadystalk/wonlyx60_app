@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,8 @@ import butterknife.Unbinder;
 public class OpenRecordFragment extends Fragment {
     @BindView(R.id.recycler_view_open_record)
     RecyclerView msgRecyclerView;
+    @BindView(R.id.tv_empty)
+    TextView emptyTv;
     private Unbinder unbinder;
     private final static int SUCCESS_CODE=200;
     @Nullable
@@ -73,22 +76,29 @@ public class OpenRecordFragment extends Fragment {
                     //请求成功、解析数据
                     List<OpenRecordMsgBean.OpenRecordMsgDataBean> data = infoBean.getData();
                     if (data != null) {
-                        // 创建主RecyclerView的适配器
-                        OpenRecordParentViewAdapter adapter = new OpenRecordParentViewAdapter(getActivity(), data);
+                        if(data.size()!=0){
+                            emptyTv.setVisibility(View.GONE);
+                            // 创建主RecyclerView的适配器
+                            OpenRecordParentViewAdapter adapter = new OpenRecordParentViewAdapter(getActivity(), data);
 
-                        // 设置主RecyclerView的布局管理器，这里是为了保证二级的recycleView能够正常展示
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
-                            @Override
-                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-                                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            }
-                        };
-                        layoutManager.setAutoMeasureEnabled(true);
-                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        msgRecyclerView.setLayoutManager(layoutManager);
+                            // 设置主RecyclerView的布局管理器，这里是为了保证二级的recycleView能够正常展示
+                            LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
+                                @Override
+                                public RecyclerView.LayoutParams generateDefaultLayoutParams() {
+                                    return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                }
+                            };
+                            layoutManager.setAutoMeasureEnabled(true);
+                            layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                            msgRecyclerView.setLayoutManager(layoutManager);
 
-                        // 设置主RecyclerView的适配器
-                        msgRecyclerView.setAdapter(adapter);
+                            // 设置主RecyclerView的适配器
+                            msgRecyclerView.setAdapter(adapter);
+                        }else {
+                            emptyTv.setVisibility(View.VISIBLE);
+                        }
+                    }else {
+                        emptyTv.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
