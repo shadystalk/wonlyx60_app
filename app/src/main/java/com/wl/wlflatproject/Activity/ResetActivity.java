@@ -11,8 +11,6 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.wl.wlflatproject.Bean.ConnectBean;
 import com.wl.wlflatproject.Bean.MainMsgBean;
-import com.wl.wlflatproject.MUtils.DeviceUtils;
-import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 import org.greenrobot.eventbus.EventBus;

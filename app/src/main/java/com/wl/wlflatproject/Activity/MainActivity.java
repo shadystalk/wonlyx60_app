@@ -95,7 +95,6 @@ import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;

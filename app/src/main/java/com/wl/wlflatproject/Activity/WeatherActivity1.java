@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.wl.wlflatproject.MUtils.LocationUtils;
 import com.wl.wlflatproject.R;
 
 import butterknife.BindView;

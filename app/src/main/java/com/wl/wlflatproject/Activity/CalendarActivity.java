@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ScrollView;
@@ -20,13 +18,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.haibin.calendarview.Calendar;
 import com.haibin.calendarview.CalendarView;
 import com.wl.wlflatproject.Bean.CalendarParam;
-import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.MUtils.LunarUtils;
 import com.wl.wlflatproject.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 public class CalendarActivity extends AppCompatActivity implements CalendarView.OnCalendarSelectListener {
 

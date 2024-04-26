@@ -1,22 +1,15 @@
 package com.wl.wlflatproject.Activity;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.wl.wlflatproject.Bean.ConnectBean;
 import com.wl.wlflatproject.Bean.MainMsgBean;
-import com.wl.wlflatproject.MUtils.DeviceUtils;
-import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.MUtils.SPUtil;
-import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 
 import org.greenrobot.eventbus.EventBus;

@@ -1,12 +1,9 @@
 package com.wl.wlflatproject.Fragment;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,19 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.blankj.utilcode.util.ScreenUtils;
-import com.qtimes.service.wonly.client.QtimesServiceManager;
-import com.wl.wlflatproject.Activity.MainActivity;
-import com.wl.wlflatproject.Activity.SettingActivity;
-import com.wl.wlflatproject.Bean.MainMsgBean;
-import com.wl.wlflatproject.Bean.SetMsgBean;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
-import com.wl.wlflatproject.MView.CodeDialog;
 import com.wl.wlflatproject.MView.SetDialog;
 import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 
-import org.greenrobot.eventbus.EventBus;
 
 import java.lang.ref.WeakReference;
 
