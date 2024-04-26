@@ -1,5 +1,6 @@
 package com.wl.wlflatproject.Activity;
 
+import static com.wl.wlflatproject.Activity.SettingMainActivity.POSITION_PARAM_KEY;
 import static com.wl.wlflatproject.MUtils.HandlerCode.CAMERA_INIT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.DOWN_LOAD_APK;
 import static com.wl.wlflatproject.MUtils.HandlerCode.GET_DOOR_INFO;
@@ -547,7 +548,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.view_next:
                 intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                intent.putExtra("POSITION",3);
+                intent.putExtra(POSITION_PARAM_KEY,3);
                 startActivity(intent);
                 break;
             default:
