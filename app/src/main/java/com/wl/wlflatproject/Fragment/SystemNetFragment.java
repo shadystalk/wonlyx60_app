@@ -282,6 +282,9 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
 
     WifiStateReceiver wifiStateReceiver;
 
+    /**
+     * 注册广播
+     */
     private void sendReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
@@ -295,6 +298,9 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         mContext.registerReceiver(wifiStateReceiver, filter);
     }
 
+    /**
+     * 广播解绑
+     */
     private void stopReceiver() {
         if (wifiStateReceiver != null) {
             mContext.unregisterReceiver(wifiStateReceiver);
@@ -378,7 +384,10 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         }
     }
 
-    // 删除指定 SSID 的 WiFi 配置
+    /**
+     * 删除指定 SSID 的 WiFi 配置
+     * （系统应用才生效）
+     */
     public boolean forgetWifiNetwork(String ssid) {
         boolean result = false;
         List<WifiConfiguration> configurations = wifiManager.getConfiguredNetworks();
@@ -400,6 +409,11 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         mConnectIcon.setVisibility(View.GONE);
     }
 
+    /**
+     * 更新Wi-Fi列表
+     *
+     * @param results
+     */
     private synchronized void scanWifiResult(List<ScanResult> results) {
         WifiInfo info = wifiManager.getConnectionInfo();
         //WiFi列表移除当前连接的WiFi
@@ -417,6 +431,9 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         refreshView(false);
     }
 
+    /**
+     * 更新Wi-Fi连接状态
+     */
     private void updateWifiConnection() {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
         if (!TextUtils.isEmpty(wifiInfo.getSSID())) {
@@ -480,7 +497,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
      * @param isVisible 是否可见
      */
     private void wifiGroupVisible(boolean isVisible) {
-        if (!isVisible){
+        if (!isVisible) {
             mCurrentWifiCl.setVisibility(View.GONE);
         }
         mChooseWifi.setVisibility(isVisible ? View.VISIBLE : View.GONE);
