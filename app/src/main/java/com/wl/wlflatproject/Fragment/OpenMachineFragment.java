@@ -86,19 +86,19 @@ public class OpenMachineFragment extends Fragment {
                         fragment.dialogTime.dismiss();
                         Toast.makeText(fragment.getContext(), showString, Toast.LENGTH_LONG).show();
                         break;
-                    case 1:
+                    case 1://开门角度
                         fragment.initOpenDegree();
                         break;
-                    case 2:
+                    case 2://开门等待时间
                         fragment.closeTimeTv.setText(fragment.closeTime);
                         break;
-                    case 3:
+                    case 3://开门速度
                         fragment.initOpenSpeed();
                         break;
-                    case 4:
+                    case 4://关门速度
                         fragment.initCloseSpeed();
                         break;
-                    case 10:
+                    case 10://开门角度修复值
                         fragment.openDegreeRepairTv.setText(fragment.openDegreeRepair);
                         break;
                 }

@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case HEARTBEAT:
+                case HEARTBEAT://心跳包
                     try {
                         if (wifiManager == null)
                             wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -225,11 +225,11 @@ public class MainActivity extends AppCompatActivity {
                         sendEmptyMessageDelayed(0, 60000);
                     }
                     break;
-                case LEAVE:
+                case LEAVE: //有人离开
                     releaseCamera();
                     Log.e("有人离开停止视频", "..");
                     break;
-                case DOWN_LOAD_APK:
+                case DOWN_LOAD_APK://下载apk
                     if (mDownloadDialog != null) {
                         mDownloadDialog.dismiss();
                         mDownloadDialog = null;
@@ -238,15 +238,15 @@ public class MainActivity extends AppCompatActivity {
                     requestPermission();
                     handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
                     break;
-                case TIME:
+                case TIME://时间更新
                     String s = dateUtils.dateFormat6(System.currentTimeMillis());
                     time.setText(s);
                     handler.sendEmptyMessageDelayed(TIME, 1000);
                     break;
-                case GET_DOOR_INFO:
+                case GET_DOOR_INFO://获取开门机信息
                     serialPort.sendDate("+DATATOPAD\r\n".getBytes());
                     break;
-                case PERMISSION:
+                case PERMISSION://请求权限
                     requestPermission();
                     break;
 //                case 15:
@@ -561,7 +561,7 @@ public class MainActivity extends AppCompatActivity {
         //发送端
         rbmq.publishToAMPQ("");
         //接收端
-        String s = id + "_robot";
+        String s = id ;
         rbmq.subscribe(s);
         rbmq.setUpConnectionFactory();
         rbmq.setRbMsgListener(new RbMqUtils.OnRbMsgListener() {
