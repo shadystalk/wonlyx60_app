@@ -82,7 +82,6 @@ import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
-import com.wl.wlflatproject.MUtils.HandlerCode;
 import com.wl.wlflatproject.MUtils.LocationUtils;
 import com.wl.wlflatproject.MUtils.LunarUtils;
 import com.wl.wlflatproject.MUtils.RbMqUtils;
@@ -91,7 +90,6 @@ import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
 import com.wl.wlflatproject.MView.SimpleUVCCameraTextureView;
 import com.wl.wlflatproject.MView.WaitDialogTime;
-import com.wl.wlflatproject.Presenter.WJAPlayPresenter;
 import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
@@ -201,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
     private long lastClickTime;
     private long mWorkerThreadID = -1;
     private Surface mPreviewSurface;
+    private final static int SUCCESS_CODE=200;
     Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
         @Override
@@ -366,21 +365,25 @@ public class MainActivity extends AppCompatActivity {
         }
         initMsgData();
     }
+
+    /**
+     * 请求首页告警消息记录
+     */
     public void initMsgData(){
         JSONObject requestBody = new JSONObject();
         try {
             requestBody.put("vendorName","wja");
+            //最多展示10條
             requestBody.put("pageSize","10");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+          e.printStackTrace();
         }
         OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 String s = response.body();
-
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
-                if (infoBean.getCode() == 200 && infoBean.getData() != null) {
+                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         // 创建主RecyclerView的适配器
@@ -388,13 +391,14 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onBindViewHolder(ViewHolder holder, int position) {
                                 super.onBindViewHolder(holder, position);
+                                //适配器跟设置的设备动态页面是共用的，但是首页这边的有个偏移，特殊处理
                                 ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)  holder.dateTv.getLayoutParams();
                                 layoutParams.leftMargin=10;
                                 holder.dateTv.setLayoutParams(layoutParams);
                             }
                         };
 
-                        // 设置主RecyclerView的布局管理器
+                        // 设置主RecyclerView的布局管理器，这里是为了二级的recycle能够正常展示做的适配
                         LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this) {
                             @Override
                             public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -404,7 +408,6 @@ public class MainActivity extends AppCompatActivity {
                         layoutManager.setAutoMeasureEnabled(true);
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
                         msgRecyclerView.setLayoutManager(layoutManager);
-
                         // 设置主RecyclerView的适配器
                         msgRecyclerView.setAdapter(adapter);
                     }
@@ -415,7 +418,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Response<String> response) {
-                Log.e("XXXXXX","onError=="+response.body());
                 super.onError(response);
             }
         });

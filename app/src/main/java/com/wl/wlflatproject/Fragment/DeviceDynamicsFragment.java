@@ -27,7 +27,9 @@ import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
 /**
- * 设备动态
+ * 设备动态页面
+ *  * @Author zhuobaolian
+ *  * @Date 15:17
  */
 public class DeviceDynamicsFragment extends Fragment {
     @BindView(R.id.device_tablayout)
@@ -54,13 +56,14 @@ public class DeviceDynamicsFragment extends Fragment {
         adapter.addFragment(new AlarmMsgFragment());
         // 设置适配器给 ViewPager
         viewPager.setAdapter(adapter);
+        //预加载
         viewPager.setOffscreenPageLimit(1);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
+                //切换顶部tab的时候 切换fragment
                 int pos = tabLayout.getSelectedTabPosition();
                 viewPager.setCurrentItem(pos);
-//                showFragment();
             }
 
             @Override
@@ -73,17 +76,17 @@ public class DeviceDynamicsFragment extends Fragment {
 
             }
         });
+        //禁止fragment滑动
         viewPager.setUserInputEnabled(false);
-        initData();
         return view;
     }
 
-    public void initData(){
-    }
 
     @Override
     public void onPause() {
         super.onPause();
+        //因为设置页面fragment的替换方式是replace，设备动态里面的两个子fragment用了viewPaper，且pagerAdapter用了FragmentStateAdapter，状态会被保存
+        // 这里是为了解决设置tab来回切换导致状态异常的问题
         viewPager.setCurrentItem(0);
     }
 

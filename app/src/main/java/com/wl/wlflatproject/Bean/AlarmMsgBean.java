@@ -3,13 +3,23 @@ package com.wl.wlflatproject.Bean;
 import java.util.List;
 
 /**
+ * 告警消息实体
  * @Author zhuobaolian
  * @Date 14:47
  */
 public class AlarmMsgBean {
 
+    /**
+     * 状态码 200 成功
+     */
     private int code;
+    /**
+     * 告警消息实际数据
+     */
     private List<AlarmMsgDataDTO> data;
+    /**
+     * 请求失败时候的消息内容
+     */
     private String msg;
     private String note;
 
@@ -48,7 +58,7 @@ public class AlarmMsgBean {
     public static class AlarmMsgDataDTO {
         private List<AlarmMsgListDTO> alarmMsgList;
         private String showDate;
-        private long timestamp;
+        private Long timestamp;
 
         public List<AlarmMsgListDTO> getAlarmMsgList() {
             return alarmMsgList;
@@ -66,15 +76,18 @@ public class AlarmMsgBean {
             this.showDate = showDate;
         }
 
-        public long getTimestamp() {
+        public Long getTimestamp() {
             return timestamp;
         }
 
-        public void setTimestamp(long timestamp) {
+        public void setTimestamp(Long timestamp) {
             this.timestamp = timestamp;
         }
 
         public static class AlarmMsgListDTO {
+            /**
+             * 告警内容
+             */
             private String alarmDescribe;
             private String alarmId;
             private String alarmType;
@@ -83,11 +96,23 @@ public class AlarmMsgBean {
             private String eventId;
             private String imgOrientation;
             private String messageType;
+            /**
+             * 图片地址
+             */
             private String picPath;
+            /**
+             * 日期
+             */
             private String showDate;
+            /**
+             * 时间
+             */
             private String showTime;
             private Long timestamp;
             private String vendorName;
+            /**
+             * 视频地址
+             */
             private String videoPath;
             private String week;
 

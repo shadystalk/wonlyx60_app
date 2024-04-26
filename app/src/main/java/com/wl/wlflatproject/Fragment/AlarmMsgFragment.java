@@ -1,12 +1,9 @@
 package com.wl.wlflatproject.Fragment;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,29 +16,27 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
-import com.wl.wlflatproject.Adapter.OpenRecordParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
-import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
-import com.wl.wlflatproject.MUtils.DpUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
-import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.R;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
 
+/***
+ * 告警消息页面
+ *  @Author zhuobaolian
+ *  * @Date 17:23
+ */
 public class AlarmMsgFragment extends Fragment {
     @BindView(R.id.recycler_view_alarm_msg)
     RecyclerView alarmMsgRy;
     private Unbinder unbinder;
+    private final static int SUCCESS_CODE=200;
 
     @Nullable
     @Override
@@ -52,29 +47,33 @@ public class AlarmMsgFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 请求服务器 获取告警消息记录
+     */
     public void initData(){
         JSONObject requestBody = new JSONObject();
         try {
+            //供应商
             requestBody.put("vendorName","wja");
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+           e.printStackTrace();
         }
         OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(getContext())).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 if(alarmMsgRy==null){
+                    //拿到结果的时候，页面可能已经销毁了，
                     return;
                 }
                 String s = response.body();
-                Log.e("XXXXXX", "onSuccess==" + s);
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
-                if (infoBean.getCode() == 200 && infoBean.getData() != null) {
+                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         // 创建主RecyclerView的适配器
                         AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(getActivity(), data);
 
-                        // 设置主RecyclerView的布局管理器
+                        // 设置主RecyclerView的布局管理器,这里是为了保证二级的recycleView能够正常展示
                         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity()) {
                             @Override
                             public RecyclerView.LayoutParams generateDefaultLayoutParams() {
@@ -95,7 +94,7 @@ public class AlarmMsgFragment extends Fragment {
 
             @Override
             public void onError(Response<String> response) {
-                Log.e("XXXXXX","onError=="+response.body());
+                Toast.makeText(getContext(), "数据请求失败，请稍后再试", Toast.LENGTH_SHORT).show();
                 super.onError(response);
             }
         });

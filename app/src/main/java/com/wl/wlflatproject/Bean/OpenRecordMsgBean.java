@@ -3,6 +3,7 @@ package com.wl.wlflatproject.Bean;
 import java.util.List;
 
 /**
+ * 开始记录实体
  * @Author zhuobaolian
  * @Date 15:23
  */
@@ -76,17 +77,29 @@ public class OpenRecordMsgBean {
         }
 
         public static class UnlockMsgListDTO {
+            /**
+             * 开锁类型
+             */
             private int unlockMode;
             private String date;
             private String deviceId;
             private String imgOrientation;
             private String messageType;
             private String picPath;
+            /**
+             * 日期
+             */
             private String showDate;
+            /**
+             * 时间
+             */
             private String showTime;
             private int timestamp;
             private String unlockDescribe;
             private String unlockId;
+            /**
+             * 用户
+             */
             private String userNote;
             private String vendorName;
             private String videoPath;
