@@ -18,6 +18,7 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Adapter.OpenRecordParentViewAdapter;
 import com.wl.wlflatproject.Bean.OpenRecordMsgBean;
+import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.R;
@@ -41,7 +42,6 @@ public class OpenRecordFragment extends Fragment {
     @BindView(R.id.tv_empty)
     TextView emptyTv;
     private Unbinder unbinder;
-    private final static int SUCCESS_CODE=200;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class OpenRecordFragment extends Fragment {
                 }
                 String s = response.body();
                 OpenRecordMsgBean infoBean = GsonUtils.GsonToBean(s, OpenRecordMsgBean.class);
-                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
+                if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
                     //请求成功、解析数据
                     List<OpenRecordMsgBean.OpenRecordMsgDataBean> data = infoBean.getData();
                     if (data != null) {

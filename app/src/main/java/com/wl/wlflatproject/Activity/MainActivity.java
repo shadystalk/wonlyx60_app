@@ -79,6 +79,7 @@ import com.wl.wlflatproject.Bean.StateBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
+import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
 import com.wl.wlflatproject.MUtils.DateUtils;
@@ -199,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
     private long lastClickTime;
     private long mWorkerThreadID = -1;
     private Surface mPreviewSurface;
-    private final static int SUCCESS_CODE=200;
     Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
         @Override
@@ -383,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(Response<String> response) {
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
-                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
+                if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         // 创建主RecyclerView的适配器

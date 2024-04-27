@@ -11,4 +11,9 @@ public class Constant {
      * 本地铃声集合
      */
     public static final int[] RINGTONES_RES = {R.raw.alarm, R.raw.alarm, R.raw.alarm};
+
+    /**
+     * 服务器请求成功
+     */
+    public final static int SUCCESS_CODE=200;
 }
