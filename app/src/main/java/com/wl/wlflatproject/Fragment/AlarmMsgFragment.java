@@ -98,6 +98,7 @@ public class AlarmMsgFragment extends Fragment {
                     }
                 } else {
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
+                    emptyTv.setVisibility(View.VISIBLE);
                 }
             }
 

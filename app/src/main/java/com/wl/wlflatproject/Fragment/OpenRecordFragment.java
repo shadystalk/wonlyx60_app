@@ -100,6 +100,7 @@ public class OpenRecordFragment extends Fragment {
                         emptyTv.setVisibility(View.VISIBLE);
                     }
                 } else {
+                    emptyTv.setVisibility(View.VISIBLE);
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
