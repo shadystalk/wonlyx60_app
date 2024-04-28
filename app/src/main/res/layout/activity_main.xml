@@ -10,7 +10,7 @@
     android:padding="24dp"
     tools:context=".Activity.MainActivity">
 <LinearLayout
-    android:background="@color/c_1a2531"
+    android:background="@drawable/bg"
     android:id="@+id/ll"
     android:orientation="vertical"
    app:layout_constraintRight_toRightOf="parent"
@@ -29,11 +29,6 @@
         >
 
 
-        <ImageView
-            android:id="@+id/bg"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/bg" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout

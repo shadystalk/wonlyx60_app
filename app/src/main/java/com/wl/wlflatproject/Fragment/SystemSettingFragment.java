@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.BrightnessUtils;
 import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.blankj.utilcode.util.VolumeUtils;
 import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.SPUtil;
@@ -104,7 +105,7 @@ public class SystemSettingFragment extends Fragment {
                 switch (msg.what){
                     case 0:
                         fragment.dialogTime.dismiss();
-                        Toast.makeText(fragment.getContext(),showString,Toast.LENGTH_LONG).show();
+                        ToastUtils.showShort(showString,Toast.LENGTH_LONG);
                         break;
                     case 9:
                         fragment.initOpenPower();

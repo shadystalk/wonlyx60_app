@@ -21,6 +21,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.ScreenUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.wl.wlflatproject.Activity.MainActivity;
 import com.wl.wlflatproject.Activity.SettingActivity;
@@ -84,7 +85,7 @@ public class OpenMachineFragment extends Fragment {
                 switch (msg.what) {
                     case 0:
                         fragment.dialogTime.dismiss();
-                        Toast.makeText(fragment.getContext(), showString, Toast.LENGTH_LONG).show();
+                        ToastUtils.showShort(showString,Toast.LENGTH_LONG);
                         break;
                     case 1://开门角度
                         fragment.initOpenDegree();

@@ -77,6 +77,7 @@ public class BindFragment extends Fragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(InfoBean bean) {
         if(bean.getCode()==1){
+            getInfo();
             bindVisi(true);
         }else{
             bindVisi(false);
