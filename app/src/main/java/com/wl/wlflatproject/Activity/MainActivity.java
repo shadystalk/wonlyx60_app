@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
         filter = DeviceFilter.getDeviceFilters(this,
                 com.serenegiant.uvccamera.R.xml.device_filter);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
-        if (deviceList.size() < 0) {
+        if (deviceList==null||deviceList.size() < 1) {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
         }
         threads = Executors.newFixedThreadPool(4);
@@ -342,9 +342,6 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
-        if (deviceList.size() < 0) {
-            Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
-        }
         funView.postDelayed(() -> {
             int width = funView.getMeasuredWidth();
             int height = funView.getMeasuredHeight();
