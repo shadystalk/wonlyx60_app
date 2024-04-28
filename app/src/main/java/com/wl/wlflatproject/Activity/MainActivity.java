@@ -80,6 +80,7 @@ import com.wl.wlflatproject.Bean.StateBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
+import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
 import com.wl.wlflatproject.MUtils.DateUtils;
@@ -96,7 +97,6 @@ import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
     private long lastClickTime;
     private long mWorkerThreadID = -1;
     private Surface mPreviewSurface;
-    private final static int SUCCESS_CODE=200;
     Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
         @Override
@@ -318,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
         filter = DeviceFilter.getDeviceFilters(this,
                 com.serenegiant.uvccamera.R.xml.device_filter);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
-        if (deviceList.size() < 0) {
+        if (deviceList==null||deviceList.size() < 1) {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
         }
         threads = Executors.newFixedThreadPool(4);
@@ -346,9 +345,6 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
-        if (deviceList.size() < 0) {
-            Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
-        }
         funView.postDelayed(() -> {
             int width = funView.getMeasuredWidth();
             int height = funView.getMeasuredHeight();
@@ -387,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSuccess(Response<String> response) {
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
-                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
+                if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         // 创建主RecyclerView的适配器

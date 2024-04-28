@@ -1,6 +1,5 @@
 package com.wl.wlflatproject.Fragment;
 
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -10,28 +9,20 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.JSONObject;
 import com.blankj.utilcode.util.ToastUtils;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
-import com.lzy.okgo.model.HttpHeaders;
 import com.lzy.okgo.model.Response;
-import com.lzy.okgo.utils.HeaderParser;
 import com.wl.wlflatproject.Bean.InfoBean;
-import com.wl.wlflatproject.Bean.MainMsgBean;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.DpUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.MUtils.SPUtil;
-import com.wl.wlflatproject.MUtils.SerialPortUtil;
-import com.wl.wlflatproject.MUtils.Utils;
 import com.wl.wlflatproject.R;
 
 import org.greenrobot.eventbus.EventBus;
@@ -41,8 +32,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-import okhttp3.Headers;
-
 public class BindFragment extends Fragment {
     @BindView(R.id.code_view)
     ImageView codeView;

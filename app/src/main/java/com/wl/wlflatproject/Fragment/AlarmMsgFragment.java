@@ -18,6 +18,7 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
+import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.R;
@@ -39,7 +40,6 @@ public class AlarmMsgFragment extends Fragment {
     @BindView(R.id.tv_empty)
     TextView emptyTv;
     private Unbinder unbinder;
-    private final static int SUCCESS_CODE=200;
 
     @Nullable
     @Override
@@ -70,7 +70,7 @@ public class AlarmMsgFragment extends Fragment {
                 }
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
-                if (infoBean.getCode() == SUCCESS_CODE && infoBean.getData() != null) {
+                if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         if(data.size()!=0) {
@@ -98,6 +98,7 @@ public class AlarmMsgFragment extends Fragment {
                     }
                 } else {
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
+                    emptyTv.setVisibility(View.VISIBLE);
                 }
             }
 

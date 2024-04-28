@@ -18,8 +18,6 @@ import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.wl.wlflatproject.Bean.MainMsgBean;
 import com.wl.wlflatproject.Bean.SetMsgBean;
 import com.wl.wlflatproject.MUtils.CMDUtils;
-import com.wl.wlflatproject.MUtils.SPUtil;
-import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MView.AfterSalesDialog;
 import com.wl.wlflatproject.MView.NormalDialog;
 import com.wl.wlflatproject.MView.SetDialog;
