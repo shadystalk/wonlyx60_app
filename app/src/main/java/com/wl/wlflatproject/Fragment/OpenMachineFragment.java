@@ -88,7 +88,7 @@ public class OpenMachineFragment extends Fragment {
                     case 4://关门速度
                         fragment.initCloseSpeed();
                         break;
-                    case 10://开门角度修复值
+                    case 17://开门角度修复值
                         fragment.openDegreeRepairTv.setText(fragment.openDegreeRepair);
                         break;
                     default:
@@ -161,9 +161,9 @@ public class OpenMachineFragment extends Fragment {
                                 close_speed = Integer.parseInt(split[1]);
                                 myHandler.sendEmptyMessage(4);
                                 break;
-                            case 10://开门角度修复值
+                            case 17://开门角度修复值
                                 openDegreeRepair = split[1] + "°";
-                                myHandler.sendEmptyMessage(10);
+                                myHandler.sendEmptyMessage(17);
                                 break;
                             default:
                                 break;

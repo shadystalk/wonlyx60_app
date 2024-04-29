@@ -16,8 +16,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
+    <View
         android:id="@+id/back_iv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_width="120dp"
+        android:layout_height="80dp"/>
+    <ImageView
         android:layout_width="66dp"
         android:layout_height="40dp"
         android:paddingStart="14dp"

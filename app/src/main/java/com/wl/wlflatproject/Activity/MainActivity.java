@@ -1,6 +1,7 @@
 package com.wl.wlflatproject.Activity;
 
 import static com.wl.wlflatproject.Activity.SettingMainActivity.POSITION_PARAM_KEY;
+import static com.wl.wlflatproject.Constant.Constant.RINGTONES_KEY;
 import static com.wl.wlflatproject.MUtils.HandlerCode.CAMERA_INIT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.DOWN_LOAD_APK;
 import static com.wl.wlflatproject.MUtils.HandlerCode.GET_DOOR_INFO;
@@ -47,6 +48,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -119,14 +121,8 @@ import butterknife.OnClick;
 import ru.sir.ymodem.YModem;
 
 public class MainActivity extends AppCompatActivity {
-    @BindView(R.id.fun_view)
-    ConstraintLayout funView;
-    @BindView(R.id.view)
-    View view;
     @BindView(R.id.time)
     TextView time;
-    @BindView(R.id.rl)
-    RelativeLayout rl;
     @BindView(R.id.video_play_view)
     SimpleUVCCameraTextureView videoPlayView;
     @BindView(R.id.lock_bt)
@@ -135,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
     LinearLayout videoIv;
     @BindView(R.id.full_screen)
     ConstraintLayout fullScreen;
+    @BindView(R.id.video_play_view_cl)
+    ConstraintLayout videoPlayViewCl;
     @BindView(R.id.location_tv)
     TextView locationTv;
     @BindView(R.id.today_weather_view)
@@ -309,7 +307,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("InvalidWakeLockTag")
     private void initData() {
-        SPUtil.getInstance(MainActivity.this).setSettingParam("devId","");
+        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID,"");
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
         wakeLock.acquire();
@@ -347,9 +345,9 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
-        funView.postDelayed(() -> {
-            int width = funView.getMeasuredWidth();
-            int height = funView.getMeasuredHeight();
+        videoPlayView.postDelayed(() -> {
+            int width = videoPlayView.getMeasuredWidth();
+            int height = videoPlayView.getMeasuredHeight();
             videoPlayView.setAspectRatio(height-10, width);
             ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
             params.width = height;
@@ -359,8 +357,8 @@ public class MainActivity extends AppCompatActivity {
         }, 1000);
         messageEdit.setCursorVisible(false);
         initListener();
-        String messageS=SPUtil.getInstance(MainActivity.this).getSettingParam("message","");
-        String messageDateS=SPUtil.getInstance(MainActivity.this).getSettingParam("message_date","");
+        String messageS=SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE,"");
+        String messageDateS=SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE_DATE,"");
         if(!TextUtils.isEmpty(messageDateS)){
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
@@ -463,8 +461,8 @@ public class MainActivity extends AppCompatActivity {
                 if(messageEdit.getText().toString().length()!=0){
                     String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
                     messageDate.setText(s);
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("message",messageEdit.getText().toString());
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("message_date",s);
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE,messageEdit.getText().toString());
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE,s);
                     if(messageEdit.getText().toString().length()==55){
                         ToastUtils.showShort("字数超限制");
                     }
@@ -476,16 +474,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.close_video, R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt, R.id.fun_view,
+    @OnClick({R.id.close_video, R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt,
             R.id.weather_ll,  R.id.video_iv,R.id.view_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
                  Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
                  startActivity(intent);
-                break;
-            case R.id.fun_view:
-
                 break;
             case R.id.lock_bt://开门
                 dialogTime.show();
@@ -617,227 +612,209 @@ public class MainActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
             @Override
             public void getData(String data) {//串口返回数据
-                if(runnable==null) {
 
-                    runnable = new Runnable() {
+                runOnUiThread(new Runnable() {
 
-                        private SetMsgBean setMsgBean;
+                    private SetMsgBean setMsgBean;
 
-                        @Override
-                        public void run() {
-                            if (data.contains("AT+CDOOR=")) {
-                                String[] split = data.split("=");
-                                switch (split[1]) {
-                                    case "1"://表示故障1
-                                        Toast.makeText(MainActivity.this, "故障1", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "2"://表示故障2
-                                        Toast.makeText(MainActivity.this, "故障2", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "C"://表示故障3
-                                        Toast.makeText(MainActivity.this, "故障3", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "D"://表示故障4
-                                        Toast.makeText(MainActivity.this, "故障4", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "A"://表示报警1
-                                        Toast.makeText(MainActivity.this, "报警1", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "B"://表示报警2
-                                        Toast.makeText(MainActivity.this, "报警2", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "E"://表示假锁状态
-                                        Toast.makeText(MainActivity.this, "假锁", Toast.LENGTH_SHORT).show();
-                                        break;
-                                    case "8"://8表示开门成功
-                                        //mq  通知小管家开门成功  并且关闭视频
-                                        OpenTvBean bean = new OpenTvBean();
-                                        bean.setCmd(0x1009);
-                                        bean.setAck(0);
-                                        bean.setDevType(devType);
-                                        bean.setDevid(id);
-                                        bean.setVendor("general");
-                                        bean.setSeqid(1);
-                                        rbmq.pushMsg(id + "#" + GsonUtils.GsonString(bean));
-                                        if (dialogTime != null && dialogTime.isShowing())
-                                            dialogTime.dismiss();
-                                        ToastUtils.showShort("门已打开");
-                                        break;
-                                    case "9"://表示关门成功
-                                        if (dialogTime != null && dialogTime.isShowing())
-                                            dialogTime.dismiss();
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            } else if (data.contains("AT+DEFAULT=")) {
-                                String[] s = data.split("=");
-                                String[] split = s[1].split(",");
-                                switch (Integer.parseInt(split[0])) {
-                                    case 7://已经常开
-                                        if (changkaiFlag != 2) {
-                                            changkaiFlag = 2;
-                                            changKai.setBackgroundResource(R.drawable.cancel_changkai);
-                                            if (QtimesServiceManager.instance().isServerActive()) {
-                                                QtimesServiceManager.instance().setLongOpenState(true);
-                                            }
+                    @Override
+                    public void run() {
+                        if (data.contains("AT+CDOOR=")) {
+                            String[] split = data.split("=");
+                            switch (split[1]) {
+                                case "1"://表示故障1
+                                    Toast.makeText(MainActivity.this, "故障1", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "2"://表示故障2
+                                    Toast.makeText(MainActivity.this, "故障2", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "C"://表示故障3
+                                    Toast.makeText(MainActivity.this, "故障3", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "D"://表示故障4
+                                    Toast.makeText(MainActivity.this, "故障4", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "A"://表示报警1
+                                    Toast.makeText(MainActivity.this, "报警1", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "B"://表示报警2
+                                    Toast.makeText(MainActivity.this, "报警2", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "E"://表示假锁状态
+                                    Toast.makeText(MainActivity.this, "假锁", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case "8"://8表示开门成功
+                                    //mq  通知小管家开门成功  并且关闭视频
+                                    OpenTvBean bean = new OpenTvBean();
+                                    bean.setCmd(0x1009);
+                                    bean.setAck(0);
+                                    bean.setDevType(devType);
+                                    bean.setDevid(id);
+                                    bean.setVendor("general");
+                                    bean.setSeqid(1);
+                                    rbmq.pushMsg(id + "#" + GsonUtils.GsonString(bean));
+                                    if (dialogTime != null & dialogTime.isShowing())
+                                        dialogTime.dismiss();
+                                    ToastUtils.showShort("门已打开");
+                                    break;
+                                case "9"://表示关门成功
+                                    if (dialogTime != null & dialogTime.isShowing())
+                                        dialogTime.dismiss();
+                            }
+                        } else if (data.contains("AT+DEFAULT=")) {
+                            String[] s = data.split("=");
+                            String[] split = s[1].split(",");
+                            switch (Integer.parseInt(split[0])) {
+                                case 7://已经常开
+                                    if (changkaiFlag != 2) {
+                                        changkaiFlag = 2;
+                                        changKai.setBackgroundResource(R.drawable.cancel_changkai);
+                                        if (QtimesServiceManager.instance().isServerActive()) {
+                                            QtimesServiceManager.instance().setLongOpenState(true);
                                         }
-                                        break;
-                                    case 8://没有开启常开
-                                        if (changkaiFlag != 1) {
-                                            changKai.setBackgroundResource(R.drawable.changkai);
-                                            changkaiFlag = 1;
-                                            if (QtimesServiceManager.instance().isServerActive()) {
-                                                QtimesServiceManager.instance().setLongOpenState(false);
-                                            }
+                                    }
+                                    break;
+                                case 8://没有开启常开
+                                    if (changkaiFlag != 1) {
+                                        changKai.setBackgroundResource(R.drawable.changkai);
+                                        changkaiFlag = 1;
+                                        if (QtimesServiceManager.instance().isServerActive()) {
+                                            QtimesServiceManager.instance().setLongOpenState(false);
                                         }
-                                        break;
-                                    case 13://唯一id1
+                                    }
+                                    break;
+                                case 13://唯一id1
+                                    if(TextUtils.isEmpty(id)){
                                         id = split[1];
                                         bean.setDevId(id);
-                                        SPUtil.getInstance(MainActivity.this).setSettingParam("devId", id);
+                                        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, id);
                                         setMq();
-                                        break;
-                                    case 14://前板版本号
-                                        String fVer = split[1];
-                                        SPUtil.getInstance(MainActivity.this).setSettingParam("fVer", fVer);
-                                        break;
-                                    case 15://后板版本号
-                                        String bVer = split[1];
-                                        SPUtil.getInstance(MainActivity.this).setSettingParam("bVer", bVer);
-                                        break;
-                                    case 16://设备型号
-                                        devType = split[1];
-                                        SPUtil.getInstance(MainActivity.this).setSettingParam("devType", devType);
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
-                                changkaiFlag = 2;
-                                if (dialogTime != null && dialogTime.isShowing())
-                                dialogTime.dismiss();
-                                changKai.setBackgroundResource(R.drawable.cancel_changkai);
-                                ToastUtils.showShort("门已常开");
-                            } else if (data.contains("AT+CLOSEALWAYSOPEN=1")) {//取消常开
-                                changkaiFlag = 1;
-                                if (dialogTime != null && dialogTime.isShowing())
-                                dialogTime.dismiss();
-                                changKai.setBackgroundResource(R.drawable.changkai);
-                                ToastUtils.showShort("门已取消常开");
-                            } else if (data.contains("AT+CDWAKE=1")) {    //有人   但是不打开视频
-                            } else if (data.contains("AT+CDBELL=1")) {   //门铃
-                                Log.e("有人按门铃", "..");
-                                if (deviceList.size() == 0) {
-                                    return;
-                                }
-                                if (!isPlaying) {
-                                    if (!isFastClick()) {
-                                        return;
                                     }
-                                    Set<Integer> set = deviceList.keySet();
-                                    set.iterator().next();
-                                    mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
-                                }
-
-                            } else if (data.contains("AT+CDECT=")) {
-                                String[] split = data.split("=");
-                                if(split.length<2){
+                                    break;
+                                case 14://前板版本号
+                                    String fVer = split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.FVER, fVer);
+                                    break;
+                                case 15://后板版本号
+                                    String bVer = split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.BVER, bVer);
+                                    break;
+                                case 16://设备型号
+                                    devType = split[1];
+                                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVTYPE, devType);
+                                    break;
+                            }
+                        } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
+                            changkaiFlag = 2;
+                            if (dialogTime != null & dialogTime.isShowing()) ;
+                            dialogTime.dismiss();
+                            changKai.setBackgroundResource(R.drawable.cancel_changkai);
+                            ToastUtils.showShort("门已常开");
+                        } else if (data.contains("AT+CLOSEALWAYSOPEN=1")) {//取消常开
+                            changkaiFlag = 1;
+                            if (dialogTime != null & dialogTime.isShowing()) ;
+                            dialogTime.dismiss();
+                            changKai.setBackgroundResource(R.drawable.changkai);
+                            ToastUtils.showShort("门已取消常开");
+                        } else if (data.contains("AT+CDWAKE=1")) {    //有人   但是不打开视频
+                        } else if (data.contains("AT+CDBELL=1")) {   //门铃
+                            Log.e("有人按门铃", "..");
+                            int settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam(RINGTONES_KEY, 0);
+                            playAudio(Constant.RINGTONES_RES[settingParam]);
+                            if (deviceList.size() == 0) {
+                                return;
+                            }
+                            if (!isPlaying) {
+                                if (!isFastClick()) {
                                     return;
                                 }
-                                String[] split1 = split[1].split(",");
-                                if(split1.length<2){
-                                    return;
-                                }
-                                switch (split1[0]) {
-                                    case "0"://表示前板检测到遮挡  门外
-                                        if ("0".equals(split1[1])) {//人离开
+                                Set<Integer> set = deviceList.keySet();
+                                set.iterator().next();
+                                mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
+                            }
 
-                                        } else {//人靠近
-                                            Log.e("检测有人", "..");
-                                            if (deviceList.size() == 0) {
+                        } else if (data.contains("AT+CDECT=")) {
+                            String[] split = data.split("=");
+                            String[] split1 = split[1].split(",");
+                            switch (split1[0]) {
+                                case "0"://表示前板检测到遮挡  门外
+                                    if (split1[1].equals("0")) {//人离开
+
+                                    } else {//人靠近
+                                        Log.e("检测有人", "..");
+                                        if (deviceList.size() == 0) {
+                                            return;
+                                        }
+                                        if (!isPlaying) {
+                                            if (!isFastClick()) {
                                                 return;
                                             }
-                                            if (!isPlaying) {
-                                                if (!isFastClick()) {
-                                                    return;
-                                                }
-                                                Set<Integer> set = deviceList.keySet();
-                                                set.iterator().next();
-                                                mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
-                                            }
+                                            Set<Integer> set = deviceList.keySet();
+                                            set.iterator().next();
+                                            mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
                                         }
-                                        break;
-                                    case "1"://表示后板检测到遮挡 门内
+                                    }
+                                    break;
+                                case "1"://表示后板检测到遮挡 门内
 
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            } else if (data.contains("AT+MIPLNOTIFY=")) {//加密消息上报给服务器
-                                String[] split = data.split(",");
-                                if(split.length==0){
-                                    return;
-                                }
-                                String s = split[split.length - 1];
-                                String[] split1 = s.split("\r\n");
-                                if(split1.length<1){
-                                    return;
-                                }
-                                String s1 = id + "#" + split1[0];
-                                rbmq.pushMsg(s1);
-                                handler.removeMessages(HEARTBEAT);
-                                handler.sendEmptyMessageDelayed(HEARTBEAT, 60000);
-                            } else if (data.contains("AT+CGSN=1")) {//上传id
-                                serialPort.sendDate(("+CGSN:" + id + "\r\n").getBytes());
-                            } else if (data.contains("AT+CGATT?")) {//服务器是否链接
-                                serialPort.sendDate((rbmq.isConnection() + "\r\n").getBytes());
-                            } else if (data.contains("AT+CCLK?")) {//上报时间
-                                serialPort.sendDate(("+CCLK:" + System.currentTimeMillis() + "\r\n").getBytes());
-                            } else if (data.contains("AT+VIDEOSN=")) { //设置摄像头id
-                            } else if (data.contains("AT+WIFISSID=")) { //设置摄像头wifi
-                                Log.e("收到摄像头wifi", "----" + data);
-                                try {
-                                    String[] split = data.split("=");
-                                    videOldWIfi = videoWIfi;
-                                    if (split.length > 1) {
-                                        videoWIfi = split[1];
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            } else if (data.contains("AT+VER=")) { //防夹版本号
-                                String[] split = data.split("=V");
-                                plankVersionCode = Float.parseFloat(split[1]);
-                            } else if (data.contains("AT+REQUESTACK=1")) {
-                                unregisterReceiver(receiver);
-                                handler.removeMessages(HEARTBEAT);
-                                threads.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            Thread.sleep(100);
-                                            if (yModem == null) {
-                                                yModem = new YModem();
-                                            }
-                                            yModem.send(downLoadFile, serialPort);
-                                            EventBus.getDefault().post(new SetMsgBean(CMDUtils.UPDATE_SUCCESS));
-                                        } catch (Exception e) {
-                                            EventBus.getDefault().post(new SetMsgBean(CMDUtils.UPDATE_ERRO));
-                                            Log.e("固件升级抛出错误---", e.toString());
-                                        } finally {
-                                            Log.e("固件升---", "结束");
-                                            handler.sendEmptyMessage(15);
-                                            handler.sendEmptyMessage(HEARTBEAT);
-                                            registerReceiver(receiver, intentFilter);
-                                        }
-                                    }
-                                });
+                                    break;
                             }
+                        } else if (data.contains("AT+MIPLNOTIFY=")) {//加密消息上报给服务器
+                            String[] split = data.split(",");
+                            String s = split[split.length - 1];
+                            String[] split1 = s.split("\r\n");
+                            String s1 = id + "#" + split1[0];
+                            rbmq.pushMsg(s1);
+                            handler.removeMessages(HEARTBEAT);
+                            handler.sendEmptyMessageDelayed(HEARTBEAT, 60000);
+                        } else if (data.contains("AT+CGSN=1")) {//上传id
+                            serialPort.sendDate(("+CGSN:" + id + "\r\n").getBytes());
+                        } else if (data.contains("AT+CGATT?")) {//服务器是否链接
+                            serialPort.sendDate((rbmq.isConnection() + "\r\n").getBytes());
+                        } else if (data.contains("AT+CCLK?")) {//上报时间
+                            serialPort.sendDate(("+CCLK:" + System.currentTimeMillis() + "\r\n").getBytes());
+                        } else if (data.contains("AT+VIDEOSN=")) { //设置摄像头id
+                        } else if (data.contains("AT+WIFISSID=")) { //设置摄像头wifi
+                            Log.e("收到摄像头wifi", "----" + data);
+                            try {
+                                String[] split = data.split("=");
+                                videOldWIfi = videoWIfi;
+                                if (split.length > 1) {
+                                    videoWIfi = split[1];
+                                }
+                            } catch (Exception e) {
+
+                            }
+                        } else if (data.contains("AT+VER=")) { //防夹版本号
+                            String[] split = data.split("=V");
+                            plankVersionCode = Float.parseFloat(split[1]);
+                        } else if (data.contains("AT+REQUESTACK=1")) {
+                            unregisterReceiver(receiver);
+                            handler.removeMessages(HEARTBEAT);
+                            threads.execute(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        Thread.sleep(100);
+                                        if (yModem == null) {
+                                            yModem = new YModem();
+                                        }
+                                        yModem.send(downLoadFile, serialPort);
+                                        EventBus.getDefault().post(new SetMsgBean(CMDUtils.UPDATE_SUCCESS));
+                                    } catch (Exception e) {
+                                        EventBus.getDefault().post(new SetMsgBean(CMDUtils.UPDATE_ERRO));
+                                        Log.e("固件升级抛出错误---", e.toString());
+                                    } finally {
+                                        Log.e("固件升---", "结束");
+                                        handler.sendEmptyMessage(15);
+                                        handler.sendEmptyMessage(HEARTBEAT);
+                                        registerReceiver(receiver, intentFilter);
+                                    }
+                                }
+                            });
                         }
-                    };
-                }
-                runOnUiThread(runnable);
+                    }
+                });
             }
         };
 
@@ -1599,7 +1576,16 @@ public class MainActivity extends AppCompatActivity {
             // ignore
         }
     }
-
+    private void playAudio(@RawRes int audioResId) {
+        try {
+            mediaplayer.reset();
+            mediaplayer.setDataSource(getResources().openRawResourceFd(audioResId));
+            mediaplayer.prepare();
+            mediaplayer.start();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     protected void onStart() {

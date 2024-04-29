@@ -41,7 +41,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     @BindView(R.id.guide_rv)
     RecyclerView guideRv;
     @BindView(R.id.back_iv)
-    ImageView backIv;
+    View backIv;
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
