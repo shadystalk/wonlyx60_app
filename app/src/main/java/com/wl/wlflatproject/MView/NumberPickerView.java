@@ -397,6 +397,8 @@ public class NumberPickerView extends View {
                     case HANDLER_WHAT_LISTENER_VALUE_CHANGED:
                         respondPickedValueChanged(msg.arg1, msg.arg2, msg.obj);
                         break;
+                    default:
+                        break;
                 }
             }
         };
@@ -410,6 +412,8 @@ public class NumberPickerView extends View {
                         break;
                     case HANDLER_WHAT_LISTENER_VALUE_CHANGED:
                         respondPickedValueChanged(msg.arg1, msg.arg2, msg.obj);
+                        break;
+                    default:
                         break;
                 }
             }
@@ -1109,6 +1113,8 @@ public class NumberPickerView extends View {
                 downYGlobal = mCurrDrawGlobalY;
                 stopScrolling();
                 mHandlerInNewThread.sendMessageDelayed(getMsg(HANDLER_WHAT_REFRESH), 0);
+                break;
+            default:
                 break;
         }
         return true;

@@ -17,13 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
-import com.blankj.utilcode.util.ScreenUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.qtimes.service.wonly.client.QtimesServiceManager;
-import com.wl.wlflatproject.Activity.MainActivity;
-import com.wl.wlflatproject.Activity.SettingActivity;
-import com.wl.wlflatproject.Bean.MainMsgBean;
-import com.wl.wlflatproject.Bean.SetMsgBean;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MView.SetDialog;
 import com.wl.wlflatproject.MView.WaitDialogTime;
@@ -97,6 +91,8 @@ public class OpenMachineFragment extends Fragment {
                     case 10://开门角度修复值
                         fragment.openDegreeRepairTv.setText(fragment.openDegreeRepair);
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -135,6 +131,8 @@ public class OpenMachineFragment extends Fragment {
                         serialPort.sendDate(("+ANGLEREPAIR:" + split[0] + "\r\n").getBytes());
                         openDegreeRepairTv.setText(value);
                         break;
+                    default:
+                        break;
                 }
                 dialogTime.show();
             }
@@ -166,6 +164,8 @@ public class OpenMachineFragment extends Fragment {
                             case 10://开门角度修复值
                                 openDegreeRepair = split[1] + "°";
                                 myHandler.sendEmptyMessage(10);
+                                break;
+                            default:
                                 break;
                         }
                     } else if (data.contains("AT+LEFTANGLEREPAIR=1")) {

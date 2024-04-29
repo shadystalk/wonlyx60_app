@@ -91,6 +91,8 @@ public class SettingActivity extends AppCompatActivity {
             case "87":
                 openDegreeTv.setText("最大");
                 break;
+            default:
+                break;
         }
         openSpeedTv.setText(intent.getStringExtra("openDoorSpeed"));
         closeSpeedTv.setText(intent.getStringExtra("closeDoorSpeed"));
@@ -115,7 +117,7 @@ public class SettingActivity extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SetMsgBean setMsgBean) {
-        if (waitDialogTime != null & waitDialogTime.isShowing())
+        if (waitDialogTime != null && waitDialogTime.isShowing())
             waitDialogTime.dismiss();
         switch (setMsgBean.getFlag()) {
             case 1:
@@ -149,6 +151,8 @@ public class SettingActivity extends AppCompatActivity {
                         case "87":
                             value="87";
                             openDegreeTv.setText("最大");
+                            break;
+                        default:
                             break;
                     }
                 }
@@ -188,6 +192,8 @@ public class SettingActivity extends AppCompatActivity {
                 if (!TextUtils.isEmpty(value))
                     level_tv.setText(value);
                 getIntent().putExtra("level", value);
+                break;
+            default:
                 break;
 
         }
@@ -240,6 +246,8 @@ public class SettingActivity extends AppCompatActivity {
                     case "87":
                         setDialog.show(3, "最大");
                         break;
+                    default:
+                        break;
                 }
                 break;
             case R.id.open_speed:
@@ -247,6 +255,8 @@ public class SettingActivity extends AppCompatActivity {
                 break;
             case R.id.close_speed:
                 setDialog.show(6, intent.getStringExtra("closeDoorSpeed"));
+                break;
+            default:
                 break;
         }
     }

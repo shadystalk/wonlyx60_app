@@ -31,6 +31,8 @@ public class WaitDialogTime1 extends Dialog {
                     Toast.makeText(mContext,"设备无响应",Toast.LENGTH_SHORT).show();
                     dismiss();
                     break;
+                default:
+                    break;
             }
         }
     };

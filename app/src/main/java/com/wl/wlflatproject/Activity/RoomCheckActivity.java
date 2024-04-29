@@ -81,6 +81,8 @@ public class RoomCheckActivity extends AppCompatActivity {
                 Intent intent=new Intent(RoomCheckActivity.this,ResetActivity.class);
                 startActivityForResult(intent,200);
                 break;
+            default:
+                break;
         }
     }
 

@@ -175,6 +175,8 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     fragment = new AfterSaleFragment();
                     fragments[position] = fragment;
                     break;
+                default:
+                    break;
             }
         }
         if (fragment != null) {

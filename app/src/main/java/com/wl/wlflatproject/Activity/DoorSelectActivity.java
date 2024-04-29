@@ -53,6 +53,8 @@ public class DoorSelectActivity extends AppCompatActivity {
             case 2:
                 threeCheck.setBackgroundResource(R.drawable.device_select_icon);
                 break;
+            default:
+                break;
         }
     }
 
@@ -88,6 +90,8 @@ public class DoorSelectActivity extends AppCompatActivity {
                 twoCheck.setBackgroundResource(R.drawable.device_unselect_icon);
                 threeCheck.setBackgroundResource(R.drawable.device_select_icon);
                 select=2;
+                break;
+            default:
                 break;
         }
     }

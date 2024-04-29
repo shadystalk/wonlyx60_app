@@ -113,6 +113,8 @@ public class SystemSettingFragment extends Fragment {
                     case 11:
                         fragment.stopPowerTv.setText(fragment.stopPower);
                         break;
+                    default:
+                        break;
                 }
             }
         }
@@ -151,6 +153,8 @@ public class SystemSettingFragment extends Fragment {
                 break;
             case 5:
                 openPowerGroup.check(R.id.open_power_5);
+                break;
+            default:
                 break;
         }
     }
@@ -233,6 +237,8 @@ public class SystemSettingFragment extends Fragment {
                         stopPower=value;
                         stopPowerTv.setText(value);
                         break;
+                    default:
+                        break;
 
                 }
                 dialogTime.show();
@@ -253,6 +259,8 @@ public class SystemSettingFragment extends Fragment {
                             case 11://防夹力度
                                 stopPower = split[1];
                                 myHandler.sendEmptyMessage(11);
+                                break;
+                            default:
                                 break;
                         }
                     } else if (data.contains("AT+CLOSESTRENGTH=1")) {
@@ -342,6 +350,7 @@ public class SystemSettingFragment extends Fragment {
                 timeGroup.check(R.id.time_minute_30);
                 break;
             default:
+                break;
         }
 
         timeGroup.setOnCheckedChangeListener((group, checkedId) -> {
@@ -362,6 +371,7 @@ public class SystemSettingFragment extends Fragment {
                     ScreenUtils.setSleepDuration(1800 * 1000);
                     break;
                 default:
+                    break;
             }
         });
     }
@@ -402,6 +412,8 @@ public class SystemSettingFragment extends Fragment {
                 case R.id.high_rb:
                     VolumeUtils.setVolume(STREAM_MUSIC, maxVolume, 0);
                     break;
+                default:
+                    break;
             }
         });
 
@@ -430,6 +442,8 @@ public class SystemSettingFragment extends Fragment {
             case 2:
                 ringtonesGroup.check(R.id.ringtones2_rb);
                 break;
+            default:
+                break;
         }
         ringtonesGroup.setOnCheckedChangeListener((group, checkedId) -> {
             switch (checkedId) {
@@ -444,6 +458,8 @@ public class SystemSettingFragment extends Fragment {
                 case R.id.ringtones2_rb:
                     SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 2);
                     playAudio(Constant.RINGTONES_RES[2]);
+                    break;
+                default:
                     break;
             }
         });

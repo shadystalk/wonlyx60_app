@@ -107,7 +107,7 @@ public class SettingActivity1 extends AppCompatActivity {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(SetMsgBean setMsgBean) {
-        if (waitDialogTime != null & waitDialogTime.isShowing())
+        if (waitDialogTime != null && waitDialogTime.isShowing())
             waitDialogTime.dismiss();
         switch (setMsgBean.getFlag()) {
             case 4:
@@ -159,6 +159,8 @@ public class SettingActivity1 extends AppCompatActivity {
                     antiPinchTv.setText("开");
                     getIntent().putExtra("isOPenClamp",true);
                 }
+                break;
+            default:
                 break;
         }
     }
@@ -359,6 +361,9 @@ public class SettingActivity1 extends AppCompatActivity {
                         boolean b = QtimesServiceManager.instance().setWishesStatus(!status);
                     }
                 });
+                break;
+
+            default:
                 break;
         }
     }

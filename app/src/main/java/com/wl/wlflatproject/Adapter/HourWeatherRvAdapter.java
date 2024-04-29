@@ -44,7 +44,7 @@ public class HourWeatherRvAdapter extends BaseQuickAdapter<HourWeatherItem, Base
         helper.setTextColor(R.id.time_tv, Color.parseColor("#aaaeb2"));
         helper.setText(R.id.time_tv, hourStr);
         //当前时间 时不为00，天气时间为00，判定为明天
-        if (!currentTime.equals("00") && weatherTime.equals("00")) {
+        if (!"00".equals(currentTime) && "00".equals(weatherTime)) {
             helper.setText(R.id.time_tv, "明天");
             helper.setTextColor(R.id.time_tv, Color.parseColor("#31ABD3"));
         }

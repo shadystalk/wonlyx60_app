@@ -173,6 +173,8 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                         }))
                         .show();
                 break;
+            default:
+                break;
         }
     }
 

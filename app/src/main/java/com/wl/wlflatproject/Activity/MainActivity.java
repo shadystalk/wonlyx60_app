@@ -259,6 +259,8 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     releaseCamera();
                     break;
+                default:
+                    break;
             }
         }
     };
@@ -554,6 +556,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             default:
+                break;
         }
     }
 
@@ -576,6 +579,7 @@ public class MainActivity extends AppCompatActivity {
                     baseBean = GsonUtils.GsonToBean(msg, BaseBean.class);
                 } catch (Exception e) {
 
+                    e.printStackTrace();
                 }
 
                 if (baseBean != null) {
@@ -586,6 +590,8 @@ public class MainActivity extends AppCompatActivity {
                                 InfoBean infoBean = new InfoBean();
                                 infoBean.setCode(baseBean.getBind());
                                 EventBus.getDefault().post(infoBean);
+                            break;
+                        default:
                             break;
 
                     }
@@ -653,13 +659,16 @@ public class MainActivity extends AppCompatActivity {
                                         bean.setVendor("general");
                                         bean.setSeqid(1);
                                         rbmq.pushMsg(id + "#" + GsonUtils.GsonString(bean));
-                                        if (dialogTime != null & dialogTime.isShowing())
+                                        if (dialogTime != null && dialogTime.isShowing())
                                             dialogTime.dismiss();
                                         ToastUtils.showShort("门已打开");
                                         break;
                                     case "9"://表示关门成功
-                                        if (dialogTime != null & dialogTime.isShowing())
+                                        if (dialogTime != null && dialogTime.isShowing())
                                             dialogTime.dismiss();
+                                        break;
+                                    default:
+                                        break;
                                 }
                             } else if (data.contains("AT+DEFAULT=")) {
                                 String[] s = data.split("=");
@@ -701,16 +710,18 @@ public class MainActivity extends AppCompatActivity {
                                         devType = split[1];
                                         SPUtil.getInstance(MainActivity.this).setSettingParam("devType", devType);
                                         break;
+                                    default:
+                                        break;
                                 }
                             } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
                                 changkaiFlag = 2;
-                                if (dialogTime != null & dialogTime.isShowing()) ;
+                                if (dialogTime != null && dialogTime.isShowing())
                                 dialogTime.dismiss();
                                 changKai.setBackgroundResource(R.drawable.cancel_changkai);
                                 ToastUtils.showShort("门已常开");
                             } else if (data.contains("AT+CLOSEALWAYSOPEN=1")) {//取消常开
                                 changkaiFlag = 1;
-                                if (dialogTime != null & dialogTime.isShowing()) ;
+                                if (dialogTime != null && dialogTime.isShowing())
                                 dialogTime.dismiss();
                                 changKai.setBackgroundResource(R.drawable.changkai);
                                 ToastUtils.showShort("门已取消常开");
@@ -731,10 +742,16 @@ public class MainActivity extends AppCompatActivity {
 
                             } else if (data.contains("AT+CDECT=")) {
                                 String[] split = data.split("=");
+                                if(split.length<2){
+                                    return;
+                                }
                                 String[] split1 = split[1].split(",");
+                                if(split1.length<2){
+                                    return;
+                                }
                                 switch (split1[0]) {
                                     case "0"://表示前板检测到遮挡  门外
-                                        if (split1[1].equals("0")) {//人离开
+                                        if ("0".equals(split1[1])) {//人离开
 
                                         } else {//人靠近
                                             Log.e("检测有人", "..");
@@ -754,11 +771,19 @@ public class MainActivity extends AppCompatActivity {
                                     case "1"://表示后板检测到遮挡 门内
 
                                         break;
+                                    default:
+                                        break;
                                 }
                             } else if (data.contains("AT+MIPLNOTIFY=")) {//加密消息上报给服务器
                                 String[] split = data.split(",");
+                                if(split.length==0){
+                                    return;
+                                }
                                 String s = split[split.length - 1];
                                 String[] split1 = s.split("\r\n");
+                                if(split1.length<1){
+                                    return;
+                                }
                                 String s1 = id + "#" + split1[0];
                                 rbmq.pushMsg(s1);
                                 handler.removeMessages(HEARTBEAT);
@@ -779,7 +804,7 @@ public class MainActivity extends AppCompatActivity {
                                         videoWIfi = split[1];
                                     }
                                 } catch (Exception e) {
-
+                                    e.printStackTrace();
                                 }
                             } else if (data.contains("AT+VER=")) { //防夹版本号
                                 String[] split = data.split("=V");
@@ -1066,6 +1091,7 @@ public class MainActivity extends AppCompatActivity {
                 view.setBackgroundResource(R.drawable.snow_icon);
                 break;
             default:
+                break;
         }
         return code;
     }
@@ -1079,10 +1105,10 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setWeatherText(TextView tv, String weather, String date, boolean showDate) {
         String code = LocationUtils.weatherCode(weather);
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         if (showDate) {
             String format11 = DateUtils.getInstance().dateFormat11(date);
-            content.append(format11 + " ");
+            content.append(format11).append(" ");
         }
         switch (code) {
             case "1":
@@ -1098,6 +1124,7 @@ public class MainActivity extends AppCompatActivity {
                 content.append("雪");
                 break;
             default:
+                break;
         }
         tv.setText(content.toString());
     }
@@ -1128,6 +1155,7 @@ public class MainActivity extends AppCompatActivity {
                 w = "雪";
                 break;
             default:
+                break;
         }
         tvW.setText(date);
         tv.setText(w+"   "+dayTemp + "/" + nightTemp + "°c");

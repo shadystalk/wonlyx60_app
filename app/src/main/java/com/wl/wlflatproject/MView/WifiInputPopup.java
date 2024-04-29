@@ -80,6 +80,8 @@ public class WifiInputPopup extends CenterPopupView implements View.OnClickListe
                 }
                 dismiss();
                 break;
+            default:
+                break;
         }
     }
 

@@ -66,6 +66,8 @@ public class SetDialog extends Dialog {
                         case "最大":
                             value="87";
                             break;
+                        default:
+                            break;
                     }
                 }
                 listener.onResult(value, flag);
@@ -80,6 +82,7 @@ public class SetDialog extends Dialog {
         for(int x=0;x< ss.length;x++){
             if(ss[x].equals(value)){
                 index=x;
+                return index;
             }
         }
         return index;
@@ -132,6 +135,8 @@ public class SetDialog extends Dialog {
                 start.refreshByNewDisplayedValues(s5);
                 start.setValue(getIndex(s5,value));
                 name.setText("防夹力度");
+                break;
+            default:
                 break;
         }
         show();

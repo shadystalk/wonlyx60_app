@@ -195,6 +195,7 @@ public class WeatherActivity extends AppCompatActivity {
                                 weatherView.setBackgroundResource(R.drawable.snow_icon);
                                 break;
                             default:
+                                break;
                         }
                         //温度
                         tempTv.setText(now.getFeels_like());
@@ -318,7 +319,7 @@ public class WeatherActivity extends AppCompatActivity {
                             Weather24HourBean.ResultsBean.HourlyBean bean = hourlyBeans.get(i);
                             String weatherStatusCode = LocationUtils.weatherStatusCode(bean.getCode());
                             if (i == 1 || i == 2) {
-                                if (weatherStatusCode.equals("3")) {
+                                if ("3".equals(weatherStatusCode)) {
                                     after2HourStatus = true;
                                 } else {
                                     after2HourStatus = false;
