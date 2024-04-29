@@ -122,7 +122,7 @@ public class WeatherActivity extends AppCompatActivity {
         mWeekWeatherRvAdapter.setEnableLoadMore(false);
         weekWeatherRv.setAdapter(mWeekWeatherRvAdapter);
         String weekJson = PreferencesUtils.getString(this, WEEK_WEATHER);
-        if (weekJson != null && !weekJson.equals("")) {
+        if (weekJson != null && !"".equals(weekJson)) {
             ArrayList<WeekWeatherItem> items = GsonUtils.jsonToArrayList(weekJson, WeekWeatherItem.class);
             mWeekWeatherRvAdapter.setNewData(items);
         }
@@ -132,7 +132,7 @@ public class WeatherActivity extends AppCompatActivity {
         mHourWeatherRvAdapter.setEnableLoadMore(false);
         hourWeatherRv.setAdapter(mHourWeatherRvAdapter);
         String hourJson = PreferencesUtils.getString(this, HOUR_WEATHER);
-        if (hourJson != null && !hourJson.equals("")) {
+        if (hourJson != null && !"".equals(hourJson)) {
             ArrayList<HourWeatherItem> items = GsonUtils.jsonToArrayList(hourJson, HourWeatherItem.class);
             mHourWeatherRvAdapter.notifyDataChanged(items);
         }

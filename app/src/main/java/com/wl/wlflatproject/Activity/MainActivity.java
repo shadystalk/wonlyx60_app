@@ -621,6 +621,9 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (data.contains("AT+CDOOR=")) {
                             String[] split = data.split("=");
+                            if(split.length<2){
+                                return;
+                            }
                             switch (split[1]) {
                                 case "1"://表示故障1
                                     Toast.makeText(MainActivity.this, "故障1", Toast.LENGTH_SHORT).show();
@@ -665,48 +668,55 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else if (data.contains("AT+DEFAULT=")) {
                             String[] s = data.split("=");
+                            if(s.length<2){
+                                return;
+                            }
                             String[] split = s[1].split(",");
-                            switch (Integer.parseInt(split[0])) {
-                                case 7://已经常开
-                                    if (changkaiFlag != 2) {
-                                        changkaiFlag = 2;
-                                        changKai.setBackgroundResource(R.drawable.cancel_changkai);
-                                        if (QtimesServiceManager.instance().isServerActive()) {
-                                            QtimesServiceManager.instance().setLongOpenState(true);
+                            try {
+                                switch (Integer.parseInt(split[0])) {
+                                    case 7://已经常开
+                                        if (changkaiFlag != 2) {
+                                            changkaiFlag = 2;
+                                            changKai.setBackgroundResource(R.drawable.cancel_changkai);
+                                            if (QtimesServiceManager.instance().isServerActive()) {
+                                                QtimesServiceManager.instance().setLongOpenState(true);
+                                            }
                                         }
-                                    }
-                                    break;
-                                case 8://没有开启常开
-                                    if (changkaiFlag != 1) {
-                                        changKai.setBackgroundResource(R.drawable.changkai);
-                                        changkaiFlag = 1;
-                                        if (QtimesServiceManager.instance().isServerActive()) {
-                                            QtimesServiceManager.instance().setLongOpenState(false);
+                                        break;
+                                    case 8://没有开启常开
+                                        if (changkaiFlag != 1) {
+                                            changKai.setBackgroundResource(R.drawable.changkai);
+                                            changkaiFlag = 1;
+                                            if (QtimesServiceManager.instance().isServerActive()) {
+                                                QtimesServiceManager.instance().setLongOpenState(false);
+                                            }
                                         }
-                                    }
-                                    break;
-                                case 13://唯一id1
-                                    if(TextUtils.isEmpty(id)){
-                                        id = split[1];
-                                        bean.setDevId(id);
-                                        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, id);
-                                        setMq();
-                                    }
-                                    break;
-                                case 14://前板版本号
-                                    String fVer = split[1];
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.FVER, fVer);
-                                    break;
-                                case 15://后板版本号
-                                    String bVer = split[1];
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.BVER, bVer);
-                                    break;
-                                case 16://设备型号
-                                    devType = split[1];
-                                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVTYPE, devType);
-                                    break;
-                                default:
-                                    break;
+                                        break;
+                                    case 13://唯一id1
+                                        if(TextUtils.isEmpty(id)){
+                                            id = split[1];
+                                            bean.setDevId(id);
+                                            SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, id);
+                                            setMq();
+                                        }
+                                        break;
+                                    case 14://前板版本号
+                                        String fVer = split[1];
+                                        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.FVER, fVer);
+                                        break;
+                                    case 15://后板版本号
+                                        String bVer = split[1];
+                                        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.BVER, bVer);
+                                        break;
+                                    case 16://设备型号
+                                        devType = split[1];
+                                        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVTYPE, devType);
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }catch (Exception e){
+                                e.printStackTrace();
                             }
                         } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
                             changkaiFlag = 2;
@@ -739,6 +749,9 @@ public class MainActivity extends AppCompatActivity {
 
                         } else if (data.contains("AT+CDECT=")) {
                             String[] split = data.split("=");
+                            if(split.length<2){
+                                return;
+                            }
                             String[] split1 = split[1].split(",");
                             switch (split1[0]) {
                                 case "0"://表示前板检测到遮挡  门外
@@ -767,6 +780,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else if (data.contains("AT+MIPLNOTIFY=")) {//加密消息上报给服务器
                             String[] split = data.split(",");
+                            if(split.length<1){
+                                return;
+                            }
                             String s = split[split.length - 1];
                             String[] split1 = s.split("\r\n");
                             String s1 = id + "#" + split1[0];
@@ -793,6 +809,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else if (data.contains("AT+VER=")) { //防夹版本号
                             String[] split = data.split("=V");
+                            if(split.length<2){
+                                return;
+                            }
                             plankVersionCode = Float.parseFloat(split[1]);
                         } else if (data.contains("AT+REQUESTACK=1")) {
                             unregisterReceiver(receiver);
@@ -940,7 +959,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_TIME_TICK)) {
+            if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
                 DateUtils dateUtils = DateUtils.getInstance();
                 Calendar calendar = Calendar.getInstance();
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
@@ -1239,8 +1258,7 @@ public class MainActivity extends AppCompatActivity {
         updataJsonBean.setPUS(pusBean);
 
         String s = GsonUtils.GsonString(updataJsonBean);
-        String path = "";
-        path = "https://pus.wonlycloud.com:10400";
+        String path = "https://pus.wonlycloud.com:10400";
         OkGo.<String>post(path).upJson(s).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
@@ -1488,16 +1506,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
                         }
                     });
-                    camera.setButtonCallback(new IButtonCallback() {
-                        @Override
-                        public void onButton(final int button, final int state) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                }
-                            });
-                        }
-                    });
+
                     int i = camera.open(ctrlBlock);
                     if (i != 0) {
                         return;
