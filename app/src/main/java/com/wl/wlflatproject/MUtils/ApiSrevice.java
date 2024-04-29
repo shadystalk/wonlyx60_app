@@ -3,6 +3,8 @@ package com.wl.wlflatproject.MUtils;
 import android.content.Context;
 
 import com.lzy.okgo.model.HttpHeaders;
+import com.wl.wlflatproject.Constant.Constant;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
@@ -23,7 +25,7 @@ public class ApiSrevice {
      */
     public static String queryAlarmMsg = baseUrl + "/api/aigang/ten/screen/queryAlarmMsg";
     public static HttpHeaders getHeads(Context context) {
-        String devId = SPUtil.getInstance(context).getSettingParam("devId", "");
+        String devId = SPUtil.getInstance(context).getSettingParam(Constant.DEVID, "");
         String versionName = VersionUtils.getVersionName(context);
         HttpHeaders headers = new HttpHeaders();
         headers.put("clientId", devId);

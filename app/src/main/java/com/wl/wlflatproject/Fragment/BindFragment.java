@@ -19,6 +19,7 @@ import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Bean.InfoBean;
+import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.DpUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
@@ -57,8 +58,8 @@ public class BindFragment extends Fragment {
 
     public void initData() {
         EventBus.getDefault().register(this);
-        devId = SPUtil.getInstance(getContext()).getSettingParam("devId", "");
-        String devType = SPUtil.getInstance(getContext()).getSettingParam("devType", "");
+        devId = SPUtil.getInstance(getContext()).getSettingParam(Constant.DEVID, "");
+        String devType = SPUtil.getInstance(getContext()).getSettingParam(Constant.DEVTYPE, "");
         Bitmap code = DpUtils.getTowCode(getContext(), devType + "-" + devId);
         codeView.setImageBitmap(code);
         getInfo();

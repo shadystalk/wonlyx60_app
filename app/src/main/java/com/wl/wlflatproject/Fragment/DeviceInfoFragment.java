@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
@@ -39,10 +40,10 @@ public class DeviceInfoFragment extends Fragment {
 
     public void initData(){
         SPUtil spUtil = SPUtil.getInstance(getContext());
-        String devId =spUtil.getSettingParam("devId", "");
-        String fVer =spUtil.getSettingParam("fVer", "");
-        String bVer =spUtil.getSettingParam("bVer", "");
-        String devType = SPUtil.getInstance(getContext()).getSettingParam("devType", "");
+        String devId =spUtil.getSettingParam(Constant.DEVID, "");
+        String fVer =spUtil.getSettingParam(Constant.FVER, "");
+        String bVer =spUtil.getSettingParam(Constant.BVER, "");
+        String devType = SPUtil.getInstance(getContext()).getSettingParam(Constant.DEVTYPE, "");
         mModelTv.setText(devType);
         mPreviousTv.setText(fVer);
         mAfterTv.setText(bVer);

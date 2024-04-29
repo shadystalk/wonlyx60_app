@@ -20,15 +20,7 @@
             android:theme="@style/DialogActivity" />
 
         <activity android:name=".Activity.WeatherActivity" />
-        <activity android:name=".Activity.DoorSelectActivity" />
         <activity android:name=".Activity.WeatherActivity1" />
-        <activity android:name=".Activity.SettingActivity" />
-
-        <activity android:name=".Activity.SettingActivity1" />
-
-        <activity android:name=".Activity.RoomCheckActivity" />
-
-        <activity android:name=".Activity.ResetActivity" />
         <activity
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"
