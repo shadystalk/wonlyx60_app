@@ -653,13 +653,15 @@ public class MainActivity extends AppCompatActivity {
                                     bean.setVendor("general");
                                     bean.setSeqid(1);
                                     rbmq.pushMsg(id + "#" + GsonUtils.GsonString(bean));
-                                    if (dialogTime != null & dialogTime.isShowing())
+                                    if (dialogTime != null && dialogTime.isShowing())
                                         dialogTime.dismiss();
                                     ToastUtils.showShort("门已打开");
                                     break;
                                 case "9"://表示关门成功
-                                    if (dialogTime != null & dialogTime.isShowing())
+                                    if (dialogTime != null && dialogTime.isShowing())
                                         dialogTime.dismiss();
+                                default:
+                                    break;
                             }
                         } else if (data.contains("AT+DEFAULT=")) {
                             String[] s = data.split("=");
@@ -703,16 +705,18 @@ public class MainActivity extends AppCompatActivity {
                                     devType = split[1];
                                     SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVTYPE, devType);
                                     break;
+                                default:
+                                    break;
                             }
                         } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
                             changkaiFlag = 2;
-                            if (dialogTime != null & dialogTime.isShowing()) ;
+                            if (dialogTime != null && dialogTime.isShowing())
                             dialogTime.dismiss();
                             changKai.setBackgroundResource(R.drawable.cancel_changkai);
                             ToastUtils.showShort("门已常开");
                         } else if (data.contains("AT+CLOSEALWAYSOPEN=1")) {//取消常开
                             changkaiFlag = 1;
-                            if (dialogTime != null & dialogTime.isShowing()) ;
+                            if (dialogTime != null && dialogTime.isShowing())
                             dialogTime.dismiss();
                             changKai.setBackgroundResource(R.drawable.changkai);
                             ToastUtils.showShort("门已取消常开");
@@ -738,7 +742,7 @@ public class MainActivity extends AppCompatActivity {
                             String[] split1 = split[1].split(",");
                             switch (split1[0]) {
                                 case "0"://表示前板检测到遮挡  门外
-                                    if (split1[1].equals("0")) {//人离开
+                                    if ("0".equals(split1[1])) {//人离开
 
                                     } else {//人靠近
                                         Log.e("检测有人", "..");
@@ -757,6 +761,8 @@ public class MainActivity extends AppCompatActivity {
                                     break;
                                 case "1"://表示后板检测到遮挡 门内
 
+                                    break;
+                                default:
                                     break;
                             }
                         } else if (data.contains("AT+MIPLNOTIFY=")) {//加密消息上报给服务器
