@@ -327,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         handler.removeMessages(TIME);
         if (dialogTime == null)
             dialogTime = new WaitDialogTime(this, android.R.style.Theme_Translucent_NoTitleBar);
-        handler.sendEmptyMessageDelayed(PERMISSION,3000);
+        handler.sendEmptyMessageDelayed(PERMISSION,10000);
         Log.e("获得Mac地址", id + "");
         rbmq = new RbMqUtils();
         bean.setAck(0);
@@ -1289,7 +1289,7 @@ public class MainActivity extends AppCompatActivity {
 
         String s = GsonUtils.GsonString(updataJsonBean);
         String path = "";
-        path = "https://pus.wonlycloud.com:10400 ";
+        path = "https://pus.wonlycloud.com:10400";
         OkGo.<String>post(path).upJson(s).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {

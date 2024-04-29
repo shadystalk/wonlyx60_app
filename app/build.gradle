@@ -34,15 +34,15 @@ android {
     }
     signingConfigs {
         debug {
-            keyAlias 'flat'
-            keyPassword 'wl2019'
-            storeFile file('../flat-high.keystore')
-            storePassword 'wl2019'
+            keyAlias 'androiddebugkey'
+            keyPassword '123456'
+            storeFile file('../AOSP.keystore')
+            storePassword '123456'
         }
         release {
-            keyAlias 'flat'
-            storeFile file('../flat.jks')
-            storePassword 'wl2019'
+            keyAlias 'androiddebugkey'
+            storeFile file('../AOSP.keystore')
+            storePassword '123456'
         }
     }
 
