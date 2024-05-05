@@ -36,6 +36,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -48,6 +49,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,6 +60,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.amap.api.location.AMapLocation;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
+import com.herohan.uvcapp.CameraHelper;
+import com.herohan.uvcapp.ICameraHelper;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
@@ -67,8 +71,10 @@ import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.serenegiant.usb.DeviceFilter;
 import com.serenegiant.usb.IButtonCallback;
 import com.serenegiant.usb.IStatusCallback;
+import com.serenegiant.usb.Size;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
+import com.serenegiant.widget.AspectRatioSurfaceView;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
@@ -123,6 +129,8 @@ import ru.sir.ymodem.YModem;
 public class MainActivity extends AppCompatActivity {
     @BindView(R.id.time)
     TextView time;
+    @BindView(R.id.count)
+    TextView count;
     @BindView(R.id.video_play_view)
     SimpleUVCCameraTextureView videoPlayView;
     @BindView(R.id.lock_bt)
@@ -186,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.recycler_msg)
     RecyclerView msgRecyclerView;
+    int countN=0;
     private int version;
     /* 更新进度条 */
     private ProgressBar mProgress;
@@ -200,6 +209,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean watherClick = false;
     private long lastClickTime;
     private long mWorkerThreadID = -1;
+    private ICameraHelper mCameraHelper;
+    private AspectRatioSurfaceView mCameraViewMain;
+    private ICameraHelper.StateCallback mStateListener;
     private Surface mPreviewSurface;
     Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -260,8 +272,27 @@ public class MainActivity extends AppCompatActivity {
                     releaseCamera();
                     break;
                 case 13:
+                    countN++;
+                    count.setText("开们:"+countN);
                     closeVideo.setVisibility(View.VISIBLE);
                     break;
+//                case 16:
+//                    //打开视频
+//                    Log.e("usb++","deviceList"+deviceList.size());
+//                    if(deviceList.size()==0){
+//                        deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
+//                    }
+//                    if (deviceList.size() == 0) {
+//                        Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                    mUSBMonitor.requestPermission(deviceList.get(0));
+//                    sendEmptyMessageDelayed(18,3000);
+//                    break;
+//                case 18:
+//                    releaseCamera();
+//                    sendEmptyMessageDelayed(16,1000);
+//                    break;
                 default:
                     break;
             }
@@ -359,6 +390,105 @@ public class MainActivity extends AppCompatActivity {
             messageDate.setText(messageDateS);
         }
         initMsgData();
+        handler.sendEmptyMessageDelayed(16,5000);
+
+
+
+
+        //UVC摄像头状态回调
+        mStateListener = new ICameraHelper.StateCallback() {
+            //插入UVC设备
+            @Override
+            public void onAttach(UsbDevice device) {
+                //设置为当前设备（如果没有权限，会显示授权对话框）
+                mCameraHelper.selectDevice(device);
+            }
+
+            //打开UVC设备成功（也就是已经获取到UVC设备的权限）
+            @Override
+            public void onDeviceOpen(UsbDevice device, boolean isFirstOpen) {
+                //打开UVC摄像头
+                mCameraHelper.openCamera();
+            }
+
+            //打开摄像头成功
+            @Override
+            public void onCameraOpen(UsbDevice device) {
+                //开始预览
+                mCameraHelper.startPreview();
+
+                //获取预览使用的Size（包括帧格式、宽度、高度、FPS）
+                Size size = mCameraHelper.getPreviewSize();
+                if (size != null) {
+                    int width = size.width;
+                    int height = size.height;
+                    //需要自适应摄像头分辨率的话，设置新的宽高比
+                    mCameraViewMain.setAspectRatio(width, height);
+                }
+
+                //添加预览Surface
+                mCameraHelper.addSurface(mCameraViewMain.getHolder().getSurface(), false);
+            }
+
+            //关闭摄像头成功
+            @Override
+            public void onCameraClose(UsbDevice device) {
+                if (mCameraHelper != null) {
+                    //移除预览Surface
+                    mCameraHelper.removeSurface(mCameraViewMain.getHolder().getSurface());
+                }
+            }
+
+            //关闭UVC设备成功
+            @Override
+            public void onDeviceClose(UsbDevice device) {
+            }
+
+            //断开UVC设备
+            @Override
+            public void onDetach(UsbDevice device) {
+            }
+
+            //用户没有授予访问UVC设备的权限
+            @Override
+            public void onCancel(UsbDevice device) {
+            }
+
+        };
+
+        //设置SurfaceView的Surface监听回调
+        mCameraViewMain.getHolder().addCallback(new SurfaceHolder.Callback() {
+
+            //创建了新的Surface
+            @Override
+            public void surfaceCreated(@NonNull SurfaceHolder holder) {
+                if (mCameraHelper != null) {
+                    //添加预览Surface
+                    mCameraHelper.addSurface(holder.getSurface(), false);
+                }
+            }
+
+            //Surface发生了改变
+            @Override
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
+            }
+
+            //销毁了原来的Surface
+            @Override
+            public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
+                if (mCameraHelper != null) {
+                    //移除预览Surface
+                    mCameraHelper.removeSurface(holder.getSurface());
+                }
+            }
+        });
+
+        mCameraHelper = new CameraHelper();
+        //设置UVC摄像头状态回调
+        mCameraHelper.setStateCallback(mStateListener);
+
+
+
     }
 
     /**
@@ -495,17 +625,11 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
                         return;
                     }
-//                    Set<Integer> set = deviceList.keySet();
-//                    set.iterator().next();
-//                    if(isStart){
-                        mUSBMonitor.requestPermission(deviceList.get(0));
-//                    }else{
-//                        ToastUtils.showLong("正在初始化请稍后");
-//                    }
+                    mUSBMonitor.requestPermission(deviceList.get(0));
                 }
                 break;
             case R.id.close_video:
-                releaseCamera();
+                mCameraHelper.release();
                 break;
             case R.id.changKai:
                 if (changkaiFlag == 1) {
