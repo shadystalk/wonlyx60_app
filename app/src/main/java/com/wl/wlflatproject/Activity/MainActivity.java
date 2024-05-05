@@ -178,6 +178,8 @@ public class MainActivity extends AppCompatActivity {
     EditText messageEdit;
     @BindView(R.id.message_tv)
     TextView messageTv;
+    @BindView(R.id.bg)
+    ImageView bg;
 
     @BindView(R.id.view_next)
     ImageView msgReminderNext;
@@ -257,6 +259,9 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     releaseCamera();
                     break;
+                case 13:
+                    closeVideo.setVisibility(View.VISIBLE);
+                    break;
                 default:
                     break;
             }
@@ -268,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
     private NetStatusReceiver receiver;
     private AMapLocation mAMapLocation;
     private long mExitTime;
-    public boolean isFull = false;
+    public boolean isStart = false;
     private FileOutputStream fout;
     private PrintWriter printWriter;
     private DateUtils dateUtils;
@@ -345,16 +350,6 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
-        videoPlayView.postDelayed(() -> {
-            int width = videoPlayView.getMeasuredWidth();
-            int height = videoPlayView.getMeasuredHeight();
-            videoPlayView.setAspectRatio(height-10, width);
-            ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
-            params.width = height;
-            params.height = width;
-            videoPlayView.setLayoutParams(params);
-            videoPlayView.setRotation(-270f);
-        }, 1000);
         messageEdit.setCursorVisible(false);
         initListener();
         String messageS=SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE,"");
@@ -488,7 +483,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.video_iv:
                 if (!isFastClick()) {
-                    Toast.makeText(MainActivity.this, "请稍后点击", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (!isPlaying) {
@@ -503,7 +497,11 @@ public class MainActivity extends AppCompatActivity {
                     }
 //                    Set<Integer> set = deviceList.keySet();
 //                    set.iterator().next();
-                    mUSBMonitor.requestPermission(deviceList.get(0));
+//                    if(isStart){
+                        mUSBMonitor.requestPermission(deviceList.get(0));
+//                    }else{
+//                        ToastUtils.showLong("正在初始化请稍后");
+//                    }
                 }
                 break;
             case R.id.close_video:
@@ -596,8 +594,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        handler.removeMessages(HEARTBEAT);
-        handler.sendEmptyMessageDelayed(HEARTBEAT, 10000);
+//        handler.removeMessages(HEARTBEAT);
+//        handler.sendEmptyMessageDelayed(HEARTBEAT, 10000);
     }
 
     /**
@@ -787,8 +785,8 @@ public class MainActivity extends AppCompatActivity {
                             String[] split1 = s.split("\r\n");
                             String s1 = id + "#" + split1[0];
                             rbmq.pushMsg(s1);
-                            handler.removeMessages(HEARTBEAT);
-                            handler.sendEmptyMessageDelayed(HEARTBEAT, 60000);
+//                            handler.removeMessages(HEARTBEAT);
+//                            handler.sendEmptyMessageDelayed(HEARTBEAT, 60000);
                         } else if (data.contains("AT+CGSN=1")) {//上传id
                             serialPort.sendDate(("+CGSN:" + id + "\r\n").getBytes());
                         } else if (data.contains("AT+CGATT?")) {//服务器是否链接
@@ -1477,7 +1475,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean isFastClick() {
         boolean flag = false;
         long curClickTime = System.currentTimeMillis();
-        if ((curClickTime - lastClickTime) >= 1000) {
+        if ((curClickTime - lastClickTime) >= 500) {
             flag = true;
         }
         lastClickTime = curClickTime;
@@ -1498,6 +1496,7 @@ public class MainActivity extends AppCompatActivity {
             queueEvent(new Runnable() {
                 @Override
                 public void run() {
+                    if(camera==null)
                     camera = new UVCCamera();
                     camera.setStatusCallback(new IStatusCallback() {
                         @Override
@@ -1508,6 +1507,7 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     int i = camera.open(ctrlBlock);
+                    Log.e("摄像头", "--state"+i);
                     if (i != 0) {
                         return;
                     }
@@ -1520,10 +1520,19 @@ public class MainActivity extends AppCompatActivity {
                         mPreviewSurface = new Surface(st);
                         camera.setPreviewDisplay(mPreviewSurface);
                         camera.startPreview();
+                        Log.e("摄像头", "--start");
                     }
+
+                    videoPlayView.setAspectRatio(742, 435);
+                    ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
+                    params.width = 435;
+                    params.height = 752;
+                    videoPlayView.setLayoutParams(params);
+                    videoPlayView.setRotation(-270f);
+                    isStart=true;
                     isPlaying = true;
-                    closeVideo.setVisibility(View.VISIBLE);
-                    videoPlayView.setVisibility(View.VISIBLE);
+                    handler.sendEmptyMessageDelayed(13,2000);
+                    bg.setVisibility(View.GONE);
                     handler.removeMessages(LEAVE);
                     handler.sendEmptyMessageDelayed(LEAVE, 120000);
                 }
@@ -1547,8 +1556,8 @@ public class MainActivity extends AppCompatActivity {
     };
 
     private synchronized void releaseCamera() {
-        videoPlayView.setVisibility(View.INVISIBLE);
-        closeVideo.setVisibility(View.GONE);
+        closeVideo.setVisibility(View.INVISIBLE);
+        bg.setVisibility(View.VISIBLE);
         if (!isPlaying) {
             return;
         }
@@ -1557,13 +1566,12 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 if (camera != null) {
                     try {
+                        camera.destroy();
                         camera.setStatusCallback(null);
                         camera.setButtonCallback(null);
-                        camera.close();
-                        camera.destroy();
                         camera = null;
                     } catch (final Exception e) {
-                        //
+                        Log.e("摄像头", "--关闭报错"+e.getMessage());
                     }
                 }
                 if (mPreviewSurface != null) {
@@ -1571,7 +1579,7 @@ public class MainActivity extends AppCompatActivity {
                     mPreviewSurface = null;
                 }
                 isPlaying = false;
-                Log.e("测试", "---yingc");
+                Log.e("摄像头", "--关闭");
             }
         });
     }
