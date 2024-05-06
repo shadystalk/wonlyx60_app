@@ -37,6 +37,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -75,6 +77,7 @@ import com.serenegiant.usb.Size;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 import com.serenegiant.widget.AspectRatioSurfaceView;
+import com.serenegiant.widget.AspectRatioTextureView;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
@@ -132,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.count)
     TextView count;
     @BindView(R.id.video_play_view)
-    SimpleUVCCameraTextureView videoPlayView;
+    AspectRatioSurfaceView videoPlayView;
     @BindView(R.id.lock_bt)
     LinearLayout lockBt;
     @BindView(R.id.video_iv)
@@ -186,8 +189,8 @@ public class MainActivity extends AppCompatActivity {
     EditText messageEdit;
     @BindView(R.id.message_tv)
     TextView messageTv;
-    @BindView(R.id.bg)
-    ImageView bg;
+//    @BindView(R.id.bg)
+//    ImageView bg;
 
     @BindView(R.id.view_next)
     ImageView msgReminderNext;
@@ -210,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
     private long lastClickTime;
     private long mWorkerThreadID = -1;
     private ICameraHelper mCameraHelper;
-    private AspectRatioSurfaceView mCameraViewMain;
     private ICameraHelper.StateCallback mStateListener;
     private Surface mPreviewSurface;
     Handler handler = new Handler() {
@@ -327,6 +329,7 @@ public class MainActivity extends AppCompatActivity {
     private PopupWindow clearPopupWindow;
     private String devType;
     private Runnable runnable;
+    UsbDevice device=null;
     private PowerManager.WakeLock wakeLock;
 
     @SuppressLint("InvalidWakeLockTag")
@@ -348,8 +351,8 @@ public class MainActivity extends AppCompatActivity {
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
         wakeLock.acquire();
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
-        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
-        mUSBMonitor.register();
+//        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
+//        mUSBMonitor.register();
         filter = DeviceFilter.getDeviceFilters(this,
                 com.serenegiant.uvccamera.R.xml.device_filter);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
@@ -394,14 +397,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
         //UVC摄像头状态回调
         mStateListener = new ICameraHelper.StateCallback() {
             //插入UVC设备
             @Override
             public void onAttach(UsbDevice device) {
                 //设置为当前设备（如果没有权限，会显示授权对话框）
-                mCameraHelper.selectDevice(device);
+//                mCameraHelper.selectDevice(device);
+                MainActivity.this.device=device;
             }
 
             //打开UVC设备成功（也就是已经获取到UVC设备的权限）
@@ -423,11 +426,13 @@ public class MainActivity extends AppCompatActivity {
                     int width = size.width;
                     int height = size.height;
                     //需要自适应摄像头分辨率的话，设置新的宽高比
-                    mCameraViewMain.setAspectRatio(width, height);
+                    videoPlayView.setAspectRatio(width, height);
                 }
 
                 //添加预览Surface
-                mCameraHelper.addSurface(mCameraViewMain.getHolder().getSurface(), false);
+                mCameraHelper.addSurface(videoPlayView.getHolder().getSurface(), false);
+                isPlaying=true;
+                closeVideo.setVisibility(View.VISIBLE);
             }
 
             //关闭摄像头成功
@@ -435,18 +440,21 @@ public class MainActivity extends AppCompatActivity {
             public void onCameraClose(UsbDevice device) {
                 if (mCameraHelper != null) {
                     //移除预览Surface
-                    mCameraHelper.removeSurface(mCameraViewMain.getHolder().getSurface());
+                    mCameraHelper.removeSurface(videoPlayView.getHolder().getSurface());
                 }
             }
 
             //关闭UVC设备成功
             @Override
             public void onDeviceClose(UsbDevice device) {
+                isPlaying=false;
+                closeVideo.setVisibility(View.INVISIBLE);
             }
 
             //断开UVC设备
             @Override
             public void onDetach(UsbDevice device) {
+                int a=0;
             }
 
             //用户没有授予访问UVC设备的权限
@@ -457,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
         };
 
         //设置SurfaceView的Surface监听回调
-        mCameraViewMain.getHolder().addCallback(new SurfaceHolder.Callback() {
+        videoPlayView.getHolder().addCallback(new SurfaceHolder.Callback() {
 
             //创建了新的Surface
             @Override
@@ -615,21 +623,15 @@ public class MainActivity extends AppCompatActivity {
                 if (!isFastClick()) {
                     return;
                 }
-                if (!isPlaying) {
-                    //打开视频
-                    Log.e("usb++","deviceList"+deviceList.size());
-                    if(deviceList.size()==0){
-                        deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
+                if (mCameraHelper != null) {
+                    final List<UsbDevice> list = mCameraHelper.getDeviceList();
+                    if (list != null && list.size() > 0) {
+                        mCameraHelper.selectDevice(list.get(0));
                     }
-                    if (deviceList.size() == 0) {
-                        Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    mUSBMonitor.requestPermission(deviceList.get(0));
                 }
                 break;
             case R.id.close_video:
-                mCameraHelper.release();
+                mCameraHelper.closeCamera();
                 break;
             case R.id.changKai:
                 if (changkaiFlag == 1) {
@@ -1608,80 +1610,80 @@ public class MainActivity extends AppCompatActivity {
 
 
     //本地摄像头链接
-    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
-        @Override
-        public void onAttach(final UsbDevice device) {
-//            Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
-            Log.e("usb++","connect");
-            queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    if(camera==null)
-                    camera = new UVCCamera();
-                    camera.setStatusCallback(new IStatusCallback() {
-                        @Override
-                        public void onStatus(final int statusClass, final int event, final int selector,
-                                             final int statusAttribute, final ByteBuffer data) {
-                            Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    int i = camera.open(ctrlBlock);
-                    Log.e("摄像头", "--state"+i);
-                    if (i != 0) {
-                        return;
-                    }
-                    if (mPreviewSurface != null) {
-                        mPreviewSurface.release();
-                        mPreviewSurface = null;
-                    }
-                    final SurfaceTexture st = videoPlayView.getSurfaceTexture();
-                    if (st != null) {
-                        mPreviewSurface = new Surface(st);
-                        camera.setPreviewDisplay(mPreviewSurface);
-                        camera.startPreview();
-                        Log.e("摄像头", "--start");
-                    }
-
-                    videoPlayView.setAspectRatio(742, 435);
-                    ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
-                    params.width = 435;
-                    params.height = 752;
-                    videoPlayView.setLayoutParams(params);
-                    videoPlayView.setRotation(-270f);
-                    isStart=true;
-                    isPlaying = true;
-                    handler.sendEmptyMessageDelayed(13,2000);
-                    bg.setVisibility(View.GONE);
-                    handler.removeMessages(LEAVE);
-                    handler.sendEmptyMessageDelayed(LEAVE, 120000);
-                }
-            }, 0);
-        }
-
-        @Override
-        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
-            // XXX you should check whether the coming device equal to camera device that currently using
-
-        }
-
-        @Override
-        public void onDettach(final UsbDevice device) {
-            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCancel(final UsbDevice device) {
-        }
-    };
+//    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+//        @Override
+//        public void onAttach(final UsbDevice device) {
+////            Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
+//            Log.e("usb++","connect");
+//            queueEvent(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if(camera==null)
+//                    camera = new UVCCamera();
+//                    camera.setStatusCallback(new IStatusCallback() {
+//                        @Override
+//                        public void onStatus(final int statusClass, final int event, final int selector,
+//                                             final int statusAttribute, final ByteBuffer data) {
+//                            Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//
+//                    int i = camera.open(ctrlBlock);
+//                    Log.e("摄像头", "--state"+i);
+//                    if (i != 0) {
+//                        return;
+//                    }
+//                    if (mPreviewSurface != null) {
+//                        mPreviewSurface.release();
+//                        mPreviewSurface = null;
+//                    }
+//                    final SurfaceTexture st = videoPlayView.getSurfaceTexture();
+//                    if (st != null) {
+//                        mPreviewSurface = new Surface(st);
+//                        camera.setPreviewDisplay(mPreviewSurface);
+//                        camera.startPreview();
+//                        Log.e("摄像头", "--start");
+//                    }
+//
+//                    videoPlayView.setAspectRatio(742, 435);
+//                    ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
+//                    params.width = 435;
+//                    params.height = 752;
+//                    videoPlayView.setLayoutParams(params);
+//                    videoPlayView.setRotation(-270f);
+//                    isStart=true;
+//                    isPlaying = true;
+//                    handler.sendEmptyMessageDelayed(13,2000);
+//                    bg.setVisibility(View.GONE);
+//                    handler.removeMessages(LEAVE);
+//                    handler.sendEmptyMessageDelayed(LEAVE, 120000);
+//                }
+//            }, 0);
+//        }
+//
+//        @Override
+//        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
+//            // XXX you should check whether the coming device equal to camera device that currently using
+//
+//        }
+//
+//        @Override
+//        public void onDettach(final UsbDevice device) {
+//            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onCancel(final UsbDevice device) {
+//        }
+//    };
 
     private synchronized void releaseCamera() {
         closeVideo.setVisibility(View.INVISIBLE);
-        bg.setVisibility(View.VISIBLE);
+//        bg.setVisibility(View.VISIBLE);
         if (!isPlaying) {
             return;
         }
