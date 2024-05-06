@@ -165,9 +165,9 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                 new XPopup.Builder(mContext)
                         .dismissOnTouchOutside(true)
                         .asCustom(new WifiInfoPopup(mContext, wifiManager.getConnectionInfo(), mCapabilities, ssid -> {
-                            boolean remove = forgetWifiNetwork(removeQuotes(ssid));
+                            //忽略网络
+                            forgetWifiNetwork(removeQuotes(ssid));
                             wifiManager.disconnect();
-//                            forgetNetwork(wifiManager, wifiManager.getConnectionInfo().getNetworkId());
                             mCurrentWifiCl.setVisibility(View.GONE);
                             updateWifiList();
                         }))
@@ -309,6 +309,8 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         }
     }
 
+    private String connectionSsid;
+
     /**
      * wifi监听广播
      */
@@ -336,7 +338,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                     case WifiManager.SUPPLICANT_STATE_CHANGED_ACTION:
                         SupplicantState state = intent.getParcelableExtra(WifiManager.EXTRA_NEW_STATE);
                         int supplicantError = intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
-                        if (state == SupplicantState.ASSOCIATING && supplicantError == WifiManager.ERROR_AUTHENTICATING) {
+                        if (supplicantError == WifiManager.ERROR_AUTHENTICATING) {
                             // 密码错误
                             if (basePopup == null || basePopup.isDismiss()) {
                                 basePopup = new XPopup.Builder(mContext)
@@ -344,14 +346,18 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                                         .asCustom(new AlarmPopup(mContext, "密码错误", "知道了"));
                                 basePopup.show();
                             }
-                            forgetWifiNetwork(wifiManager.getConnectionInfo().getSSID());
+                            if (!TextUtils.isEmpty(connectionSsid)) {
+                                forgetWifiNetwork(removeQuotes(connectionSsid));
+                            }
                         } else if (state == SupplicantState.ASSOCIATING) {
                             // 正在尝试连接
                             wifiConnecting();
+                        } else if (state == SupplicantState.FOUR_WAY_HANDSHAKE) {
+                            //连接中，记住ssid密码错误时遗忘
+                            connectionSsid = wifiManager.getConnectionInfo().getSSID();
                         }
                         break;
                     case WifiManager.WIFI_STATE_CHANGED_ACTION:
-
                         int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
                         switch (wifiState) {
                             case WifiManager.WIFI_STATE_DISABLED://关闭
@@ -399,6 +405,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                 }
             }
         }
+        connectionSsid = "";
         return result;
     }
 
@@ -454,6 +461,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                         //已连接
                         mConnectIcon.setVisibility(View.VISIBLE);
                         linksPb.setVisibility(View.GONE);
+                        connectionSsid = "";
                     }
                 }
             }
