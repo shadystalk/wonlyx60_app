@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -35,6 +36,8 @@ import butterknife.Unbinder;
  *  * @Date 17:23
  */
 public class AlarmMsgFragment extends Fragment {
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.recycler_view_alarm_msg)
     RecyclerView alarmMsgRy;
     @BindView(R.id.tv_empty)
@@ -47,6 +50,13 @@ public class AlarmMsgFragment extends Fragment {
         View view = inflater.inflate(R.layout.alarm_msg_fragment, container, false);
         unbinder = ButterKnife.bind(this, view);
         initData();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 执行刷新操作，比如重新加载数据
+                initData();
+            }
+        });
         return view;
     }
 
@@ -55,12 +65,12 @@ public class AlarmMsgFragment extends Fragment {
      */
     public void initData(){
         JSONObject requestBody = new JSONObject();
-        try {
-            //供应商
-            requestBody.put("vendorName","wja");
-        } catch (Exception e) {
-           e.printStackTrace();
-        }
+//        try {
+//            //供应商
+//            requestBody.put("vendorName","wja");
+//        } catch (Exception e) {
+//           e.printStackTrace();
+//        }
         OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(getContext())).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
@@ -68,6 +78,7 @@ public class AlarmMsgFragment extends Fragment {
                     //拿到结果的时候，页面可能已经销毁了，
                     return;
                 }
+                swipeRefreshLayout.setRefreshing(false);
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
                 if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
@@ -104,6 +115,7 @@ public class AlarmMsgFragment extends Fragment {
 
             @Override
             public void onError(Response<String> response) {
+                swipeRefreshLayout.setRefreshing(false);
                 Toast.makeText(getContext(), "数据请求失败，请稍后再试", Toast.LENGTH_SHORT).show();
                 super.onError(response);
             }

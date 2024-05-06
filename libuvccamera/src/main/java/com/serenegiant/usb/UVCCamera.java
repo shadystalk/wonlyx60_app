@@ -200,6 +200,7 @@ public class UVCCamera {
 		} catch (final Exception e) {
 			Log.w(TAG, e);
 			result = -1;
+            return result;
 		}
 		if (result != 0) {
 			throw new UnsupportedOperationException("open failed:result=" + result);

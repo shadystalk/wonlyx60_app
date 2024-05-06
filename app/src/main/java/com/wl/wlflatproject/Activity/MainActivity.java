@@ -367,7 +367,7 @@ public class MainActivity extends AppCompatActivity {
     public void initMsgData(){
         JSONObject requestBody = new JSONObject();
         try {
-            requestBody.put("vendorName","wja");
+//            requestBody.put("vendorName","wja");
             //最多展示10條
             requestBody.put("pageSize","10");
         } catch (Exception e) {
