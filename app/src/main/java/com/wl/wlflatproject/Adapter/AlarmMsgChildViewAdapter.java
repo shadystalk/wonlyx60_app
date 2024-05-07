@@ -54,8 +54,14 @@ public class AlarmMsgChildViewAdapter extends RecyclerView.Adapter<AlarmMsgChild
         }else {
             holder.picImg.setVisibility(View.VISIBLE);
             holder.picImg.setOnClickListener(view -> {
+                int imgOrientation=0;
                 //弹窗查看图片
-                MediaDialog dialog = new MediaDialog(context, data.getPicPath(), true, R.style.mDialog);
+                try {
+                    imgOrientation=Integer.parseInt(data.getImgOrientation());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                MediaDialog dialog = new MediaDialog(context, data.getPicPath(), true, R.style.mDialog,imgOrientation);
                 dialog.show();
             });
         }

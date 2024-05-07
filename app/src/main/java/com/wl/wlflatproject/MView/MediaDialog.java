@@ -23,6 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.blankj.utilcode.util.ScreenUtils;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.wl.wlflatproject.MUtils.RotateTransformation;
 import com.wl.wlflatproject.R;
 
 public class MediaDialog extends Dialog {
@@ -30,6 +31,7 @@ public class MediaDialog extends Dialog {
 
     private String mUrl;
 
+    private Context mContext;
     private ImageView imageView, playIv;
     private ConstraintLayout mainLayout;
 
@@ -39,6 +41,7 @@ public class MediaDialog extends Dialog {
     private MediaPlayer mediaPlayer;
 
     private ProgressBar loadingBar;
+    private int imgOrientation;
 
     /**
      * 媒体显示窗
@@ -51,7 +54,15 @@ public class MediaDialog extends Dialog {
         super(context, themeResId);
         mUrl = url;
         isImage = image;
+        this.mContext=context;
+    }
 
+    public MediaDialog(@NonNull Context context, String url, boolean image, int themeResId, int imgOrientation) {
+        super(context, themeResId);
+        mUrl = url;
+        isImage = image;
+        this.imgOrientation = imgOrientation;
+        this.mContext=context;
     }
 
     @Override
@@ -87,8 +98,10 @@ public class MediaDialog extends Dialog {
      */
     private void initPicView() {
         imageView.setVisibility(VISIBLE);
-
-        Glide.with(getContext()).load(mUrl).into(imageView);
+//        if (imgOrientation != 0) {
+//            imageView.setRotation(imgOrientation);
+//        }
+        Glide.with(getContext()).load(mUrl).transform(new RotateTransformation(imgOrientation,Glide.get(mContext).getBitmapPool())).into(imageView);
     }
 
     /**
