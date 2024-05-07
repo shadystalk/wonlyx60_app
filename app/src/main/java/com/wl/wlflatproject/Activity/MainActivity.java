@@ -54,6 +54,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.amap.api.location.AMapLocation;
 import com.blankj.utilcode.util.ToastUtils;
@@ -121,6 +122,8 @@ import butterknife.OnClick;
 import ru.sir.ymodem.YModem;
 
 public class MainActivity extends AppCompatActivity {
+    @BindView(R.id.swipeRefreshLayout)
+    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.time)
     TextView time;
     @BindView(R.id.video_play_view)
@@ -359,6 +362,13 @@ public class MainActivity extends AppCompatActivity {
             messageDate.setText(messageDateS);
         }
         initMsgData();
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // 执行刷新操作，比如重新加载数据
+                initMsgData();
+            }
+        });
     }
 
     /**
@@ -376,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
         OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
+                swipeRefreshLayout.setRefreshing(false);
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
                 if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
@@ -413,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Response<String> response) {
+                swipeRefreshLayout.setRefreshing(false);
                 super.onError(response);
             }
         });
