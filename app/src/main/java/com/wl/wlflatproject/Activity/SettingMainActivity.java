@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,11 +22,15 @@ import com.wl.wlflatproject.Fragment.AfterSaleFragment;
 import com.wl.wlflatproject.Fragment.BindFragment;
 import com.wl.wlflatproject.Fragment.DeviceDynamicsFragment;
 import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
-import com.wl.wlflatproject.Fragment.SystemNetFragment;
 import com.wl.wlflatproject.Fragment.OpenMachineFragment;
+import com.wl.wlflatproject.Fragment.SystemNetFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.R;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +66,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_setting_main);
+        EventBus.getDefault().register(this);
         ButterKnife.bind(this);
         timeReceiver = new TimeReceiver();
         setTime();
@@ -187,7 +191,18 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         }
     }
 
-    public class TimeReceiver extends BroadcastReceiver {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(TimeEvent bean) {
+        setTime();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
+    public static class TimeReceiver extends BroadcastReceiver {
         public TimeReceiver() {
         }
 
@@ -197,9 +212,12 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
             if (Intent.ACTION_TIME_CHANGED.equals(action) || Intent.ACTION_TIMEZONE_CHANGED.equals(action)
                     || Intent.ACTION_TIME_TICK.equals(action)) {
                 // 处理时间变化的逻辑
-                setTime();
+                EventBus.getDefault().post(new TimeEvent());
             }
         }
+    }
+
+    public static class TimeEvent {
     }
 
 }
