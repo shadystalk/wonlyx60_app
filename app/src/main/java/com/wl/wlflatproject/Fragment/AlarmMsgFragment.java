@@ -85,6 +85,7 @@ public class AlarmMsgFragment extends Fragment {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         if(data.size()!=0) {
+                            alarmMsgRy.setVisibility(View.VISIBLE);
                             // 创建主RecyclerView的适配器
                             AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(getActivity(), data);
 
@@ -102,13 +103,16 @@ public class AlarmMsgFragment extends Fragment {
                             // 设置主RecyclerView的适配器
                             alarmMsgRy.setAdapter(adapter);
                         }else {
+                            alarmMsgRy.setVisibility(View.GONE);
                             emptyTv.setVisibility(View.VISIBLE);
                         }
                     }else {
+                        alarmMsgRy.setVisibility(View.GONE);
                         emptyTv.setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
+                    alarmMsgRy.setVisibility(View.GONE);
                     emptyTv.setVisibility(View.VISIBLE);
                 }
             }

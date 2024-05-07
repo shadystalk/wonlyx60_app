@@ -88,6 +88,7 @@ public class OpenRecordFragment extends Fragment {
                     List<OpenRecordMsgBean.OpenRecordMsgDataBean> data = infoBean.getData();
                     if (data != null) {
                         if(data.size()!=0){
+                            msgRecyclerView.setVisibility(View.VISIBLE);
                             emptyTv.setVisibility(View.GONE);
                             // 创建主RecyclerView的适配器
                             OpenRecordParentViewAdapter adapter = new OpenRecordParentViewAdapter(getActivity(), data);
@@ -107,13 +108,16 @@ public class OpenRecordFragment extends Fragment {
                             msgRecyclerView.setAdapter(adapter);
                         }else {
                             emptyTv.setVisibility(View.VISIBLE);
+                            msgRecyclerView.setVisibility(View.GONE);
                         }
                     }else {
                         emptyTv.setVisibility(View.VISIBLE);
+                        msgRecyclerView.setVisibility(View.GONE);
                     }
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
                     emptyTv.setVisibility(View.VISIBLE);
+                    msgRecyclerView.setVisibility(View.GONE);
                     Toast.makeText(getContext(), infoBean.getMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
