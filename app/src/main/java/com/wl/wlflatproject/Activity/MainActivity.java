@@ -709,6 +709,7 @@ public class MainActivity extends AppCompatActivity {
                                             SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, id);
                                             setMq();
                                         }
+                                        initMsgData();
                                         break;
                                     case 14://前板版本号
                                         String fVer = split[1];
