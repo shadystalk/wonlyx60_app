@@ -24,8 +24,9 @@
         <activity
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="stateAlwaysHidden|adjustUnspecified">
+        >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

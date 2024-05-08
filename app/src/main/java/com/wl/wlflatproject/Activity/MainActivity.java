@@ -1560,7 +1560,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDettach(final UsbDevice device) {
-            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
         }
 
         @Override

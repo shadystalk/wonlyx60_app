@@ -12,7 +12,8 @@ import java.security.NoSuchAlgorithmException;
 import android.util.Base64;
 
 public class ApiSrevice {
-    public static String baseUrl = "https://ums-test.wonlycloud.com:10301";
+//    public static String baseUrl = "https://ums-test.wonlycloud.com:10301";//测试
+    public static String baseUrl = "https://ums-ag.wonlycloud.com:10301";
 
     public static String searchInfo = baseUrl + "/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
     /**

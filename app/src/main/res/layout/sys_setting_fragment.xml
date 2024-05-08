@@ -321,7 +321,7 @@
                         android:gravity="center"
                         android:paddingStart="56dp"
                         android:paddingEnd="56dp"
-                        android:text="叮咚叮咚"
+                        android:text="铃声1"
                         android:textColor="@color/white"
                         android:textSize="24sp" />
 
@@ -336,7 +336,7 @@
                         android:gravity="center"
                         android:paddingStart="56dp"
                         android:paddingEnd="56dp"
-                        android:text="默认铃声01"
+                        android:text="铃声2"
                         android:textColor="@color/white"
                         android:textSize="24sp" />
 
@@ -351,7 +351,7 @@
                         android:gravity="center"
                         android:paddingStart="56dp"
                         android:paddingEnd="56dp"
-                        android:text="默认铃声02"
+                        android:text="铃声3"
                         android:textColor="@color/white"
                         android:textSize="24sp" />
                 </RadioGroup>
