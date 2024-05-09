@@ -18,12 +18,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.SurfaceTexture;
+import android.hardware.Camera;
 import android.hardware.usb.UsbDevice;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.opengl.GLES11Ext;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,9 +35,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -99,6 +104,7 @@ import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
+
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
@@ -127,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.time)
     TextView time;
     @BindView(R.id.video_play_view)
-    SimpleUVCCameraTextureView videoPlayView;
+    SurfaceView videoPlayView;
     @BindView(R.id.lock_bt)
     LinearLayout lockBt;
     @BindView(R.id.video_iv)
@@ -183,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
     TextView messageTv;
     @BindView(R.id.bg)
     ImageView bg;
-
     @BindView(R.id.view_next)
     ImageView msgReminderNext;
 
@@ -230,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case LEAVE: //有人离开
-                    releaseCamera();
+                    stopCamera();
                     Log.e("有人离开停止视频", "..");
                     break;
                 case DOWN_LOAD_APK://下载apk
@@ -258,9 +263,7 @@ public class MainActivity extends AppCompatActivity {
 //                    serialPort.readCode(dataListener);
 //                    break;
                 case CAMERA_INIT:
-                    mWorkerThreadID = handler.getLooper().getThread().getId();
                     initSerialPort();
-                    releaseCamera();
                     break;
                 case 13:
                     closeVideo.setVisibility(View.VISIBLE);
@@ -293,13 +296,15 @@ public class MainActivity extends AppCompatActivity {
     private USBMonitor mUSBMonitor;
     private boolean isPlaying = false;
     private UVCCamera camera;
-    private HashMap<Integer,UsbDevice> deviceList;
+    private HashMap<Integer, UsbDevice> deviceList;
     private MediaPlayer mediaplayer;
     private List<DeviceFilter> filter;
     private PopupWindow clearPopupWindow;
     private String devType;
     private Runnable runnable;
     private PowerManager.WakeLock wakeLock;
+    private SurfaceHolder mSurfaceHolder;
+    private TSurfaceHolderCallback mSurfaceHolderCallback;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -315,17 +320,17 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("InvalidWakeLockTag")
     private void initData() {
-        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID,"");
+        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
         wakeLock.acquire();
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
-        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
-        mUSBMonitor.register();
+//        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
+//        mUSBMonitor.register();
         filter = DeviceFilter.getDeviceFilters(this,
                 com.serenegiant.uvccamera.R.xml.device_filter);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
-        if (deviceList==null||deviceList.size() < 1) {
+        if (deviceList == null || deviceList.size() < 1) {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
         }
         threads = Executors.newFixedThreadPool(4);
@@ -335,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
         handler.removeMessages(TIME);
         if (dialogTime == null)
             dialogTime = new WaitDialogTime(this, android.R.style.Theme_Translucent_NoTitleBar);
-        handler.sendEmptyMessageDelayed(PERMISSION,10000);
+        handler.sendEmptyMessageDelayed(PERMISSION, 10000);
         Log.e("获得Mac地址", id + "");
         rbmq = new RbMqUtils();
         bean.setAck(0);
@@ -355,9 +360,9 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
         messageEdit.setCursorVisible(false);
         initListener();
-        String messageS=SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE,"");
-        String messageDateS=SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE_DATE,"");
-        if(!TextUtils.isEmpty(messageDateS)){
+        String messageS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE, "");
+        String messageDateS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE_DATE, "");
+        if (!TextUtils.isEmpty(messageDateS)) {
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
         }
@@ -369,19 +374,20 @@ public class MainActivity extends AppCompatActivity {
                 initMsgData();
             }
         });
+        createPreviewView();
     }
 
     /**
      * 请求首页告警消息记录
      */
-    public void initMsgData(){
+    public void initMsgData() {
         JSONObject requestBody = new JSONObject();
         try {
 //            requestBody.put("vendorName","wja");
             //最多展示10條
-            requestBody.put("pageSize","10");
+            requestBody.put("pageSize", "10");
         } catch (Exception e) {
-          e.printStackTrace();
+            e.printStackTrace();
         }
         OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
@@ -393,13 +399,13 @@ public class MainActivity extends AppCompatActivity {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
                         // 创建主RecyclerView的适配器
-                        AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(MainActivity.this, data){
+                        AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(MainActivity.this, data) {
                             @Override
                             public void onBindViewHolder(ViewHolder holder, int position) {
                                 super.onBindViewHolder(holder, position);
                                 //适配器跟设置的设备动态页面是共用的，但是首页这边的有个偏移，特殊处理
-                                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams)  holder.dateTv.getLayoutParams();
-                                layoutParams.leftMargin=10;
+                                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) holder.dateTv.getLayoutParams();
+                                layoutParams.leftMargin = 10;
                                 holder.dateTv.setLayoutParams(layoutParams);
                             }
                         };
@@ -435,9 +441,9 @@ public class MainActivity extends AppCompatActivity {
         messageTv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if(clearPopupWindow==null){
+                if (clearPopupWindow == null) {
                     View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
-                    clearPopupWindow = new PopupWindow(inflate, 150,65, true);
+                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
                     inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -447,7 +453,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     });
                 }
-                clearPopupWindow.showAsDropDown(changKai,40,-22);
+                clearPopupWindow.showAsDropDown(changKai, 40, -22);
 
                 return false;
             }
@@ -465,15 +471,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if(messageEdit.getText().toString().length()!=0){
+                if (messageEdit.getText().toString().length() != 0) {
                     String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
                     messageDate.setText(s);
-                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE,messageEdit.getText().toString());
-                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE,s);
-                    if(messageEdit.getText().toString().length()==55){
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE, messageEdit.getText().toString());
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE, s);
+                    if (messageEdit.getText().toString().length() == 55) {
                         ToastUtils.showShort("字数超限制");
                     }
-                }else{
+                } else {
                     messageDate.setText("");
                 }
             }
@@ -481,13 +487,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @OnClick({R.id.close_video, R.id.date_tv,R.id.calendar_cn_tv,R.id.changKai, R.id.setting, R.id.lock_bt,
-            R.id.weather_ll,  R.id.video_iv,R.id.view_next})
+    @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
+            R.id.weather_ll, R.id.video_iv, R.id.view_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
-                 Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                 startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
+                startActivity(intent);
                 break;
             case R.id.lock_bt://开门
                 dialogTime.show();
@@ -499,25 +505,19 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (!isPlaying) {
                     //打开视频
-                    Log.e("usb++","deviceList"+deviceList.size());
-                    if(deviceList.size()==0){
+                    Log.e("usb++", "deviceList" + deviceList.size());
+                    if (deviceList.size() == 0) {
                         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
                     }
                     if (deviceList.size() == 0) {
                         Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
                         return;
                     }
-//                    Set<Integer> set = deviceList.keySet();
-//                    set.iterator().next();
-//                    if(isStart){
-                        mUSBMonitor.requestPermission(deviceList.get(0));
-//                    }else{
-//                        ToastUtils.showLong("正在初始化请稍后");
-//                    }
+                    startCamera();
                 }
                 break;
             case R.id.close_video:
-                releaseCamera();
+                stopCamera();
                 break;
             case R.id.changKai:
                 if (changkaiFlag == 1) {
@@ -557,7 +557,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.view_next:
                 intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                intent.putExtra(POSITION_PARAM_KEY,3);
+                intent.putExtra(POSITION_PARAM_KEY, 3);
                 startActivity(intent);
                 break;
             default:
@@ -572,7 +572,7 @@ public class MainActivity extends AppCompatActivity {
         //发送端
         rbmq.publishToAMPQ("");
         //接收端
-        String s = id+"_robot" ;
+        String s = id + "_robot";
         rbmq.subscribe(s);
         rbmq.setUpConnectionFactory();
         rbmq.setRbMsgListener(new RbMqUtils.OnRbMsgListener() {
@@ -592,9 +592,9 @@ public class MainActivity extends AppCompatActivity {
                         case 0x1001://通知小管家
                             break;
                         case 4103://绑定  解绑
-                                InfoBean infoBean = new InfoBean();
-                                infoBean.setCode(baseBean.getBind());
-                                EventBus.getDefault().post(infoBean);
+                            InfoBean infoBean = new InfoBean();
+                            infoBean.setCode(baseBean.getBind());
+                            EventBus.getDefault().post(infoBean);
                             break;
                         default:
                             break;
@@ -631,7 +631,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (data.contains("AT+CDOOR=")) {
                             String[] split = data.split("=");
-                            if(split.length<2){
+                            if (split.length < 2) {
                                 return;
                             }
                             switch (split[1]) {
@@ -678,7 +678,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else if (data.contains("AT+DEFAULT=")) {
                             String[] s = data.split("=");
-                            if(s.length<2){
+                            if (s.length < 2) {
                                 return;
                             }
                             String[] split = s[1].split(",");
@@ -703,7 +703,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         break;
                                     case 13://唯一id1
-                                        if(TextUtils.isEmpty(id)){
+                                        if (TextUtils.isEmpty(id)) {
                                             id = split[1];
                                             bean.setDevId(id);
                                             SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, id);
@@ -726,19 +726,19 @@ public class MainActivity extends AppCompatActivity {
                                     default:
                                         break;
                                 }
-                            }catch (Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         } else if (data.contains("AT+ALWAYSOPEN=1")) {//常开
                             changkaiFlag = 2;
                             if (dialogTime != null && dialogTime.isShowing())
-                            dialogTime.dismiss();
+                                dialogTime.dismiss();
                             changKai.setBackgroundResource(R.drawable.cancel_changkai);
                             ToastUtils.showShort("门已常开");
                         } else if (data.contains("AT+CLOSEALWAYSOPEN=1")) {//取消常开
                             changkaiFlag = 1;
                             if (dialogTime != null && dialogTime.isShowing())
-                            dialogTime.dismiss();
+                                dialogTime.dismiss();
                             changKai.setBackgroundResource(R.drawable.changkai);
                             ToastUtils.showShort("门已取消常开");
                         } else if (data.contains("AT+CDWAKE=1")) {    //有人   但是不打开视频
@@ -760,7 +760,7 @@ public class MainActivity extends AppCompatActivity {
 
                         } else if (data.contains("AT+CDECT=")) {
                             String[] split = data.split("=");
-                            if(split.length<2){
+                            if (split.length < 2) {
                                 return;
                             }
                             String[] split1 = split[1].split(",");
@@ -791,7 +791,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else if (data.contains("AT+MIPLNOTIFY=")) {//加密消息上报给服务器
                             String[] split = data.split(",");
-                            if(split.length<1){
+                            if (split.length < 1) {
                                 return;
                             }
                             String s = split[split.length - 1];
@@ -820,7 +820,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                         } else if (data.contains("AT+VER=")) { //防夹版本号
                             String[] split = data.split("=V");
-                            if(split.length<2){
+                            if (split.length < 2) {
                                 return;
                             }
                             plankVersionCode = Float.parseFloat(split[1]);
@@ -858,7 +858,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     /**
      * 初始化日历
      */
@@ -866,7 +865,7 @@ public class MainActivity extends AppCompatActivity {
         DateUtils instance = DateUtils.getInstance();
         //日期
         String dayOrMonthOrYear = instance.getDayOrMonthOrYear1(System.currentTimeMillis());
-        dateTv.setText(dayOrMonthOrYear+"  "+instance.getWeekday(System.currentTimeMillis(), true));
+        dateTv.setText(dayOrMonthOrYear + "  " + instance.getWeekday(System.currentTimeMillis(), true));
         //星期
         //农历
         //猪 贰零壹玖 润 六月 小廿八 己亥 辛未 戊辰
@@ -885,7 +884,7 @@ public class MainActivity extends AppCompatActivity {
         mLocationUtils.startLocation();
         String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear1(System.currentTimeMillis());
         String weekday = dateUtils.getWeekday(System.currentTimeMillis(), true);
-        dateTv.setText(dayOrMonthOrYear+"  "+weekday);
+        dateTv.setText(dayOrMonthOrYear + "  " + weekday);
         hideBottomUIMenu();
     }
 
@@ -918,7 +917,7 @@ public class MainActivity extends AppCompatActivity {
         Log.e("串口；", "ondestroy");
         serialPort.close();
         serialPort.flag = false;
-        releaseCamera();
+        stopCamera();
         mLocationUtils.destroyLocationClient();
         unregisterReceiver(receiver);
         if (camera != null) {
@@ -977,7 +976,7 @@ public class MainActivity extends AppCompatActivity {
                 if (hour == 0) {
                     //日期
                     String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear1(System.currentTimeMillis());
-                    dateTv.setText(dayOrMonthOrYear+"  "+dateUtils.getWeekday(System.currentTimeMillis(), true));
+                    dateTv.setText(dayOrMonthOrYear + "  " + dateUtils.getWeekday(System.currentTimeMillis(), true));
                     //星期
                     //农历
                     //农历
@@ -1060,7 +1059,7 @@ public class MainActivity extends AppCompatActivity {
             boolean night = dateUtils.isNight();
             //当前天气
             GDFutureWeatherBean.ForecastsBean.CastsBean todayWeather = beanCasts.get(0);
-            todayExtentTv.setText("最高 "+todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
+            todayExtentTv.setText("最高 " + todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
 
             //后两天天气
             GDFutureWeatherBean.ForecastsBean.CastsBean secondWeather = beanCasts.get(1);
@@ -1171,7 +1170,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
         tvW.setText(date);
-        tv.setText(w+"   "+dayTemp + "/" + nightTemp + "°c");
+        tv.setText(w + "   " + dayTemp + "/" + nightTemp + "°c");
     }
 
     @Override
@@ -1189,7 +1188,6 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
-
 
 
     private void requestPermission() {
@@ -1433,8 +1431,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     public boolean installApp(String apkPath) {
         Process process = null;
         BufferedReader successResult = null;
@@ -1474,8 +1470,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
     //防止断电回滚
     public void Sync() {
         try {
@@ -1497,105 +1491,77 @@ public class MainActivity extends AppCompatActivity {
 
 
     //本地摄像头链接
-    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
-        @Override
-        public void onAttach(final UsbDevice device) {
-//            Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
-        }
+//    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+//        @Override
+//        public void onAttach(final UsbDevice device) {
+////            Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
+//            Log.e("usb++","connect");
+//            queueEvent(new Runnable() {
+//                @Override
+//                public void run() {
+//                    if(camera==null)
+//                    camera = new UVCCamera();
+//                    camera.setStatusCallback(new IStatusCallback() {
+//                        @Override
+//                        public void onStatus(final int statusClass, final int event, final int selector,
+//                                             final int statusAttribute, final ByteBuffer data) {
+//                            Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
+//                        }
+//                    });
+//
+//                    int i = camera.open(ctrlBlock);
+//                    Log.e("摄像头", "--state"+i);
+//                    if (i != 0) {
+//                        return;
+//                    }
+//                    if (mPreviewSurface != null) {
+//                        mPreviewSurface.release();
+//                        mPreviewSurface = null;
+//                    }
+//                    final SurfaceTexture st = videoPlayView.getSurfaceTexture();
+//                    if (st != null) {
+//                        mPreviewSurface = new Surface(st);
+//                        camera.setPreviewDisplay(mPreviewSurface);
+//                        camera.startPreview();
+//                        Log.e("摄像头", "--start");
+//                    }
+//
+//                    videoPlayView.setAspectRatio(742, 435);
+//                    ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
+//                    params.width = 435;
+//                    params.height = 752;
+//                    videoPlayView.setLayoutParams(params);
+//                    videoPlayView.setRotation(-270f);
+//                    isStart=true;
+//                    isPlaying = true;
+//                    handler.sendEmptyMessageDelayed(13,2000);
+//                    bg.setVisibility(View.GONE);
+//                    handler.removeMessages(LEAVE);
+//                    handler.sendEmptyMessageDelayed(LEAVE, 120000);
+//                }
+//            }, 0);
+//        }
+//
+//        @Override
+//        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
+//            // XXX you should check whether the coming device equal to camera device that currently using
+//
+//        }
+//
+//        @Override
+//        public void onDettach(final UsbDevice device) {
+////            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
+//        }
+//
+//        @Override
+//        public void onCancel(final UsbDevice device) {
+//        }
+//    };
 
-        @Override
-        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
-            Log.e("usb++","connect");
-            queueEvent(new Runnable() {
-                @Override
-                public void run() {
-                    if(camera==null)
-                    camera = new UVCCamera();
-                    camera.setStatusCallback(new IStatusCallback() {
-                        @Override
-                        public void onStatus(final int statusClass, final int event, final int selector,
-                                             final int statusAttribute, final ByteBuffer data) {
-                            Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-                    int i = camera.open(ctrlBlock);
-                    Log.e("摄像头", "--state"+i);
-                    if (i != 0) {
-                        return;
-                    }
-                    if (mPreviewSurface != null) {
-                        mPreviewSurface.release();
-                        mPreviewSurface = null;
-                    }
-                    final SurfaceTexture st = videoPlayView.getSurfaceTexture();
-                    if (st != null) {
-                        mPreviewSurface = new Surface(st);
-                        camera.setPreviewDisplay(mPreviewSurface);
-                        camera.startPreview();
-                        Log.e("摄像头", "--start");
-                    }
-
-                    videoPlayView.setAspectRatio(742, 435);
-                    ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
-                    params.width = 435;
-                    params.height = 752;
-                    videoPlayView.setLayoutParams(params);
-                    videoPlayView.setRotation(-270f);
-                    isStart=true;
-                    isPlaying = true;
-                    handler.sendEmptyMessageDelayed(13,2000);
-                    bg.setVisibility(View.GONE);
-                    handler.removeMessages(LEAVE);
-                    handler.sendEmptyMessageDelayed(LEAVE, 120000);
-                }
-            }, 0);
-        }
-
-        @Override
-        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
-            // XXX you should check whether the coming device equal to camera device that currently using
-
-        }
-
-        @Override
-        public void onDettach(final UsbDevice device) {
-//            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onCancel(final UsbDevice device) {
-        }
-    };
-
-    private synchronized void releaseCamera() {
-        closeVideo.setVisibility(View.INVISIBLE);
-        bg.setVisibility(View.VISIBLE);
-        if (!isPlaying) {
-            return;
-        }
-        threads.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (camera != null) {
-                    try {
-                        camera.destroy();
-                        camera.setStatusCallback(null);
-                        camera.setButtonCallback(null);
-                        camera = null;
-                    } catch (final Exception e) {
-                        Log.e("摄像头", "--关闭报错"+e.getMessage());
-                    }
-                }
-                if (mPreviewSurface != null) {
-                    mPreviewSurface.release();
-                    mPreviewSurface = null;
-                }
-                isPlaying = false;
-                Log.e("摄像头", "--关闭");
-            }
-        });
-    }
 
     protected final synchronized void queueEvent(final Runnable task, final long delayMillis) {
         if ((task == null) || (handler == null)) return;
@@ -1612,6 +1578,7 @@ public class MainActivity extends AppCompatActivity {
             // ignore
         }
     }
+
     private void playAudio(@RawRes int audioResId) {
         try {
             mediaplayer.reset();
@@ -1632,6 +1599,88 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+    }
+
+    public boolean createPreviewView() {
+        mSurfaceHolder = videoPlayView.getHolder();
+//        mSurfaceView.setZOrderMediaOverlay(true);
+        Log.e("start", "添加回调");
+        mSurfaceHolderCallback = new TSurfaceHolderCallback();
+
+        mSurfaceHolder.addCallback(mSurfaceHolderCallback);
+
+        return true;
+    }
+
+    private class TSurfaceHolderCallback implements SurfaceHolder.Callback {
+
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        }
+
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+
+        }
+
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+
+        }
+    }
+
+    private Camera mCamera0 = null;
+    int mCameraId = -1;
+
+    private boolean startCamera() {
+        //(Camera.CameraInfo.CAMERA_FACING_BACK);
+        Log.e("start", "开启摄像头");
+        if (isPlaying) {
+            return false;
+        }
+        int num = Camera.getNumberOfCameras();
+        if (num > 2)
+            mCameraId = 2;
+        else
+            mCameraId = 0;
+        Camera.CameraInfo camInfo = new Camera.CameraInfo();
+        try {
+            Camera.getCameraInfo(mCameraId, camInfo);
+            if (mCameraId != -1) {
+                mCamera0 = Camera.open(mCameraId);
+            } else {
+                mCamera0 = Camera.open();
+            }
+        } catch (RuntimeException e) {
+            Toast toast = Toast.makeText(this, "Unable to open camera!", Toast.LENGTH_LONG);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+            Log.e("start", "开启失败");
+            return false;
+        }
+        try {
+            mCamera0.setPreviewDisplay(mSurfaceHolder);
+            mCamera0.startPreview();
+            bg.setVisibility(View.GONE);
+            closeVideo.setVisibility(View.VISIBLE);
+            isPlaying = true;
+        } catch (Exception e) {
+            mCamera0.release();
+            return false;
+        }
+        return true;
+    }
+
+    private void stopCamera() {
+        if (isPlaying) {
+            mCamera0.setPreviewCallback(null);
+            mCamera0.stopPreview();
+            mCamera0.release();
+            mCamera0 = null;
+            isPlaying = false;
+            bg.setVisibility(View.VISIBLE);
+            closeVideo.setVisibility(View.GONE);
+        }
     }
 
 }
