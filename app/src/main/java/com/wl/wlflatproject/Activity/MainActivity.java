@@ -891,7 +891,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        mLocationUtils.stopLocation();
+        stopCamera();
     }
 
     @Override
@@ -1595,7 +1595,6 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -1620,7 +1619,6 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void surfaceCreated(SurfaceHolder holder) {
-
         }
 
         @Override
@@ -1660,6 +1658,7 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             mCamera0.setPreviewDisplay(mSurfaceHolder);
+            mCamera0.setDisplayOrientation(90);
             mCamera0.startPreview();
             bg.setVisibility(View.GONE);
             closeVideo.setVisibility(View.VISIBLE);
