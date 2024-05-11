@@ -16,9 +16,7 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_width="430dp"
             android:layout_height="match_parent">
-            <SurfaceView
-                android:scaleY="-1.0"
-                android:scaleX="-1.0"
+            <TextureView
                 android:id="@+id/video_play_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

@@ -17,6 +17,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.usb.UsbDevice;
@@ -25,7 +26,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.opengl.GLES11Ext;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,12 +35,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Surface;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -49,7 +47,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -71,9 +68,6 @@ import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.serenegiant.usb.DeviceFilter;
-import com.serenegiant.usb.IButtonCallback;
-import com.serenegiant.usb.IStatusCallback;
-import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.UVCCamera;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
@@ -99,7 +93,6 @@ import com.wl.wlflatproject.MUtils.RbMqUtils;
 import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
-import com.wl.wlflatproject.MView.SimpleUVCCameraTextureView;
 import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
@@ -114,11 +107,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -133,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.time)
     TextView time;
     @BindView(R.id.video_play_view)
-    SurfaceView videoPlayView;
+    TextureView videoPlayView;
     @BindView(R.id.lock_bt)
     LinearLayout lockBt;
     @BindView(R.id.video_iv)
@@ -194,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.recycler_msg)
     RecyclerView msgRecyclerView;
+    private SurfaceTexture surfaceTexture;
     private int version;
     /* 更新进度条 */
     private ProgressBar mProgress;
@@ -293,7 +285,6 @@ public class MainActivity extends AppCompatActivity {
     private String fileUrl;
     private IntentFilter intentFilter;
     private float plankVersionCode;
-    private USBMonitor mUSBMonitor;
     private boolean isPlaying = false;
     private UVCCamera camera;
     private HashMap<Integer, UsbDevice> deviceList;
@@ -301,10 +292,8 @@ public class MainActivity extends AppCompatActivity {
     private List<DeviceFilter> filter;
     private PopupWindow clearPopupWindow;
     private String devType;
-    private Runnable runnable;
     private PowerManager.WakeLock wakeLock;
-    private SurfaceHolder mSurfaceHolder;
-    private TSurfaceHolderCallback mSurfaceHolderCallback;
+    private Runnable runnable;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -753,9 +742,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (!isFastClick()) {
                                     return;
                                 }
-                                Set<Integer> set = deviceList.keySet();
-                                set.iterator().next();
-                                mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
+                                startCamera();
                             }
 
                         } else if (data.contains("AT+CDECT=")) {
@@ -777,9 +764,7 @@ public class MainActivity extends AppCompatActivity {
                                             if (!isFastClick()) {
                                                 return;
                                             }
-                                            Set<Integer> set = deviceList.keySet();
-                                            set.iterator().next();
-                                            mUSBMonitor.requestPermission(deviceList.get(set.iterator().next()));
+                                            startCamera();
                                         }
                                     }
                                     break;
@@ -922,13 +907,6 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
         if (camera != null) {
             camera.stopPreview();
-        }
-        if (mUSBMonitor != null) {
-            mUSBMonitor.unregister();
-        }
-        if (mUSBMonitor != null) {
-            mUSBMonitor.destroy();
-            mUSBMonitor = null;
         }
         mediaplayer.stop();
         mediaplayer.release();
@@ -1490,77 +1468,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //本地摄像头链接
-//    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
-//        @Override
-//        public void onAttach(final UsbDevice device) {
-////            Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        @Override
-//        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
-//            Log.e("usb++","connect");
-//            queueEvent(new Runnable() {
-//                @Override
-//                public void run() {
-//                    if(camera==null)
-//                    camera = new UVCCamera();
-//                    camera.setStatusCallback(new IStatusCallback() {
-//                        @Override
-//                        public void onStatus(final int statusClass, final int event, final int selector,
-//                                             final int statusAttribute, final ByteBuffer data) {
-//                            Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//
-//                    int i = camera.open(ctrlBlock);
-//                    Log.e("摄像头", "--state"+i);
-//                    if (i != 0) {
-//                        return;
-//                    }
-//                    if (mPreviewSurface != null) {
-//                        mPreviewSurface.release();
-//                        mPreviewSurface = null;
-//                    }
-//                    final SurfaceTexture st = videoPlayView.getSurfaceTexture();
-//                    if (st != null) {
-//                        mPreviewSurface = new Surface(st);
-//                        camera.setPreviewDisplay(mPreviewSurface);
-//                        camera.startPreview();
-//                        Log.e("摄像头", "--start");
-//                    }
-//
-//                    videoPlayView.setAspectRatio(742, 435);
-//                    ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
-//                    params.width = 435;
-//                    params.height = 752;
-//                    videoPlayView.setLayoutParams(params);
-//                    videoPlayView.setRotation(-270f);
-//                    isStart=true;
-//                    isPlaying = true;
-//                    handler.sendEmptyMessageDelayed(13,2000);
-//                    bg.setVisibility(View.GONE);
-//                    handler.removeMessages(LEAVE);
-//                    handler.sendEmptyMessageDelayed(LEAVE, 120000);
-//                }
-//            }, 0);
-//        }
-//
-//        @Override
-//        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
-//            // XXX you should check whether the coming device equal to camera device that currently using
-//
-//        }
-//
-//        @Override
-//        public void onDettach(final UsbDevice device) {
-////            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
-//        }
-//
-//        @Override
-//        public void onCancel(final UsbDevice device) {
-//        }
-//    };
+
 
 
     protected final synchronized void queueEvent(final Runnable task, final long delayMillis) {
@@ -1601,73 +1509,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public boolean createPreviewView() {
-        mSurfaceHolder = videoPlayView.getHolder();
-//        mSurfaceView.setZOrderMediaOverlay(true);
-        Log.e("start", "添加回调");
-        mSurfaceHolderCallback = new TSurfaceHolderCallback();
+        videoPlayView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                MainActivity.this.surfaceTexture=surfaceTexture;
+                Matrix matrix = videoPlayView.getTransform(new Matrix());
+                matrix.setScale(-1, 1);
+                int width = videoPlayView.getWidth();
+                matrix.postTranslate(width, 0);
+                videoPlayView.setTransform(matrix);
+            }
 
-        mSurfaceHolder.addCallback(mSurfaceHolderCallback);
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
 
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+            }
+        });
         return true;
     }
 
-    private class TSurfaceHolderCallback implements SurfaceHolder.Callback {
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-        }
-
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-
-        }
-    }
 
     private Camera mCamera0 = null;
     int mCameraId = -1;
 
-    private boolean startCamera() {
-        //(Camera.CameraInfo.CAMERA_FACING_BACK);
-        Log.e("start", "开启摄像头");
-        if (isPlaying) {
-            return false;
+    private void startCamera() {
+        if(runnable==null){
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    Log.e("start", "开启摄像头");
+                    if (isPlaying) {
+                        return;
+                    }
+                    int num = Camera.getNumberOfCameras();
+                    if (num > 2)
+                        mCameraId = 2;
+                    else
+                        mCameraId = 0;
+                    Camera.CameraInfo camInfo = new Camera.CameraInfo();
+                    try {
+                        Camera.getCameraInfo(mCameraId, camInfo);
+                        if (mCameraId != -1) {
+                            mCamera0 = Camera.open(mCameraId);
+                        } else {
+                            mCamera0 = Camera.open();
+                        }
+                    } catch (RuntimeException e) {
+                    }
+                    try {
+                        mCamera0.setPreviewTexture(surfaceTexture);
+                        mCamera0.setDisplayOrientation(90);
+                        mCamera0.startPreview();
+                        isPlaying = true;
+                        handler.sendEmptyMessageDelayed(13,1000);
+                    } catch (Exception e) {
+                        mCamera0.release();
+                    }
+                }
+            };
         }
-        int num = Camera.getNumberOfCameras();
-        if (num > 2)
-            mCameraId = 2;
-        else
-            mCameraId = 0;
-        Camera.CameraInfo camInfo = new Camera.CameraInfo();
-        try {
-            Camera.getCameraInfo(mCameraId, camInfo);
-            if (mCameraId != -1) {
-                mCamera0 = Camera.open(mCameraId);
-            } else {
-                mCamera0 = Camera.open();
-            }
-        } catch (RuntimeException e) {
-            Toast toast = Toast.makeText(this, "Unable to open camera!", Toast.LENGTH_LONG);
-            toast.setGravity(Gravity.CENTER, 0, 0);
-            toast.show();
-            Log.e("start", "开启失败");
-            return false;
-        }
-        try {
-            mCamera0.setPreviewDisplay(mSurfaceHolder);
-            mCamera0.setDisplayOrientation(90);
-            mCamera0.startPreview();
-            bg.setVisibility(View.GONE);
-            closeVideo.setVisibility(View.VISIBLE);
-            isPlaying = true;
-        } catch (Exception e) {
-            mCamera0.release();
-            return false;
-        }
-        return true;
+        threads.execute(runnable);
+        bg.setVisibility(View.GONE);
     }
 
     private void stopCamera() {
