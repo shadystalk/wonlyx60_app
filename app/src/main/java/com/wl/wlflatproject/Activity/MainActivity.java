@@ -8,6 +8,8 @@ import static com.wl.wlflatproject.MUtils.HandlerCode.GET_DOOR_INFO;
 import static com.wl.wlflatproject.MUtils.HandlerCode.HEARTBEAT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.LEAVE;
 import static com.wl.wlflatproject.MUtils.HandlerCode.PERMISSION;
+import static com.wl.wlflatproject.MUtils.HandlerCode.START_SERVICE;
+import static com.wl.wlflatproject.MUtils.HandlerCode.STOP_SERVICE;
 import static com.wl.wlflatproject.MUtils.HandlerCode.TIME;
 
 import android.Manifest;
@@ -67,6 +69,7 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
+import com.rockchip.gpadc.demo.ComputerServices;
 import com.serenegiant.usb.DeviceFilter;
 import com.serenegiant.usb.UVCCamera;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
@@ -76,6 +79,7 @@ import com.wl.wlflatproject.Bean.CalendarParam;
 import com.wl.wlflatproject.Bean.GDFutureWeatherBean;
 import com.wl.wlflatproject.Bean.GDNowWeatherBean;
 import com.wl.wlflatproject.Bean.InfoBean;
+import com.wl.wlflatproject.Bean.MainMsgBean;
 import com.wl.wlflatproject.Bean.OpenTvBean;
 import com.wl.wlflatproject.Bean.SetMsgBean;
 import com.wl.wlflatproject.Bean.StateBean;
@@ -99,6 +103,8 @@ import com.yanzhenjie.permission.Action;
 import com.yanzhenjie.permission.AndPermission;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -294,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
     private String devType;
     private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
+    private Intent servicesIntent;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -309,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("InvalidWakeLockTag")
     private void initData() {
+        EventBus.getDefault().register(this);
         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
@@ -364,6 +372,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         createPreviewView();
+        servicesIntent = new Intent(this, ComputerServices.class);
+        startService(servicesIntent);
     }
 
     /**
@@ -910,6 +920,7 @@ public class MainActivity extends AppCompatActivity {
         }
         mediaplayer.stop();
         mediaplayer.release();
+        EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
 
@@ -1552,10 +1563,11 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     int num = Camera.getNumberOfCameras();
-                    if (num > 2)
-                        mCameraId = 2;
-                    else
+                    if (num > 0){
                         mCameraId = 0;
+                    }else{
+                        return;
+                    }
                     Camera.CameraInfo camInfo = new Camera.CameraInfo();
                     try {
                         Camera.getCameraInfo(mCameraId, camInfo);
@@ -1593,5 +1605,16 @@ public class MainActivity extends AppCompatActivity {
             closeVideo.setVisibility(View.GONE);
         }
     }
-
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MainMsgBean msgBean) {
+        int flag = msgBean.getFlag();
+        switch (flag) {
+            case STOP_SERVICE://停止服务
+                stopService(servicesIntent);
+                break;
+            case START_SERVICE://开启服务
+                startService(servicesIntent);
+                break;
+        }
+    }
 }

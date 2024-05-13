@@ -4,7 +4,12 @@ public class MainMsgBean {
     private String msg;
     private int flag;
     private int num;
+    public MainMsgBean(int flag){
+        this.flag=flag;
+    }
+    public MainMsgBean(){
 
+    }
     public int getNum() {
         return num;
     }

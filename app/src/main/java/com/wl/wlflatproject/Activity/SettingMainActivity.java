@@ -1,5 +1,7 @@
 package com.wl.wlflatproject.Activity;
 
+import static com.wl.wlflatproject.MUtils.HandlerCode.STOP_SERVICE;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -17,7 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.rockchip.gpadc.demo.CameraPreviewActivity;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
+import com.wl.wlflatproject.Bean.MainMsgBean;
 import com.wl.wlflatproject.Fragment.AfterSaleFragment;
 import com.wl.wlflatproject.Fragment.BindFragment;
 import com.wl.wlflatproject.Fragment.DeviceDynamicsFragment;
@@ -26,6 +31,7 @@ import com.wl.wlflatproject.Fragment.OpenMachineFragment;
 import com.wl.wlflatproject.Fragment.SystemNetFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
+import com.wl.wlflatproject.MView.NormalDialog;
 import com.wl.wlflatproject.R;
 
 import org.greenrobot.eventbus.EventBus;
@@ -48,7 +54,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","工程模式"};
     /**
      * tag默认key
      */
@@ -56,11 +62,12 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
-            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales};
+            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales,R.mipmap.ic_sys_setting};
 
     private Fragment[] fragments = new Fragment[title.length];
 
     private int tabPosition = 0;
+    private NormalDialog normalDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +186,24 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     fragment = new AfterSaleFragment();
                     fragments[position] = fragment;
                     break;
+                case 7:
+                    // 工程模式
+                    if (normalDialog == null)
+                        normalDialog = new NormalDialog(this, R.style.mDialog);
+                    normalDialog.show();
+                    normalDialog.setTitleText("工程模式");
+                    normalDialog.setContentText("点击确定进入工程模式");
+                    normalDialog.getConfirmTv().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            EventBus.getDefault().post(new MainMsgBean(STOP_SERVICE));
+                            normalDialog.dismiss();
+                            Intent intent3=new Intent(SettingMainActivity.this, CameraPreviewActivity.class);
+                            startActivityForResult(intent3,400);
+                        }
+                    });
+
+                    break;
                 default:
                     break;
             }
@@ -220,4 +245,11 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     public static class TimeEvent {
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==400){
+            EventBus.getDefault().post(new MainMsgBean(24));
+        }
+    }
 }
