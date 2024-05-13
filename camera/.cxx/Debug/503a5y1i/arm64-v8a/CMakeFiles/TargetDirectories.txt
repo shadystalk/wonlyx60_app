@@ -1,0 +1,3 @@
+E:/rknn_yolov5_android/rknn_yolov5_android/app/.cxx/Debug/503a5y1i/arm64-v8a/CMakeFiles/rknn4j.dir
+E:/rknn_yolov5_android/rknn_yolov5_android/app/.cxx/Debug/503a5y1i/arm64-v8a/CMakeFiles/edit_cache.dir
+E:/rknn_yolov5_android/rknn_yolov5_android/app/.cxx/Debug/503a5y1i/arm64-v8a/CMakeFiles/rebuild_cache.dir

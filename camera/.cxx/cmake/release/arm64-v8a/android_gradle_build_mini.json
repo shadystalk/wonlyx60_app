@@ -1,0 +1,19 @@
+{
+  "buildFiles": [
+    "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\android.toolchain.cmake",
+    "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\ndk\\21.4.7075529\\build\\cmake\\platforms.cmake",
+    "E:\\lowflat\\camera\\CMakeLists.txt"
+  ],
+  "cleanCommands": [
+    "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"E:\\lowflat\\camera\\.cxx\\cmake\\release\\arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"E:\\lowflat\\camera\\.cxx\\cmake\\release\\arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "rknn4j-Release-arm64-v8a": {
+      "artifactName": "rknn4j",
+      "buildCommand": "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"E:\\lowflat\\camera\\.cxx\\cmake\\release\\arm64-v8a\" rknn4j",
+      "abi": "arm64-v8a",
+      "output": "E:\\lowflat\\camera\\build\\intermediates\\cmake\\release\\obj\\arm64-v8a\\librknn4j.so"
+    }
+  }
+}

@@ -1,0 +1,2 @@
+ninja: Entering directory `F:\how_to_do\rknpu2\examples\rknn_yolov5_android_apk_demo\app\.cxx\Debug\z2q6p666\arm64-v8a'
+ninja: no work to do.

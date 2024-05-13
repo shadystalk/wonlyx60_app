@@ -1,0 +1,59 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.4.1"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Project",
+					"targetIndexes" : 
+					[
+						0
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "rknn4j::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rknn4j-RelWithDebInfo-501ce07e5078f4ab092e.json",
+					"name" : "rknn4j",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "F:/how_to_do/rknpu2/examples/rknn_yolov5_android_apk_demo/app/.cxx/RelWithDebInfo/433e3e5i/arm64-v8a",
+		"source" : "F:/how_to_do/rknpu2/examples/rknn_yolov5_android_apk_demo/app"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 1
+	}
+}

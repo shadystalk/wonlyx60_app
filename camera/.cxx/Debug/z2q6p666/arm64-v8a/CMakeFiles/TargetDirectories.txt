@@ -1,0 +1,3 @@
+F:/how_to_do/rknpu2/examples/rknn_yolov5_android_apk_demo/app/.cxx/Debug/z2q6p666/arm64-v8a/CMakeFiles/rknn4j.dir
+F:/how_to_do/rknpu2/examples/rknn_yolov5_android_apk_demo/app/.cxx/Debug/z2q6p666/arm64-v8a/CMakeFiles/edit_cache.dir
+F:/how_to_do/rknpu2/examples/rknn_yolov5_android_apk_demo/app/.cxx/Debug/z2q6p666/arm64-v8a/CMakeFiles/rebuild_cache.dir

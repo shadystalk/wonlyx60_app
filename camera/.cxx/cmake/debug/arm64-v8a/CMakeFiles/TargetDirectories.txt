@@ -1,0 +1,3 @@
+E:/screen-ten/camera/.cxx/cmake/debug/arm64-v8a/CMakeFiles/rknn4j.dir
+E:/screen-ten/camera/.cxx/cmake/debug/arm64-v8a/CMakeFiles/edit_cache.dir
+E:/screen-ten/camera/.cxx/cmake/debug/arm64-v8a/CMakeFiles/rebuild_cache.dir
