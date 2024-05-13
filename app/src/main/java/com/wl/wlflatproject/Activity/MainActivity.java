@@ -245,7 +245,9 @@ public class MainActivity extends AppCompatActivity {
                     handler.sendEmptyMessageDelayed(TIME, 1000);
                     break;
                 case GET_DOOR_INFO://获取开门机信息
+                    serialPort.sendDate("00000000000000000000000000000000\r\n".getBytes());
                     serialPort.sendDate("+DATATOPAD\r\n".getBytes());
+                    sendEmptyMessageDelayed(GET_DOOR_INFO,5000);//补发
                     break;
                 case PERMISSION://请求权限
                     requestPermission();
@@ -258,7 +260,9 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     break;
                 case 13:
+                    dialogTime.dismiss();
                     closeVideo.setVisibility(View.VISIBLE);
+                    bg.setVisibility(View.GONE);
                     break;
                 default:
                     break;
@@ -693,6 +697,7 @@ public class MainActivity extends AppCompatActivity {
                                         break;
                                     case 13://唯一id1
                                         if (TextUtils.isEmpty(id)) {
+                                            handler.removeMessages(GET_DOOR_INFO);
                                             id = split[1];
                                             bean.setDevId(id);
                                             SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, id);
@@ -1543,6 +1548,7 @@ public class MainActivity extends AppCompatActivity {
     int mCameraId = -1;
 
     private void startCamera() {
+        dialogTime.show();
         if(runnable==null){
             runnable = new Runnable() {
                 @Override
@@ -1571,7 +1577,7 @@ public class MainActivity extends AppCompatActivity {
                         mCamera0.setDisplayOrientation(90);
                         mCamera0.startPreview();
                         isPlaying = true;
-                        handler.sendEmptyMessageDelayed(13,1000);
+                        handler.sendEmptyMessageDelayed(13,200);
                     } catch (Exception e) {
                         mCamera0.release();
                     }
@@ -1579,7 +1585,6 @@ public class MainActivity extends AppCompatActivity {
             };
         }
         threads.execute(runnable);
-        bg.setVisibility(View.GONE);
     }
 
     private void stopCamera() {

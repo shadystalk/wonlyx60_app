@@ -76,12 +76,12 @@ public class BindFragment extends Fragment {
         if(TextUtils.isEmpty(devId)){
             return;
         }
-        OkGo.<String>get(ApiSrevice.searchInfo).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
+        OkGo.<String>get(ApiSrevice.searchInfo).tag(this).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 String s = response.body().toString();
                 InfoBean infoBean = GsonUtils.GsonToBean(s, InfoBean.class);
-                if(infoBean.getCode()==200  &&  infoBean.getData()!=null){
+                if(infoBean.getCode()==200  &&  infoBean.getData()!=null &&bindNum!=null){
                     bindNum.setText(infoBean.getData().getPhone());
                     bindVisi(true);
                 }else{
@@ -110,5 +110,6 @@ public class BindFragment extends Fragment {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         unbinder.unbind();
+        OkGo.getInstance().cancelTag(this);
     }
 }
