@@ -175,7 +175,6 @@
       "project": {
         "compilerSettingsCacheFolder": "E:\\screen-ten\\.cxx",
         "cxxFolder": "E:\\screen-ten\\.cxx",
-        "ideBuildTargetAbi": "arm64-v8a,armeabi-v7a,armeabi",
         "isBuildOnlyTargetAbiEnabled": true,
         "isCmakeBuildCohabitationEnabled": false,
         "isNativeCompilerSettingsCacheEnabled": false,

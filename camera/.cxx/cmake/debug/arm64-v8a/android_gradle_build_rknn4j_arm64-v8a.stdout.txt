@@ -1,2 +1,16 @@
 ninja: Entering directory `E:\screen-ten\camera\.cxx\cmake\debug\arm64-v8a'
-ninja: no work to do.
+[1/7] Building CXX object CMakeFiles/rknn4j.dir/src/main/cpp/native-lib.cc.o
+In file included from ../../../../src/main/cpp/native-lib.cc:13:
+../../../../src/main/cpp/object_tracker/track_link.h:13:9: warning: 'LOGI' macro redefined [-Wmacro-redefined]
+#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG, __VA_ARGS__)
+        ^
+../../../../src/main/cpp/yolo_image.h:13:9: note: previous definition is here
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "rkyolo4j", ##__VA_ARGS__);
+        ^
+1 warning generated.
+[2/7] Building CXX object CMakeFiles/rknn4j.dir/src/main/cpp/object_tracker/track_link.cc.o
+[3/7] Building CXX object CMakeFiles/rknn4j.dir/src/main/cpp/object_tracker/objects_update.cc.o
+[4/7] Building CXX object CMakeFiles/rknn4j.dir/src/main/cpp/post_process.cc.o
+[5/7] Building CXX object CMakeFiles/rknn4j.dir/src/main/cpp/object_tracker/objects_tracker.cc.o
+[6/7] Building CXX object CMakeFiles/rknn4j.dir/src/main/cpp/yolo_image.cc.o
+[7/7] Linking CXX shared library ..\..\..\..\build\intermediates\cmake\debug\obj\arm64-v8a\librknn4j.so

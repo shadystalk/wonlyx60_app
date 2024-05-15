@@ -200,11 +200,11 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
                         flag=1;
                         switchRct.setText("矩形2");
                         break;
+//                    case 1:
+//                        flag=2;
+//                        switchRct.setText("矩形3");
+//                        break;
                     case 1:
-                        flag=2;
-                        switchRct.setText("矩形3");
-                        break;
-                    case 2:
                         flag=0;
                         switchRct.setText("矩形1");
                         break;
@@ -267,29 +267,31 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     }
 
 
-    public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect) {
+    public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect,Rect cropRect1) {
         byte[] filledData = new byte[width * height * 3 / 2]; // YUV420格式，Y占总像素的一半，UV各占四分之一
 
         // 先复制整个Y分量
         System.arraycopy(data, 0, filledData, 0, width * height);
 
-        // 计算十字形区域
-        int verticalWidth = cropRect.width() / 2;
-        int horizontalHeight = cropRect.height() / 2;
-        int verticalStartX = cropRect.centerX() - verticalWidth / 2;
-        int verticalEndX = cropRect.centerX() + verticalWidth / 2;
-        int horizontalStartY = cropRect.centerY() - horizontalHeight / 2;
-        int horizontalEndY = cropRect.centerY() + horizontalHeight / 2;
 
         // 填充Y分量之外的区域为黑色
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (!(x >= verticalStartX && x <= verticalEndX) && !(y >= horizontalStartY && y <= horizontalEndY)) {
+                if(((x<cropRect1.left&&y<cropRect.top)
+                        ||(x>cropRect1.right&&y<cropRect.top)
+                        || (x<cropRect1.left&&y>cropRect.bottom)
+                        ||(x>cropRect1.right&&y>cropRect.bottom)
+
+                        ||(x<cropRect1.left&&x<cropRect.left)
+                        ||(x>cropRect1.right&&x>cropRect.right)
+                        ||(y<cropRect1.top&&y<cropRect.top)
+                        ||(y>cropRect1.bottom&&y>cropRect.bottom)
+                )){
                     filledData[y * width + x] = 0; // 裁剪区域外填充黑色
                 }
             }
-        }
 
+        }
         // UV分量的开始索引
         int uvStartIndex = width * height;
         int uvWidth = width / 2;
@@ -299,21 +301,9 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         System.arraycopy(data, uvStartIndex, filledData, uvStartIndex, uvWidth * uvHeight * 2);
 
         // 填充UV分量之外的区域为中性色
-        for (int y = 0; y < uvHeight; y++) {
-            for (int x = 0; x < uvWidth; x++) {
-                if (!(x >= (verticalStartX / 2) && x <= (verticalEndX / 2)) && !(y >= (horizontalStartY / 2) && y <= (horizontalEndY / 2))) {
-                    filledData[uvStartIndex + (y * uvWidth + x) * 2] = (byte) 128; // U分量
-                    filledData[uvStartIndex + (y * uvWidth + x) * 2 + 1] = (byte) 128; // V分量
-                }
-            }
-        }
 
         return filledData;
     }
-
-
-
-
 
 
 
@@ -324,9 +314,9 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
 
         Rect cropRect = rectangleView.getRect();
+        Rect cropRect1 = rectangleView.getRect1();
 
-
-        byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect);
+        byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect,cropRect1);
 
         mCamera0.addCallbackBuffer(data);
         ImageBufferQueue.ImageBuffer imageBuffer = mImageBufferQueue.getFreeBuffer();
@@ -343,13 +333,14 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         }
 
 //
-//            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, 1280, 720, null);
+//            YuvImage yuvimage = new YuvImage(filledData, ImageFormat.NV21, 1280, 720, null);
 //            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 //            yuvimage.compressToJpeg(new Rect(0, 0, 1280, 720), 80, baos);
 //            byte[] jdata = baos.toByteArray();
 //
 //            Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
 //            countNumBinder.setBmp(bmp);
+//            mTrackResultView.setImageBitmap(bmp);
     }
 
     private class TSurfaceHolderCallback implements SurfaceHolder.Callback {

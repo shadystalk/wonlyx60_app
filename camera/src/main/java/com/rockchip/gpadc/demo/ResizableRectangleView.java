@@ -30,6 +30,7 @@ public class ResizableRectangleView extends View {
     private int horizontalEndX;
     private int verticalStartY;
     private int verticalEndY;
+    private Rect rect1;
 
     public ResizableRectangleView(Context context) {
         super(context);
@@ -57,7 +58,7 @@ public class ResizableRectangleView extends View {
 
     private void init() {
         screenWidth = 1280;
-        screenHeight = 800;
+        screenHeight = 720;
         // 假设屏幕宽度和高度可以通过某种方式获取，或者您可以直接使用具体的数值
 //        int boxWidth = 800;  // 例如，框宽度为屏幕宽度的一半
 //        int boxHeight = 800;  // 同样，框高度也是
@@ -77,10 +78,9 @@ public class ResizableRectangleView extends View {
 
         verticalStartX = screenWidth / 2 - 100;
         verticalStartY = 0;
-        verticalEndX = screenWidth / 2 + 100;
-        ;
+        verticalEndX = screenWidth / 2 + 100;;
         verticalEndY = screenHeight;
-
+        rect1 = new Rect(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
 
         horizontalStartX = 0;
         horizontalStartY = screenHeight / 2 - 100;
@@ -94,9 +94,9 @@ public class ResizableRectangleView extends View {
 //         绘制用户调整的矩形
         canvas.drawRect(rect, paint);
         // 绘制十字形的竖直部分
-        canvas.drawRect(verticalStartX, verticalStartY, verticalEndX, verticalEndY, paint);
+        canvas.drawRect(rect1, paint);
         // 绘制十字形的水平部分
-        canvas.drawRect(horizontalStartX, horizontalStartY, horizontalEndX, horizontalEndY, paint);
+//        canvas.drawRect(horizontalStartX, horizontalStartY, horizontalEndX, horizontalEndY, paint);
     }
 
 //
@@ -120,25 +120,31 @@ public class ResizableRectangleView extends View {
     public Rect getRect() {
         return rect;
     }
+    public Rect getRect1() {
+        return rect1;
+    }
 
     public void setView(View up, View left, View down, View right, View up1, View left1, View down1, View right1) {
         left.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (flag == 0) {
-                    if (oneLeft > 10) {
+                    if (oneLeft > 0) {
                         oneLeft = oneLeft - 10;
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    if (horizontalStartX > 10) {
-                        horizontalStartX = horizontalStartX - 10;
-                        invalidate();
-                    }
-                } else {
-                    if (verticalStartX > 10) {
+                }
+//                else if (flag == 1) {
+//                    if (horizontalStartX > 10) {
+//                        horizontalStartX = horizontalStartX - 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
+                    if (verticalStartX > 0) {
                         verticalStartX = verticalStartX - 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -154,16 +160,19 @@ public class ResizableRectangleView extends View {
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    int i = screenWidth / 2 - 100;
-                    if (horizontalStartX < i) {
-                        horizontalStartX = horizontalStartX + 10;
-                        invalidate();
-                    }
-                } else {
+                }
+//                else if (flag == 1) {
+//                    int i = screenWidth / 2 - 100;
+//                    if (horizontalStartX < i) {
+//                        horizontalStartX = horizontalStartX + 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
                     int i = screenWidth / 2 - 100;
                     if (verticalStartX < i) {
                         verticalStartX = verticalStartX + 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -175,19 +184,22 @@ public class ResizableRectangleView extends View {
             @Override
             public void onClick(View view) {
                 if (flag == 0) {
-                    if (oneRight < (screenWidth - 10)) {
+                    if (oneRight < screenWidth) {
                         oneRight = oneRight + 10;
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    if (horizontalEndX < (screenWidth - 10)) {
-                        horizontalEndX = horizontalEndX + 10;
-                        invalidate();
-                    }
-                } else {
-                    if (verticalEndX < (screenWidth - 10)) {
+                }
+//                else if (flag == 1) {
+//                    if (horizontalEndX < (screenWidth - 10)) {
+//                        horizontalEndX = horizontalEndX + 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
+                    if (verticalEndX < screenWidth) {
                         verticalEndX = verticalEndX + 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -203,16 +215,19 @@ public class ResizableRectangleView extends View {
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    int i = screenWidth / 2 + 100;
-                    if (horizontalEndX > i) {
-                        horizontalEndX = horizontalEndX - 10;
-                        invalidate();
-                    }
-                } else {
+                }
+//                else if (flag == 1) {
+//                    int i = screenWidth / 2 + 100;
+//                    if (horizontalEndX > i) {
+//                        horizontalEndX = horizontalEndX - 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
                     int i = screenWidth / 2 + 100;
                     if (verticalEndX > i) {
                         verticalEndX = verticalEndX - 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -224,19 +239,22 @@ public class ResizableRectangleView extends View {
             @Override
             public void onClick(View view) {
                 if (flag == 0) {
-                    if (oneTop > 10) {
+                    if (oneTop > 0) {
                         oneTop = oneTop - 10;
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    if (horizontalStartY > 10) {
-                        horizontalStartY = horizontalStartY - 10;
-                        invalidate();
-                    }
-                } else {
-                    if (verticalStartY > 10) {
+                }
+//                else if (flag == 1) {
+//                    if (horizontalStartY > 10) {
+//                        horizontalStartY = horizontalStartY - 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
+                    if (verticalStartY > 0) {
                         verticalStartY = verticalStartY - 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -252,16 +270,19 @@ public class ResizableRectangleView extends View {
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    int i = screenHeight / 2 - 100;
-                    if (horizontalStartY < i) {
-                        horizontalStartY = horizontalStartY + 10;
-                        invalidate();
-                    }
-                } else {
+                }
+//                else if (flag == 1) {
+//                    int i = screenHeight / 2 - 100;
+//                    if (horizontalStartY < i) {
+//                        horizontalStartY = horizontalStartY + 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
                     int i = screenHeight / 2 - 100;
                     if (verticalStartY < i) {
                         verticalStartY = verticalStartY + 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -273,19 +294,22 @@ public class ResizableRectangleView extends View {
             @Override
             public void onClick(View view) {
                 if (flag == 0) {
-                    if (oneBottom < (screenHeight - 10)) {
+                    if (oneBottom < screenHeight) {
                         oneBottom = oneBottom + 10;
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    if (horizontalEndY < (screenHeight - 10)) {
-                        horizontalEndY = horizontalEndY + 10;
-                        invalidate();
-                    }
-                } else {
-                    if (verticalEndY < (screenHeight - 10)) {
+                }
+//                else if (flag == 1) {
+//                    if (horizontalEndY < (screenHeight - 10)) {
+//                        horizontalEndY = horizontalEndY + 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
+                    if (verticalEndY < screenHeight) {
                         verticalEndY = verticalEndY + 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
@@ -302,16 +326,19 @@ public class ResizableRectangleView extends View {
                         rect.set(oneLeft, oneTop, oneRight, oneBottom);
                         invalidate();
                     }
-                } else if (flag == 1) {
-                    int i = screenHeight / 2 + 100;
-                    if (horizontalEndY > i) {
-                        horizontalEndY = horizontalEndY - 10;
-                        invalidate();
-                    }
-                } else {
+                }
+//                else if (flag == 1) {
+//                    int i = screenHeight / 2 + 100;
+//                    if (horizontalEndY > i) {
+//                        horizontalEndY = horizontalEndY - 10;
+//                        invalidate();
+//                    }
+//                }
+                else {
                     int i = screenHeight / 2 + 100;
                     if (verticalEndY > i) {
                         verticalEndY = verticalEndY - 10;
+                        rect1.set(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
                         invalidate();
                     }
                 }
