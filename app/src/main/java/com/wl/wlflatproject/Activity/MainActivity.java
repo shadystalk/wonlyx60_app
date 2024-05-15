@@ -910,9 +910,6 @@ public class MainActivity extends AppCompatActivity {
         stopCamera();
         mLocationUtils.destroyLocationClient();
         unregisterReceiver(receiver);
-        if (camera != null) {
-            camera.stopPreview();
-        }
         mediaplayer.stop();
         mediaplayer.release();
         super.onDestroy();
@@ -1578,6 +1575,8 @@ public class MainActivity extends AppCompatActivity {
                         mCamera0.startPreview();
                         isPlaying = true;
                         handler.sendEmptyMessageDelayed(13,200);
+                        handler.removeMessages(LEAVE);
+                        handler.sendEmptyMessageDelayed(LEAVE,120*1000);
                     } catch (Exception e) {
                         mCamera0.release();
                     }
