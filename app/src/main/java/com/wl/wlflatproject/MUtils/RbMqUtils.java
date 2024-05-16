@@ -33,7 +33,6 @@ public class RbMqUtils {
     private String isConnection ="+CGATT:0";//0断开1链接
     private String mie;
     public boolean flag=true;
-    public static String MQIP="rmq.wonlycloud.com";
     public boolean connect=true;
     private Channel channel;
 
@@ -46,7 +45,7 @@ public class RbMqUtils {
      */
     public void setUpConnectionFactory() {
 //        factory.setHost(MQIP);//主机地址
-        factory.setHost("rmq-test.wonlycloud.com");//测试
+        factory.setHost(ApiSrevice.MQIP);//测试
 //        factory.setHost("47.99.54.211";//开发
         factory.setPort(5672);// 端口号
         factory.setUsername("android");// 用户名

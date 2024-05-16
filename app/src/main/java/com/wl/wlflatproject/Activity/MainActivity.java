@@ -170,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
     TextView secondWeatherTv;
     @BindView(R.id.third_weather_tv)
     TextView thirdWeatherTv;
+    @BindView(R.id.test)
+    TextView test;
     @BindView(R.id.today_temp_ll)
     LinearLayout todayTempLl;
     @BindView(R.id.door_select_ll)
@@ -298,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
     private String devType;
     private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
+    private int settingParam;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -313,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
 
     @SuppressLint("InvalidWakeLockTag")
     private void initData() {
+        new ApiSrevice(this);
         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
@@ -368,6 +372,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         createPreviewView();
+        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+               if(test.getVisibility()==View.VISIBLE){
+                   test.setVisibility(View.GONE);
+               }else{
+                   test.setVisibility(View.VISIBLE);
+               }
+                return false;
+            }
+        });
+        settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
+        switch (settingParam){
+            case 0:
+                test.setText("正式服");
+                break;
+            case 1:
+                test.setText("测试服");
+                break;
+        }
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                switch (settingParam){
+                    case 0:
+                        settingParam =1;
+                        break;
+                    case 1:
+                        settingParam =0;
+                        break;
+                }
+                SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
     }
 
     /**
@@ -477,6 +516,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
     }
 
 

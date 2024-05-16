@@ -101,6 +101,17 @@
             android:text="农历-四月-初三"
             android:textColor="@color/white"
             android:textSize="32sp" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/test"
+            android:textSize="30sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="正式服"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         <ImageView
             android:background="@drawable/logo"
             android:id="@+id/logo"
