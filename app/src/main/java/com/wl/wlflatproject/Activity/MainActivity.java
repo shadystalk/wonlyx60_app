@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -83,6 +84,7 @@ import com.wl.wlflatproject.Bean.StateBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
+import com.wl.wlflatproject.BuildConfig;
 import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
@@ -190,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.recycler_msg)
     RecyclerView msgRecyclerView;
+    @BindView(R.id.logo)
+    ImageView logo;
     private SurfaceTexture surfaceTexture;
     private int version;
     /* 更新进度条 */
@@ -265,6 +269,7 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     break;
                 case 13:
+                    animationView.cancelAnimation();
                     animationView.setVisibility(View.GONE);
                     bg.setVisibility(View.GONE);
 //                    dialogTime.dismiss();
@@ -399,16 +404,26 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (settingParam) {
-                    case 0:
-                        settingParam = 1;
-                        break;
-                    case 1:
-                        settingParam = 0;
-                        break;
+                if(BuildConfig.DEBUG){
+                    switch (settingParam) {
+                        case 0:
+                            settingParam = 1;
+                            break;
+                        case 1:
+                            settingParam = 0;
+                            break;
+                    }
+                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
+                    android.os.Process.killProcess(android.os.Process.myPid());
                 }
-                SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
-                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
+        logo.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+                startActivity(intent);
+                return false;
             }
         });
     }
@@ -552,8 +567,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                     startCamera();
                     animationView.setVisibility(View.VISIBLE);
-                    animationView.setMaxProgress(1);
-                    animationView.setMinProgress(0);
                     animationView.playAnimation();
                 }
                 break;
