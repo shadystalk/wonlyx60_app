@@ -31,7 +31,7 @@ public class ApiSrevice {
         switch (settingParam){
             case 0://正式
                 baseUrl="https://ums-ag.wonlycloud.com:10301";
-                MQIP="https://ums-ag.wonlycloud.com:10301";
+                MQIP="rmq.wonlycloud.com";
                 break;
             case 1://测试
                 baseUrl="https://ums-test.wonlycloud.com:10301";
