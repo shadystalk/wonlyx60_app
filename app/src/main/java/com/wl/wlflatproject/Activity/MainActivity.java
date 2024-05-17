@@ -58,6 +58,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.airbnb.lottie.LottieAnimationView;
 import com.amap.api.location.AMapLocation;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
@@ -123,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.time)
     TextView time;
+    @BindView(R.id.animation_view)
+    LottieAnimationView animationView;
     @BindView(R.id.video_play_view)
     TextureView videoPlayView;
     @BindView(R.id.lock_bt)
@@ -249,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                 case GET_DOOR_INFO://获取开门机信息
                     serialPort.sendDate("00000000000000000000000000000000\r\n".getBytes());
                     serialPort.sendDate("+DATATOPAD\r\n".getBytes());
-                    sendEmptyMessageDelayed(GET_DOOR_INFO,5000);//补发
+                    sendEmptyMessageDelayed(GET_DOOR_INFO, 5000);//补发
                     break;
                 case PERMISSION://请求权限
                     requestPermission();
@@ -262,9 +265,10 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     break;
                 case 13:
-                    dialogTime.dismiss();
-                    closeVideo.setVisibility(View.VISIBLE);
+                    animationView.setVisibility(View.GONE);
                     bg.setVisibility(View.GONE);
+//                    dialogTime.dismiss();
+                    closeVideo.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;
@@ -375,16 +379,16 @@ public class MainActivity extends AppCompatActivity {
         calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-               if(test.getVisibility()==View.VISIBLE){
-                   test.setVisibility(View.GONE);
-               }else{
-                   test.setVisibility(View.VISIBLE);
-               }
+                if (test.getVisibility() == View.VISIBLE) {
+                    test.setVisibility(View.GONE);
+                } else {
+                    test.setVisibility(View.VISIBLE);
+                }
                 return false;
             }
         });
         settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
-        switch (settingParam){
+        switch (settingParam) {
             case 0:
                 test.setText("正式服");
                 break;
@@ -395,12 +399,12 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (settingParam){
+                switch (settingParam) {
                     case 0:
-                        settingParam =1;
+                        settingParam = 1;
                         break;
                     case 1:
-                        settingParam =0;
+                        settingParam = 0;
                         break;
                 }
                 SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
@@ -547,6 +551,10 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     startCamera();
+                    animationView.setVisibility(View.VISIBLE);
+                    animationView.setMaxProgress(1);
+                    animationView.setMinProgress(0);
+                    animationView.playAnimation();
                 }
                 break;
             case R.id.close_video:
@@ -1510,9 +1518,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
-
     protected final synchronized void queueEvent(final Runnable task, final long delayMillis) {
         if ((task == null) || (handler == null)) return;
         try {
@@ -1554,7 +1559,7 @@ public class MainActivity extends AppCompatActivity {
         videoPlayView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
-                MainActivity.this.surfaceTexture=surfaceTexture;
+                MainActivity.this.surfaceTexture = surfaceTexture;
                 Matrix matrix = videoPlayView.getTransform(new Matrix());
                 matrix.setScale(-1, 1);
                 int width = videoPlayView.getWidth();
@@ -1585,8 +1590,8 @@ public class MainActivity extends AppCompatActivity {
     int mCameraId = -1;
 
     private void startCamera() {
-        dialogTime.show();
-        if(runnable==null){
+//        dialogTime.show();
+        if (runnable == null) {
             runnable = new Runnable() {
                 @Override
                 public void run() {
@@ -1614,9 +1619,9 @@ public class MainActivity extends AppCompatActivity {
                         mCamera0.setDisplayOrientation(90);
                         mCamera0.startPreview();
                         isPlaying = true;
-                        handler.sendEmptyMessageDelayed(13,200);
+                        handler.sendEmptyMessageDelayed(13, 500);
                         handler.removeMessages(LEAVE);
-                        handler.sendEmptyMessageDelayed(LEAVE,120*1000);
+                        handler.sendEmptyMessageDelayed(LEAVE, 120 * 1000);
                     } catch (Exception e) {
                         mCamera0.release();
                     }
