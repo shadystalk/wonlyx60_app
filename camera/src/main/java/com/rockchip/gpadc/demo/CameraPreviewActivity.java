@@ -12,9 +12,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
@@ -22,7 +21,6 @@ import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.SurfaceTexture;
 import android.graphics.Typeface;
-import android.graphics.YuvImage;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
@@ -30,7 +28,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -39,10 +37,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.rockchip.gpadc.demo.rga.RGA;
+import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.rockchip.gpadc.demo.yolo.InferenceWrapper;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -52,16 +49,14 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class CameraPreviewActivity extends Activity implements Camera.PreviewCallback {
 
     private final String TAG = "rkyolo";
     private static final int MAGIC_TEXTURE_ID = 10;
 
-    TSurfaceHolderCallback mSurfaceHolderCallback = null;
 
     private Camera mCamera0 = null;
-    private SurfaceView mSurfaceView = null;
+    private TextureView textureView = null;
     public SurfaceTexture mSurfaceTexture = null;
     private SurfaceHolder mSurfaceHolder = null;
     public int flip = -1;    // for CAMERA_FACING_BACK(camera comes with RK3588 using this mode),
@@ -93,9 +88,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     private Canvas mTrackResultCanvas = null;
     private Paint mTrackResultPaint = null;
     private Paint mTrackResultTextPaint = null;
-
-    private PorterDuffXfermode mPorterDuffXfermodeClear;
-    private PorterDuffXfermode mPorterDuffXfermodeSRC;
     private View up;
     private View left;
     private View right;
@@ -107,41 +99,16 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     private View down1;
     private Button switchRct;
     private int flag=0;//矩形切换标识
-
-    private void setGpioDirection() {
-        try {
-            // Execute the command to set the GPIO direction
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-
-            // Write the command to set the GPIO direction
-            os.writeBytes("echo out > /sys/class/gpio/gpio33/direction\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-//            XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//            mManager.xzjhSetGpioDirction(4, 1);
-        } catch (IOException | InterruptedException e) {
-            Log.e(TAG, "Error setting GPIO direction", e);
-        }
-    }
+    private SerialPortUtil serialPort;
+    private Rect cropRect;
+    private Rect cropRect1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camerapreview);
         ImageView black = findViewById(R.id.black);
-//        XzjhSystemManager mMamager = null;
-//        mMamager = (XzjhSystemManager)getSystemService("xzjh_server");
-
-
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
-        setGpioDirection();
-
         mFpsNum1 = (TextView) findViewById(R.id.fps_num1);
         mFpsNum2 = (TextView) findViewById(R.id.fps_num2);
         mFpsNum3 = (TextView) findViewById(R.id.fps_num3);
@@ -155,14 +122,12 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         right1 = findViewById(R.id.right_to_left);
         down1 = findViewById(R.id.down_to_up);
         switchRct = findViewById(R.id.switch_rect);
+        textureView = findViewById(R.id.surfaceViewCamera1);
         // 获取裁剪区域
         rectangleView = findViewById(R.id.ResizableRectangleView);
         rectangleView.setView(up,left,down,right,up1,left1,down1,right1);
-
         mTrackResultView = (ImageView) findViewById(R.id.canvasView);
-
         fileDirPath = getCacheDir().getAbsolutePath();
-
         platform = getPlatform();
         Log.d(TAG, "get soc platform:" + platform);
 
@@ -184,7 +149,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        serialPort = SerialPortUtil.getInstance();
         mInferenceWrapper = new InferenceWrapper();
         black.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -200,10 +165,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
                         flag=1;
                         switchRct.setText("矩形2");
                         break;
-//                    case 1:
-//                        flag=2;
-//                        switchRct.setText("矩形3");
-//                        break;
                     case 1:
                         flag=0;
                         switchRct.setText("矩形1");
@@ -219,8 +180,15 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
-
-        destroyPreviewView();
+        SPUtil.getInstance(this).setSettingParam("rectLeft",cropRect.left);
+        SPUtil.getInstance(this).setSettingParam("rectTop",cropRect.top);
+        SPUtil.getInstance(this).setSettingParam("rectRight",cropRect.right);
+        SPUtil.getInstance(this).setSettingParam("rectBottom",cropRect.bottom);
+        SPUtil.getInstance(this).setSettingParam("rectLeft1",cropRect1.left);
+        SPUtil.getInstance(this).setSettingParam("rectTop1",cropRect1.top);
+        SPUtil.getInstance(this).setSettingParam("rectRight1",cropRect1.right);
+        SPUtil.getInstance(this).setSettingParam("rectBottom1",cropRect1.bottom);
+        SPUtil.getInstance(this).setSettingParam("haveRect",true);
         super.onDestroy();
     }
 
@@ -229,7 +197,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         Log.d(TAG, "onPause");
         stopTrack();
         stopCamera();
-        destroyPreviewView();
         super.onPause();
 
     }
@@ -239,41 +206,20 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         Log.d(TAG, "onResume");
 
         createPreviewView();
+//        startCamera();
+//        startTrack();
         super.onResume();
 
 
     }
 
-    private boolean createPreviewView() {
-        mSurfaceView = findViewById(R.id.surfaceViewCamera1);
-        mSurfaceHolder = mSurfaceView.getHolder();
-//        mSurfaceView.setZOrderMediaOverlay(true);
 
-        mSurfaceTexture = new SurfaceTexture(MAGIC_TEXTURE_ID);
-
-        mSurfaceHolderCallback = new TSurfaceHolderCallback();
-        mSurfaceHolder.addCallback(mSurfaceHolderCallback);
-
-        return true;
-    }
-
-    private void destroyPreviewView() {
-        if (mSurfaceHolder != null) {
-            mSurfaceHolder.removeCallback(mSurfaceHolderCallback);
-            mSurfaceHolderCallback = null;
-            mSurfaceHolder = null;
-        }
-
-    }
 
 
     public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect,Rect cropRect1) {
         byte[] filledData = new byte[width * height * 3 / 2]; // YUV420格式，Y占总像素的一半，UV各占四分之一
-
         // 先复制整个Y分量
         System.arraycopy(data, 0, filledData, 0, width * height);
-
-
         // 填充Y分量之外的区域为黑色
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -281,7 +227,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
                         ||(x>cropRect1.right&&y<cropRect.top)
                         || (x<cropRect1.left&&y>cropRect.bottom)
                         ||(x>cropRect1.right&&y>cropRect.bottom)
-
                         ||(x<cropRect1.left&&x<cropRect.left)
                         ||(x>cropRect1.right&&x>cropRect.right)
                         ||(y<cropRect1.top&&y<cropRect.top)
@@ -296,12 +241,24 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         int uvStartIndex = width * height;
         int uvWidth = width / 2;
         int uvHeight = height / 2;
-
         // 复制整个UV分量
         System.arraycopy(data, uvStartIndex, filledData, uvStartIndex, uvWidth * uvHeight * 2);
-
-        // 填充UV分量之外的区域为中性色
-
+        // 填充UV分量之外的区域为黑色
+        for (int y = 0; y < uvHeight; y++) {
+            for (int x = 0; x < uvWidth; x++) {
+                if (((x * 2 < cropRect1.left && y * 2 < cropRect.top) ||
+                        (x * 2 > cropRect1.right && y * 2 < cropRect.top) ||
+                        (x * 2 < cropRect1.left && y * 2 > cropRect.bottom) ||
+                        (x * 2 > cropRect1.right && y * 2 > cropRect.bottom) ||
+                        (x * 2 < cropRect1.left && x * 2 < cropRect.left) ||
+                        (x * 2 > cropRect1.right && x * 2 > cropRect.right) ||
+                        (y * 2 < cropRect1.top && y * 2 < cropRect.top) ||
+                        (y * 2 > cropRect1.bottom && y * 2 > cropRect.bottom))) {
+                    filledData[uvStartIndex + (y * uvWidth + x) * 2] = (byte) 128; // U分量
+                    filledData[uvStartIndex + (y * uvWidth + x) * 2 + 1] = (byte) 128; // V分量
+                }
+            }
+        }
         return filledData;
     }
 
@@ -309,14 +266,33 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-
-
-
-
-        Rect cropRect = rectangleView.getRect();
-        Rect cropRect1 = rectangleView.getRect1();
-
-        byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect,cropRect1);
+        if(cropRect==null){
+            cropRect = rectangleView.getRect();
+            cropRect1 = rectangleView.getRect1();
+            boolean haveRect = SPUtil.getInstance(this).getSettingParam("haveRect", false);
+            if(haveRect){
+                int rectLeft = SPUtil.getInstance(this).getSettingParam("rectLeft", 0);
+                int rectTop = SPUtil.getInstance(this).getSettingParam("rectTop", 0);
+                int rectRight = SPUtil.getInstance(this).getSettingParam("rectRight", 0);
+                int rectBottom = SPUtil.getInstance(this).getSettingParam("rectBottom", 0);
+                int rectLeft1 = SPUtil.getInstance(this).getSettingParam("rectLeft1", 0);
+                int rectTop1 = SPUtil.getInstance(this).getSettingParam("rectTop1", 0);
+                int rectRight1 = SPUtil.getInstance(this).getSettingParam("rectRight1", 0);
+                int rectBottom1 = SPUtil.getInstance(this).getSettingParam("rectBottom1", 0);
+                rectangleView.oneLeft=rectLeft;
+                rectangleView.oneTop=rectTop;
+                rectangleView.oneRight=rectRight;
+                rectangleView.oneBottom=rectBottom;
+                rectangleView.verticalStartX=rectLeft1;
+                rectangleView.verticalStartY=rectTop1;
+                rectangleView.verticalEndX=rectRight1;
+                rectangleView.verticalEndY=rectBottom1;
+                cropRect.set(rectLeft, rectTop, rectRight, rectBottom);
+                cropRect1.set(rectLeft1, rectTop1, rectRight1, rectBottom1);
+                rectangleView.invalidate();
+            }
+        }
+        byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect, cropRect1);
 
         mCamera0.addCallbackBuffer(data);
         ImageBufferQueue.ImageBuffer imageBuffer = mImageBufferQueue.getFreeBuffer();
@@ -339,56 +315,9 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 //            byte[] jdata = baos.toByteArray();
 //
 //            Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
-//            countNumBinder.setBmp(bmp);
 //            mTrackResultView.setImageBitmap(bmp);
     }
 
-    private class TSurfaceHolderCallback implements SurfaceHolder.Callback {
-
-        @Override
-        public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            Log.d(TAG, "surfaceChanged");
-            mWidth = width;
-            mHeight = height;
-
-            textureBuffer=new byte[CAMERA_PREVIEW_WIDTH * CAMERA_PREVIEW_HEIGHT * 4];
-        }
-
-        @Override
-        public void surfaceCreated(SurfaceHolder holder) {
-            Log.d(TAG, "surfaceCreated");
-
-            startCamera();
-            startTrack();
-
-
-            if (mCamera0 != null) {
-                try {
-                    Camera.Parameters parameters = mCamera0.getParameters();
-                    List<Integer> supportedFormats = parameters.getSupportedPreviewFormats();
-                    for (Integer format : supportedFormats) {
-                        Log.d(TAG, "Supported Preview Format: " + format);
-                    }
-                    // ... 进一步的摄像头设置代码 ...
-                } catch (RuntimeException e) {
-                    Log.e(TAG, "Could not get camera parameters.", e);
-                    // 处理异常，例如向用户显示错误消息
-                }
-            } else {
-                Log.e(TAG, "Camera is not opened.");
-                // 处理摄像头未打开的情况
-            }
-
-        }
-
-        @Override
-        public void surfaceDestroyed(SurfaceHolder holder) {
-            Log.d(TAG, "surfaceDestroyed");
-
-            stopTrack();
-            stopCamera();
-        }
-    }
 
 
     private boolean startCamera() {
@@ -398,10 +327,11 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
-//        if (num > 2)
-//            mCameraId = 2;
-//        else
+        if (num > 1){
             mCameraId = 0;
+        }else{
+           return false;
+        }
         Log.d(TAG, "mCameraId = " + mCameraId);
         Camera.CameraInfo camInfo = new Camera.CameraInfo();
         try {
@@ -428,14 +358,14 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         setCameraParameters();
 
         try {
-            mCamera0.setPreviewDisplay(mSurfaceHolder);
-            mCamera0.setDisplayOrientation(0);
+//            mCamera0.setPreviewDisplay(mSurfaceHolder);
             int BUFFER_SIZE0 = CAMERA_PREVIEW_WIDTH * CAMERA_PREVIEW_HEIGHT * 3 / 2; // NV21
             byte[][] mPreviewData0 = new byte[][]{new byte[BUFFER_SIZE0], new byte[BUFFER_SIZE0],new byte[BUFFER_SIZE0]};
-            //================================
+//            //================================
             for (byte[] buffer : mPreviewData0)
                 mCamera0.addCallbackBuffer(buffer);
             mCamera0.setPreviewCallbackWithBuffer(this);
+            mCamera0.setPreviewTexture(mSurfaceTexture);
             //==================================
             mCamera0.startPreview();
         } catch (Exception e) {
@@ -621,44 +551,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     private long lastDetectionTime = 0;
     private static final long DETECTION_TIMEOUT = 2000; // 2秒超时
 
-    private void writeToFile(String path, String value) {
-        try {
-            // Start a process with superuser privileges
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-
-            // Write the command to set the GPIO value
-            os.writeBytes("echo " + value + " > " + path + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-        } catch (IOException e) {
-            Log.e(TAG, "Error in writing to file: " + path, e);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Interrupted exception", e);
-        }
-    }
-
-    private void setGpioHigh() {
-//        writeToFile("/sys/class/gpio/gpio33/value", "1");
-//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//        mManager.xzjhSetGpioValue(4, 1);
-//        Log.d(TAG, "GPIO set to High");
-    }
-
-    private void setGpioLow() {
-//        writeToFile("/sys/class/gpio/gpio33/value", "0");
-//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//        mManager.xzjhSetGpioValue(4, 0);
-//        Log.d(TAG, "GPIO set to Low");
-    }
-
-
-//新加的
-
     private boolean isFirstRun() {
         SharedPreferences sharedPreferences = getSharedPreferences("setting", MODE_PRIVATE);
         boolean isFirstRun = sharedPreferences.getBoolean("isFirstRun", true);
@@ -678,7 +570,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         {
             if (msg.what == 0) {
                 float fps = (float) msg.obj;
-
                 DecimalFormat decimalFormat = new DecimalFormat("00.00");
                 String fpsStr = decimalFormat.format(fps);
                 mFpsNum1.setText(String.valueOf(fpsStr.charAt(0)));
@@ -708,19 +599,15 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     private void showTrackSelectResults() {
         int width = CAMERA_PREVIEW_WIDTH;
         int height = CAMERA_PREVIEW_HEIGHT;
-
         if (mTrackResultBitmap == null) {
             mTrackResultBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
             mTrackResultCanvas = new Canvas(mTrackResultBitmap);
             initPaints();
         }
-
         // Clear canvas
         clearCanvas();
-
         ArrayList<InferenceResult.Recognition> recognitions = mInferenceResult.getResult(mInferenceWrapper);
         boolean detectedInterestedObject = false;
-
         for (InferenceResult.Recognition rego : recognitions) {
             int id = rego.getId();
             if (id == 0 || id == 15 || id == 16 || id == 56 || id == 14) {  // Specific categories
@@ -732,9 +619,8 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
         // Set GPIO based on detection
         handleGpio(detectedInterestedObject);
-
         // Update the displayed image
-//        mTrackResultView.setImageBitmap(mTrackResultBitmap);
+        mTrackResultView.setImageBitmap(mTrackResultBitmap);
     }
 
     private void initPaints() {
@@ -762,9 +648,9 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
     private void drawDetection(InferenceResult.Recognition rego, int width, int height) {
         RectF detection = new RectF(
-                rego.getLocation().left * width,
+                width-rego.getLocation().right * width,
                 rego.getLocation().top * height,
-                rego.getLocation().right * width,
+                width-rego.getLocation().left * width,
                 rego.getLocation().bottom * height
         );
         mTrackResultCanvas.drawRect(detection, mTrackResultPaint);
@@ -775,10 +661,12 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
     private void handleGpio(boolean detectedInterestedObject) {
         if (detectedInterestedObject) {
-            setGpioHigh();
-            lastDetectionTime = System.currentTimeMillis();
-        } else if (System.currentTimeMillis() - lastDetectionTime > DETECTION_TIMEOUT) {
-            setGpioLow();
+            long currentTimeMillis = System.currentTimeMillis();
+            if(currentTimeMillis-lastDetectionTime>2000){
+                serialPort.sendDate("+COPEN:1\r\n".getBytes());
+                Log.e("Activity防夹--","发送开门");
+                lastDetectionTime = System.currentTimeMillis();
+            }
         }
     }
 
@@ -795,4 +683,39 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         }
         return platform;
     }
+
+
+
+    public boolean createPreviewView() {
+        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+            @Override
+            public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
+                CameraPreviewActivity.this.mSurfaceTexture =surfaceTexture;
+                Matrix matrix = textureView.getTransform(new Matrix());
+                matrix.setScale(1, -1);
+                int height = textureView.getHeight();
+                matrix.postTranslate(0, height);
+                textureView.setTransform(matrix);
+                startCamera();
+                startTrack();
+            }
+
+            @Override
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
+
+            }
+
+            @Override
+            public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
+                return false;
+            }
+
+            @Override
+            public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+
+            }
+        });
+        return true;
+    }
+
 }

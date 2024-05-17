@@ -10,9 +10,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.SPUtil;
-import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
 import com.wl.wlflatproject.R;
 

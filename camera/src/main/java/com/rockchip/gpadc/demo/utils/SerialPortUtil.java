@@ -1,8 +1,6 @@
-package com.wl.wlflatproject.MUtils;
+package com.rockchip.gpadc.demo.utils;
 
 import android.util.Log;
-
-import com.wl.wlflatproject.Activity.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +12,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import android_serialport_api.SerialPort;
-import ru.sir.ymodem.YModem;
 
 public class SerialPortUtil {
     public SerialPort mSerialPort;
@@ -87,7 +84,7 @@ public class SerialPortUtil {
     public void removeListener(DataListener listener){
         dataListenerList.remove(listener);
     }
-    public void readCode(DataListener listener) {
+    public void readCode(final DataListener listener) {
         if (inputStream != null) {
             dataListenerList.add(listener);
             threads.execute(new Runnable() {

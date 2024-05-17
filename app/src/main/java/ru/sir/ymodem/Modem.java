@@ -1,18 +1,13 @@
 package ru.sir.ymodem;
 
 import android.util.Log;
-import android.widget.Toast;
 
+import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.van.uart.LastError;
 import com.van.uart.UartManager;
-import com.wl.wlflatproject.MUtils.Constants;
-import com.wl.wlflatproject.MUtils.PostEventBus;
-import com.wl.wlflatproject.MUtils.SerialPortUtil;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-
-import android_serialport_api.SerialPort;
 
 
 /**
@@ -57,7 +52,7 @@ class Modem {
      * @return TRUE if receiver requested CRC-16 checksum, FALSE if 8bit checksum
      * @throws IOException
      */
-    protected boolean waitReceiverRequest(Timer timer,SerialPortUtil serialPortUtil) throws IOException {
+    protected boolean waitReceiverRequest(Timer timer, SerialPortUtil serialPortUtil) throws IOException {
         Log.e("固件升级---","准备正式发数据了");
         int character;
         while (true) {

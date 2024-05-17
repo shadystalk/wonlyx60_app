@@ -8,7 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
 import android.view.View;
 
 
@@ -16,20 +15,16 @@ public class ResizableRectangleView extends View {
     private Rect rect;
     private Paint paint;
     private int startX, startY, endX, endY;
-    private int oneLeft;
-    private int oneTop;
     private int screenWidth;
     private int screenHeight;
-    private int oneRight;
-    private int oneBottom;
-    private int horizontalStartY;
-    private int horizontalEndY;
-    private int verticalStartX;
-    private int verticalEndX;
-    private int horizontalStartX;
-    private int horizontalEndX;
-    private int verticalStartY;
-    private int verticalEndY;
+    public int oneLeft;
+    public int oneTop;
+    public int oneRight;
+    public int oneBottom;
+    public int verticalStartX;
+    public int verticalEndX;
+    public int verticalStartY;
+    public int verticalEndY;
     private Rect rect1;
 
     public ResizableRectangleView(Context context) {
@@ -82,10 +77,6 @@ public class ResizableRectangleView extends View {
         verticalEndY = screenHeight;
         rect1 = new Rect(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
 
-        horizontalStartX = 0;
-        horizontalStartY = screenHeight / 2 - 100;
-        horizontalEndX = screenWidth;
-        horizontalEndY = screenHeight / 2 + 100;
     }
 
     @Override

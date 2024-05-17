@@ -1,17 +1,12 @@
 package ru.sir.ymodem;
 
-import android.util.Log;
-
+import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.van.uart.UartManager;
-import com.wl.wlflatproject.MUtils.Constants;
-import com.wl.wlflatproject.MUtils.PostEventBus;
-import com.wl.wlflatproject.MUtils.SerialPortUtil;
 
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**

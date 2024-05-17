@@ -18,7 +18,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.wl.wlflatproject.MUtils.SerialPortUtil;
+import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.wl.wlflatproject.MView.SetDialog;
 import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;

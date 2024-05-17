@@ -11,24 +11,22 @@ import static java.lang.Thread.sleep;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.GLES11Ext;
-import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.SurfaceHolder;
 import android.widget.Toast;
+
 import com.rockchip.gpadc.demo.rga.RGA;
+import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.rockchip.gpadc.demo.yolo.InferenceWrapper;
-import java.io.DataOutputStream;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,7 +35,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ComputerServices extends Service implements Camera.PreviewCallback{
+public class ComputerServices extends Service {
     private String mModelName = "yolov5s.rknn";
     private String platform = "rk3588";
     private String fileDirPath;
@@ -49,6 +47,7 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
     String TAG="com.rockchip.gpadc.demo.ComputerServices";
     private SurfaceTexture mSurfaceTexture;
     private int previewFormat;
+    private SerialPortUtil serialPort;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -72,9 +71,8 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        setGpioDirection();
         fileDirPath = getCacheDir().getAbsolutePath();
-
+        serialPort = SerialPortUtil.getInstance();
         platform = getPlatform();
 
         if (platform.equals("rk3588")) {
@@ -99,25 +97,6 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
         startCamera();
         startTrack();
         return super.onStartCommand(intent, flags, startId);
-    }
-    private void setGpioDirection() {
-        try {
-            // Execute the command to set the GPIO direction
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-
-            // Write the command to set the GPIO direction
-            os.writeBytes("echo out > /sys/class/gpio/gpio33/direction\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-//            XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//            mManager.xzjhSetGpioDirction(4, 1);
-        } catch (IOException | InterruptedException e) {
-        }
     }
 
     private String getPlatform()//取平台版本
@@ -247,15 +226,11 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
                 showTrackSelectResults();
         }
     };
-    private Bitmap mTrackResultBitmap = null;
-    private Canvas mTrackResultCanvas = null;
     private long lastDetectionTime = 0;
     private static final long DETECTION_TIMEOUT = 2000; // 2秒超时
     private void showTrackSelectResults() {
         int width = CAMERA_PREVIEW_WIDTH;
         int height = CAMERA_PREVIEW_HEIGHT;
-
-
         ArrayList<InferenceResult.Recognition> recognitions = mInferenceResult.getResult(mInferenceWrapper);
         boolean detectedInterestedObject = false;
 
@@ -263,60 +238,25 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
             int id = rego.getId();
             if (id == 0 || id == 15 || id == 16 || id == 56 || id == 14) {  // Specific categories
                 detectedInterestedObject = true;
-                drawDetection(rego, width, height);
                 Log.e("防夹--","有人");
             }
         }
-
         // Set GPIO based on detection
         handleGpio(detectedInterestedObject);
     }
 
     private void handleGpio(boolean detectedInterestedObject) {
         if (detectedInterestedObject) {
-            setGpioHigh();
-            lastDetectionTime = System.currentTimeMillis();
-        } else if (System.currentTimeMillis() - lastDetectionTime > DETECTION_TIMEOUT) {
-            setGpioLow();
+            long currentTimeMillis = System.currentTimeMillis();
+            if(currentTimeMillis-lastDetectionTime>2000){
+                serialPort.sendDate("+COPEN:1\r\n".getBytes());
+                Log.e("防夹--","发送开门");
+                lastDetectionTime = System.currentTimeMillis();
+            }
         }
     }
-    private void setGpioHigh() {
-//        writeToFile("/sys/class/gpio/gpio33/value", "1");
-//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//        mManager.xzjhSetGpioValue(4, 1);
-//        Log.d(TAG, "GPIO set to High");
-    }
 
-    private void setGpioLow() {
-//        writeToFile("/sys/class/gpio/gpio33/value", "0");
-//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//        mManager.xzjhSetGpioValue(4, 0);
-//        Log.d(TAG, "GPIO set to Low");
-    }
 
-    private void writeToFile(String path, String value) {
-        try {
-            // Start a process with superuser privileges
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-
-            // Write the command to set the GPIO value
-            os.writeBytes("echo " + value + " > " + path + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-        } catch (IOException e) {
-            Log.e(TAG, "Error in writing to file: " + path, e);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Interrupted exception", e);
-        }
-    }
-    private void drawDetection(InferenceResult.Recognition rego, int width, int height) {
-
-    }
     private void updateMainUI(int type, Object data) {
         Message msg = mHandler.obtainMessage();
         msg.what = type;
@@ -339,14 +279,12 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
             mImageBufferQueue = null;
         }
     }
-    private SurfaceHolder mSurfaceHolder = null;
     private int mCameraId = -1;
     private boolean mIsCameraOpened = false;
     private Camera mCamera0 = null;
     public int flip = -1;
     int previewWidth=1280;
     int previewHeight=720;
-    private int  previewDataSize = 2;
     private boolean startCamera() {
         mSurfaceTexture = new SurfaceTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES);
         if (mIsCameraOpened) {
@@ -355,11 +293,11 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
 
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
-//        if (num > 1){
+        if (num > 1){
             mCameraId = 0;
-//        } else{
-//            return false;
-//        }
+        } else{
+            return false;
+        }
         Log.d(TAG, "mCameraId = " + mCameraId);
         Camera.CameraInfo camInfo = new Camera.CameraInfo();
         try {
@@ -447,69 +385,50 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
         Log.i(TAG, "mCamera0 set parameters success.");
     }
 
-    @Override
-    public void onPreviewFrame(byte[] data, Camera camera) {
-        ResizableRectangleView resizableRectangleView = new ResizableRectangleView(this);
-        Rect cropRect = resizableRectangleView.getRect();
-        byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect);
-
-        mCamera0.addCallbackBuffer(data);
-        ImageBufferQueue.ImageBuffer imageBuffer = mImageBufferQueue.getFreeBuffer();
-
-
-        if (imageBuffer != null) {
-            // RK_FORMAT_YCrCb_420_SP -> RK_FORMAT_RGBA_8888
-            // flip for CAMERA_FACING_FRONT
-            RGA.colorConvertAndFlip(filledData, RK_FORMAT_YCrCb_420_SP,
-                    imageBuffer.mImage, RK_FORMAT_RGBA_8888,
-                    CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, this.flip);
-
-            mImageBufferQueue.postBuffer(imageBuffer);
-        }
-    }
-
-
-    public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect) {
+    public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect,Rect cropRect1) {
         byte[] filledData = new byte[width * height * 3 / 2]; // YUV420格式，Y占总像素的一半，UV各占四分之一
-
         // 先复制整个Y分量
         System.arraycopy(data, 0, filledData, 0, width * height);
-
-        // 计算十字形区域
-        int verticalWidth = cropRect.width() / 2;
-        int horizontalHeight = cropRect.height() / 2;
-        int verticalStartX = cropRect.centerX() - verticalWidth / 2;
-        int verticalEndX = cropRect.centerX() + verticalWidth / 2;
-        int horizontalStartY = cropRect.centerY() - horizontalHeight / 2;
-        int horizontalEndY = cropRect.centerY() + horizontalHeight / 2;
-
         // 填充Y分量之外的区域为黑色
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if (!(x >= verticalStartX && x <= verticalEndX) && !(y >= horizontalStartY && y <= horizontalEndY)) {
+                if(((x<cropRect1.left&&y<cropRect.top)
+                        ||(x>cropRect1.right&&y<cropRect.top)
+                        || (x<cropRect1.left&&y>cropRect.bottom)
+                        ||(x>cropRect1.right&&y>cropRect.bottom)
+                        ||(x<cropRect1.left&&x<cropRect.left)
+                        ||(x>cropRect1.right&&x>cropRect.right)
+                        ||(y<cropRect1.top&&y<cropRect.top)
+                        ||(y>cropRect1.bottom&&y>cropRect.bottom)
+                )){
                     filledData[y * width + x] = 0; // 裁剪区域外填充黑色
                 }
             }
-        }
 
+        }
         // UV分量的开始索引
         int uvStartIndex = width * height;
         int uvWidth = width / 2;
         int uvHeight = height / 2;
-
         // 复制整个UV分量
         System.arraycopy(data, uvStartIndex, filledData, uvStartIndex, uvWidth * uvHeight * 2);
-
         // 填充UV分量之外的区域为中性色
+        // 填充UV分量之外的区域为黑色
         for (int y = 0; y < uvHeight; y++) {
             for (int x = 0; x < uvWidth; x++) {
-                if (!(x >= (verticalStartX / 2) && x <= (verticalEndX / 2)) && !(y >= (horizontalStartY / 2) && y <= (horizontalEndY / 2))) {
+                if (((x * 2 < cropRect1.left && y * 2 < cropRect.top) ||
+                        (x * 2 > cropRect1.right && y * 2 < cropRect.top) ||
+                        (x * 2 < cropRect1.left && y * 2 > cropRect.bottom) ||
+                        (x * 2 > cropRect1.right && y * 2 > cropRect.bottom) ||
+                        (x * 2 < cropRect1.left && x * 2 < cropRect.left) ||
+                        (x * 2 > cropRect1.right && x * 2 > cropRect.right) ||
+                        (y * 2 < cropRect1.top && y * 2 < cropRect.top) ||
+                        (y * 2 > cropRect1.bottom && y * 2 > cropRect.bottom))) {
                     filledData[uvStartIndex + (y * uvWidth + x) * 2] = (byte) 128; // U分量
                     filledData[uvStartIndex + (y * uvWidth + x) * 2 + 1] = (byte) 128; // V分量
                 }
             }
         }
-
         return filledData;
     }
 
@@ -650,24 +569,41 @@ public class ComputerServices extends Service implements Camera.PreviewCallback{
 
         return new int[]{resultWidth, resultHeight};
     }
+
+    private Rect cropRect;
+    private Rect cropRect1;
     private Camera.PreviewCallback mCameraCallbacks = new Camera.PreviewCallback() {
         @Override
         public void onPreviewFrame(byte[] data, Camera camera) {
-//            YuvImage yuvimage = new YuvImage(data, ImageFormat.NV21, 1280, 720, null);
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            yuvimage.compressToJpeg(new Rect(0, 0, 1280, 720), 80, baos);
-//            byte[] jdata = baos.toByteArray();
-//
-//            Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
-//            countNumBinder.setBmp(bmp);
+            if(cropRect==null){
+                ResizableRectangleView resizableRectangleView = new ResizableRectangleView(ComputerServices.this);
+                cropRect = resizableRectangleView.getRect();
+                cropRect1 = resizableRectangleView.getRect1();
+                boolean haveRect = SPUtil.getInstance(ComputerServices.this).getSettingParam("haveRect", false);
+                if(haveRect){
+                    int rectLeft = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectLeft", 0);
+                    int rectTop = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectTop", 0);
+                    int rectRight = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectRight", 0);
+                    int rectBottom = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectBottom", 0);
+                    int rectLeft1 = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectLeft1", 0);
+                    int rectTop1 = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectTop1", 0);
+                    int rectRight1 = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectRight1", 0);
+                    int rectBottom1 = SPUtil.getInstance(ComputerServices.this).getSettingParam("rectBottom1", 0);
+                    resizableRectangleView.oneLeft=rectLeft;
+                    resizableRectangleView.oneTop=rectTop;
+                    resizableRectangleView.oneRight=rectRight;
+                    resizableRectangleView.oneBottom=rectBottom;
+                    resizableRectangleView.verticalStartX=rectLeft1;
+                    resizableRectangleView.verticalStartY=rectTop1;
+                    resizableRectangleView.verticalEndX=rectRight1;
+                    resizableRectangleView.verticalEndY=rectBottom1;
+                    cropRect.set(rectLeft, rectTop, rectRight, rectBottom);
+                    cropRect1.set(rectLeft1, rectTop1, rectRight1, rectBottom1);
+                    resizableRectangleView.invalidate();
+                }
+            }
 
-
-            // 获取裁剪区域
-            ResizableRectangleView rectangleView = new ResizableRectangleView(ComputerServices.this);
-            Rect cropRect = rectangleView.getRect();
-
-
-            byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect);
+            byte[] filledData = cropAndFill(data, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, cropRect,cropRect1);
 
             mCamera0.addCallbackBuffer(data);
             ImageBufferQueue.ImageBuffer imageBuffer = mImageBufferQueue.getFreeBuffer();

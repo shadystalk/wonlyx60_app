@@ -35,7 +35,7 @@
 
 
 
-    <SurfaceView
+    <TextureView
         android:layout_marginTop="80px"
         android:id="@+id/surfaceViewCamera1"
         android:layout_width="match_parent"
