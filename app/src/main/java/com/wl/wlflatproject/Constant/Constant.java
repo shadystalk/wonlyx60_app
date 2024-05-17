@@ -34,7 +34,7 @@ public class Constant {
     /**
      * 本地铃声集合
      */
-    public static final int[] RINGTONES_RES = {R.raw.alarm, R.raw.alarm, R.raw.alarm};
+    public static final int[] RINGTONES_RES = {R.raw.alarm, R.raw.alarm1, R.raw.alarm2};
 
     /**
      * 服务器请求成功

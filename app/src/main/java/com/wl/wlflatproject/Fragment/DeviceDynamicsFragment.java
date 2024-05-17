@@ -51,6 +51,7 @@ public class DeviceDynamicsFragment extends Fragment {
         viewPager.setAdapter(adapter);
         //预加载
         viewPager.setOffscreenPageLimit(1);
+        viewPager.setSaveEnabled(false);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {

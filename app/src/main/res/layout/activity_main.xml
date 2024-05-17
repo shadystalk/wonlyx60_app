@@ -24,11 +24,21 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
             <ImageView
                 android:background="@drawable/bg"
                 android:id="@+id/bg"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
+            <com.airbnb.lottie.LottieAnimationView
+                android:visibility="gone"
+                android:id="@+id/animation_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_fileName="video1.json"
+                app:lottie_imageAssetsFolder="images/" />
                 <LinearLayout
                     android:visibility="invisible"
                     android:layout_marginBottom="38dp"
@@ -101,6 +111,17 @@
             android:text="农历-四月-初三"
             android:textColor="@color/white"
             android:textSize="32sp" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/test"
+            android:textSize="30sp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="正式服"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
         <ImageView
             android:background="@drawable/logo"
             android:id="@+id/logo"

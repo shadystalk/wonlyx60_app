@@ -3,6 +3,7 @@ package com.wl.wlflatproject.MUtils;
 import android.content.Context;
 
 import com.lzy.okgo.model.HttpHeaders;
+import com.wl.wlflatproject.Activity.MainActivity;
 import com.wl.wlflatproject.Constant.Constant;
 
 import javax.crypto.Mac;
@@ -12,9 +13,9 @@ import java.security.NoSuchAlgorithmException;
 import android.util.Base64;
 
 public class ApiSrevice {
-//    public static String baseUrl = "https://ums-test.wonlycloud.com:10301";//测试
-    public static String baseUrl = "https://ums-ag.wonlycloud.com:10301";
-
+    public static String baseUrl = "https://ums-test.wonlycloud.com:10301";//测试
+//    public static String baseUrl = "https://ums-ag.wonlycloud.com:10301";
+    public static String MQIP="rmq.wonlycloud.com";
     public static String searchInfo = baseUrl + "/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
     /**
      * 开门记录
@@ -25,6 +26,19 @@ public class ApiSrevice {
      * 告警消息
      */
     public static String queryAlarmMsg = baseUrl + "/api/aigang/ten/screen/queryAlarmMsg";
+    public ApiSrevice(Context context){
+        int settingParam = SPUtil.getInstance(context).getSettingParam("test", 0);
+        switch (settingParam){
+            case 0://正式
+                baseUrl="https://ums-ag.wonlycloud.com:10301";
+                MQIP="https://ums-ag.wonlycloud.com:10301";
+                break;
+            case 1://测试
+                baseUrl="https://ums-test.wonlycloud.com:10301";
+                MQIP="rmq-test.wonlycloud.com";
+                break;
+        }
+    }
     public static HttpHeaders getHeads(Context context) {
         String devId = SPUtil.getInstance(context).getSettingParam(Constant.DEVID, "");
         String versionName = VersionUtils.getVersionName(context);
