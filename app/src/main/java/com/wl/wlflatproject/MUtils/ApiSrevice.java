@@ -16,16 +16,16 @@ public class ApiSrevice {
     public static String baseUrl = "https://ums-test.wonlycloud.com:10301";//测试
 //    public static String baseUrl = "https://ums-ag.wonlycloud.com:10301";
     public static String MQIP="rmq.wonlycloud.com";
-    public static String searchInfo = baseUrl + "/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
+    public static String searchInfo = "/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
     /**
      * 开门记录
      */
-    public static String queryUnlockRecord = baseUrl + "/api/aigang/ten/screen/queryUnlockRecord";
+    public static String queryUnlockRecord ="/api/aigang/ten/screen/queryUnlockRecord";
 
     /**
      * 告警消息
      */
-    public static String queryAlarmMsg = baseUrl + "/api/aigang/ten/screen/queryAlarmMsg";
+    public static String queryAlarmMsg = "/api/aigang/ten/screen/queryAlarmMsg";
     public ApiSrevice(Context context){
         int settingParam = SPUtil.getInstance(context).getSettingParam("test", 0);
         switch (settingParam){

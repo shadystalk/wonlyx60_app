@@ -76,7 +76,7 @@ public class BindFragment extends Fragment {
         if(TextUtils.isEmpty(devId)){
             return;
         }
-        OkGo.<String>get(ApiSrevice.searchInfo).tag(this).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
+        OkGo.<String>get(ApiSrevice.baseUrl+ApiSrevice.searchInfo).tag(this).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 String s = response.body().toString();

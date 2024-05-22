@@ -69,8 +69,6 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
-import com.serenegiant.usb.DeviceFilter;
-import com.serenegiant.usb.UVCCamera;
 import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
@@ -301,10 +299,8 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter intentFilter;
     private float plankVersionCode;
     private boolean isPlaying = false;
-    private UVCCamera camera;
     private HashMap<Integer, UsbDevice> deviceList;
     private MediaPlayer mediaplayer;
-    private List<DeviceFilter> filter;
     private PopupWindow clearPopupWindow;
     private String devType;
     private PowerManager.WakeLock wakeLock;
@@ -333,8 +329,6 @@ public class MainActivity extends AppCompatActivity {
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
 //        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
 //        mUSBMonitor.register();
-        filter = DeviceFilter.getDeviceFilters(this,
-                com.serenegiant.uvccamera.R.xml.device_filter);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
         if (deviceList == null || deviceList.size() < 1) {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
@@ -440,7 +434,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        OkGo.<String>post(ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
+        OkGo.<String>post(ApiSrevice.baseUrl+ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 swipeRefreshLayout.setRefreshing(false);
