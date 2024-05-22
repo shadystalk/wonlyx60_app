@@ -9,8 +9,8 @@ android {
 //        versionCode 21
 //        versionName "21"
 //
-        versionCode 3  //高
-        versionName "V1.0.3"
+        versionCode 4  //高
+        versionName "V1.0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {

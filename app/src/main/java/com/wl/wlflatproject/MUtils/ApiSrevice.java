@@ -43,7 +43,7 @@ public class ApiSrevice {
         String devId = SPUtil.getInstance(context).getSettingParam(Constant.DEVID, "");
         String versionName = VersionUtils.getVersionName(context);
         HttpHeaders headers = new HttpHeaders();
-        headers.put("clientId", "29:EA:03:00:00:00:2F:1F:07:0B");
+        headers.put("clientId", devId);
         headers.put("appId", "wonly_screen_10");
         headers.put("appVersion", versionName);
         long l = System.currentTimeMillis();
