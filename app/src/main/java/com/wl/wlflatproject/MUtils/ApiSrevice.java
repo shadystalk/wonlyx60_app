@@ -16,7 +16,7 @@ public class ApiSrevice {
     public static String baseUrl = "https://ums-test.wonlycloud.com:10301";//测试
 //    public static String baseUrl = "https://ums-ag.wonlycloud.com:10301";
     public static String MQIP="rmq.wonlycloud.com";
-    public static String searchInfo ="/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
+    public static String searchInfo = "/api/aigang/ten/screen/bind/info";    //查询设备绑定用户信息
     /**
      * 开门记录
      */
@@ -25,13 +25,13 @@ public class ApiSrevice {
     /**
      * 告警消息
      */
-    public static String queryAlarmMsg ="/api/aigang/ten/screen/queryAlarmMsg";
+    public static String queryAlarmMsg = "/api/aigang/ten/screen/queryAlarmMsg";
     public ApiSrevice(Context context){
         int settingParam = SPUtil.getInstance(context).getSettingParam("test", 0);
         switch (settingParam){
             case 0://正式
                 baseUrl="https://ums-ag.wonlycloud.com:10301";
-                MQIP="https://ums-ag.wonlycloud.com:10301";
+                MQIP="rmq.wonlycloud.com";
                 break;
             case 1://测试
                 baseUrl="https://ums-test.wonlycloud.com:10301";

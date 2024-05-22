@@ -31,6 +31,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
             <com.airbnb.lottie.LottieAnimationView
+                app:lottie_loop="true"
                 android:visibility="gone"
                 android:id="@+id/animation_view"
                 android:layout_width="match_parent"
