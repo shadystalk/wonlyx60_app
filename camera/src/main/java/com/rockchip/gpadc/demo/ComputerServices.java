@@ -294,7 +294,7 @@ public class ComputerServices extends Service {
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
         if (num > 1){
-            mCameraId = 0;
+            mCameraId = 1;
         } else{
             return false;
         }

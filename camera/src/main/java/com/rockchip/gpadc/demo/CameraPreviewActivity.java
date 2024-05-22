@@ -180,15 +180,17 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
-        SPUtil.getInstance(this).setSettingParam("rectLeft",cropRect.left);
-        SPUtil.getInstance(this).setSettingParam("rectTop",cropRect.top);
-        SPUtil.getInstance(this).setSettingParam("rectRight",cropRect.right);
-        SPUtil.getInstance(this).setSettingParam("rectBottom",cropRect.bottom);
-        SPUtil.getInstance(this).setSettingParam("rectLeft1",cropRect1.left);
-        SPUtil.getInstance(this).setSettingParam("rectTop1",cropRect1.top);
-        SPUtil.getInstance(this).setSettingParam("rectRight1",cropRect1.right);
-        SPUtil.getInstance(this).setSettingParam("rectBottom1",cropRect1.bottom);
-        SPUtil.getInstance(this).setSettingParam("haveRect",true);
+        if(cropRect!=null){
+            SPUtil.getInstance(this).setSettingParam("rectLeft",cropRect.left);
+            SPUtil.getInstance(this).setSettingParam("rectTop",cropRect.top);
+            SPUtil.getInstance(this).setSettingParam("rectRight",cropRect.right);
+            SPUtil.getInstance(this).setSettingParam("rectBottom",cropRect.bottom);
+            SPUtil.getInstance(this).setSettingParam("rectLeft1",cropRect1.left);
+            SPUtil.getInstance(this).setSettingParam("rectTop1",cropRect1.top);
+            SPUtil.getInstance(this).setSettingParam("rectRight1",cropRect1.right);
+            SPUtil.getInstance(this).setSettingParam("rectBottom1",cropRect1.bottom);
+            SPUtil.getInstance(this).setSettingParam("haveRect",true);
+        }
         super.onDestroy();
     }
 
@@ -328,7 +330,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
         if (num > 1){
-            mCameraId = 0;
+            mCameraId = 1;
         }else{
            return false;
         }

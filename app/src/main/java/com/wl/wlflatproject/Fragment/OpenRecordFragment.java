@@ -73,7 +73,7 @@ public class OpenRecordFragment extends Fragment {
 //        } catch (Exception e) {
 //        e.printStackTrace();
 //        }
-        OkGo.<String>post(ApiSrevice.queryUnlockRecord).headers(ApiSrevice.getHeads(getContext())).upJson(requestBody).execute(new StringCallback() {
+        OkGo.<String>post(ApiSrevice.baseUrl+ApiSrevice.queryUnlockRecord).headers(ApiSrevice.getHeads(getContext())).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 if(msgRecyclerView==null){
