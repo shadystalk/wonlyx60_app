@@ -28,6 +28,7 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -327,8 +328,6 @@ public class MainActivity extends AppCompatActivity {
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
         wakeLock.acquire();
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
-//        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
-//        mUSBMonitor.register();
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
         if (deviceList == null || deviceList.size() < 1) {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
@@ -365,6 +364,15 @@ public class MainActivity extends AppCompatActivity {
         if (!TextUtils.isEmpty(messageDateS)) {
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
+        }
+        boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate",false);
+        if(systemUpDate){
+            String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "update.zip";
+            File f=new File(file);
+            if (null != f && f.exists()) {
+                f.delete();
+                SPUtil.getInstance(this).setSettingParam("SystemUpDate",true);
+            }
         }
         initMsgData();
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
