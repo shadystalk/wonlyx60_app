@@ -107,7 +107,6 @@ dependencies {
     implementation 'com.github.zcweng:switch-button:0.0.3@aar'
     implementation 'com.google.zxing:core:3.3.3'
     implementation 'com.alibaba:fastjson:1.1.67.android'
-    implementation project(':libuvccamera')
     implementation 'com.blankj:utilcodex:1.31.1'
     implementation 'com.github.li-xiaojun:XPopup:2.10.0'
     implementation 'com.google.android.material:material:1.4.0'

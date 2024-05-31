@@ -115,12 +115,12 @@ public class SystemUpdateFragment extends Fragment {
     }
 
     public boolean compareVersions(String currentVersion, String latestVersion) {
-        String[] currentVersionSplit = currentVersion.split(".");
-        int currentData = Integer.parseInt(currentVersionSplit[1]);
-        int currentDataTime = Integer.parseInt(currentVersionSplit[2]);
-        String[] latestVersionSplit = latestVersion.split(".");
-        int latestData = Integer.parseInt(latestVersionSplit[1]);
-        int latestDataTime = Integer.parseInt(latestVersionSplit[2]);
+        String[] currentVersionSplit = currentVersion.split("\\.");
+        int currentData = Integer.parseInt(currentVersionSplit[2]);
+        int currentDataTime = Integer.parseInt(currentVersionSplit[3]);
+        String[] latestVersionSplit = latestVersion.split("\\.");
+        int latestData = Integer.parseInt(latestVersionSplit[0]);
+        int latestDataTime = Integer.parseInt(latestVersionSplit[1]);
         if(currentData<latestData){
             return true;
         }
