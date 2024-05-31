@@ -1,26 +1,18 @@
 package com.wl.wlflatproject.Fragment;
 
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Intent;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.FileCallback;
@@ -30,18 +22,10 @@ import com.lzy.okgo.model.Response;
 import com.wl.wlflatproject.Activity.MainActivity;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
-import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.GsonUtils;
-import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.UpdateManager;
-import com.wl.wlflatproject.MUtils.VersionUtils;
 import com.wl.wlflatproject.R;
-
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 public class SystemUpdateFragment extends Fragment {
 
