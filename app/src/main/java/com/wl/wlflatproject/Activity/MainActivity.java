@@ -14,9 +14,11 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -24,6 +26,7 @@ import android.hardware.usb.UsbDevice;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
@@ -406,7 +409,8 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(BuildConfig.DEBUG){
+//                int a=0;
+//                if(BuildConfig.DEBUG){
                     switch (settingParam) {
                         case 0:
                             settingParam = 1;
@@ -417,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
                     android.os.Process.killProcess(android.os.Process.myPid());
-                }
+//                }
             }
         });
         logo.setOnLongClickListener(new View.OnLongClickListener() {
@@ -425,6 +429,26 @@ public class MainActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
                 Intent intent = new Intent(Settings.ACTION_SETTINGS);
                 startActivity(intent);
+                return false;
+            }
+        });
+        wifi_state.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                String packageName = "com.antutu.ABenchMark"; // 替换为目标应用的包名
+                try {
+                    PackageManager pm = getPackageManager();
+                    Intent intent = pm.getLaunchIntentForPackage(packageName);
+                    if (intent != null) {
+                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+                        startActivity(intent);
+                    } else {
+                        // 应用不存在或无法启动
+                        ToastUtils.showShort("应用不存在或无法启动");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 return false;
             }
         });

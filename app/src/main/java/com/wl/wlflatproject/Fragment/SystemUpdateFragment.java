@@ -1,6 +1,7 @@
 package com.wl.wlflatproject.Fragment;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -171,7 +172,7 @@ public class SystemUpdateFragment extends Fragment {
     }
 
     private void downloadApp(String apk_url) {
-        OkGo.<File>get(apk_url).tag(this).execute(new FileCallback(Environment.getExternalStorageDirectory().getAbsolutePath(),"update.zip") {
+        OkGo.<File>get(apk_url).tag(SystemUpdateFragment.this).execute(new FileCallback(Environment.getExternalStorageDirectory().getAbsolutePath(),"update.zip") {
             @Override
             public void onError(Response<File> response) {
                 if (mDownloadDialog != null) {
@@ -194,7 +195,7 @@ public class SystemUpdateFragment extends Fragment {
                 if (mDownloadDialog == null) {
                     // 构造软件下载对话框
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle("正在更新");
+                    builder.setTitle("                          系统正在更新，请勿断电");
                     // 给下载对话框增加进度条
                     final LayoutInflater inflater = LayoutInflater.from(getContext());
                     View v = inflater.inflate(R.layout.item_progress, null);
@@ -202,6 +203,12 @@ public class SystemUpdateFragment extends Fragment {
                     builder.setView(v);
                     mDownloadDialog = builder.create();
                     mDownloadDialog.show();
+                    mDownloadDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                        @Override
+                        public void onCancel(DialogInterface dialogInterface) {
+                            OkGo.getInstance().cancelTag(SystemUpdateFragment.this);
+                        }
+                    });
                 }
                 mProgress.setProgress((int) (progress.fraction * 100));
             }
@@ -211,6 +218,6 @@ public class SystemUpdateFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        OkGo.getInstance().cancelTag(this);
+        OkGo.getInstance().cancelTag(SystemUpdateFragment.this);
     }
 }
