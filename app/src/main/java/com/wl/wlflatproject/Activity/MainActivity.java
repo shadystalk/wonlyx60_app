@@ -8,6 +8,7 @@ import static com.wl.wlflatproject.MUtils.HandlerCode.GET_DOOR_INFO;
 import static com.wl.wlflatproject.MUtils.HandlerCode.HEARTBEAT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.LEAVE;
 import static com.wl.wlflatproject.MUtils.HandlerCode.PERMISSION;
+import static com.wl.wlflatproject.MUtils.HandlerCode.SETTING;
 import static com.wl.wlflatproject.MUtils.HandlerCode.TIME;
 
 import android.Manifest;
@@ -277,6 +278,9 @@ public class MainActivity extends AppCompatActivity {
 //                    dialogTime.dismiss();
                     closeVideo.setVisibility(View.VISIBLE);
                     break;
+                case SETTING:
+                    logo.setEnabled(false);
+                    break;
                 default:
                     break;
             }
@@ -368,13 +372,13 @@ public class MainActivity extends AppCompatActivity {
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
         }
-        boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate",false);
-        if(systemUpDate){
+        boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate", false);
+        if (systemUpDate) {
             String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "update.zip";
-            File f=new File(file);
+            File f = new File(file);
             if (null != f && f.exists()) {
                 f.delete();
-                SPUtil.getInstance(this).setSettingParam("SystemUpDate",true);
+                SPUtil.getInstance(this).setSettingParam("SystemUpDate", true);
             }
         }
         initMsgData();
@@ -386,17 +390,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         createPreviewView();
-        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (test.getVisibility() == View.VISIBLE) {
-                    test.setVisibility(View.GONE);
-                } else {
-                    test.setVisibility(View.VISIBLE);
-                }
-                return false;
-            }
-        });
+//        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                if (test.getVisibility() == View.VISIBLE) {
+//                    test.setVisibility(View.GONE);
+//                } else {
+//                    test.setVisibility(View.VISIBLE);
+//                }
+//                return false;
+//            }
+//        });
         settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
         switch (settingParam) {
             case 0:
@@ -411,44 +415,48 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 //                int a=0;
 //                if(BuildConfig.DEBUG){
-                    switch (settingParam) {
-                        case 0:
-                            settingParam = 1;
-                            break;
-                        case 1:
-                            settingParam = 0;
-                            break;
-                    }
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
-                    android.os.Process.killProcess(android.os.Process.myPid());
+                switch (settingParam) {
+                    case 0:
+                        settingParam = 1;
+                        break;
+                    case 1:
+                        settingParam = 0;
+                        break;
+                }
+                SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
+                android.os.Process.killProcess(android.os.Process.myPid());
 //                }
             }
         });
-        logo.setOnLongClickListener(new View.OnLongClickListener() {
+        logo.setEnabled(false);
+        logo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 Intent intent = new Intent(Settings.ACTION_SETTINGS);
                 startActivity(intent);
-                return false;
+
             }
         });
         wifi_state.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                String packageName = "com.antutu.ABenchMark"; // 替换为目标应用的包名
-                try {
-                    PackageManager pm = getPackageManager();
-                    Intent intent = pm.getLaunchIntentForPackage(packageName);
-                    if (intent != null) {
-                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-                        startActivity(intent);
-                    } else {
-                        // 应用不存在或无法启动
-                        ToastUtils.showShort("应用不存在或无法启动");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                String packageName = "com.antutu.ABenchMark"; // 替换为目标应用的包名
+//                try {
+//                    PackageManager pm = getPackageManager();
+//                    Intent intent = pm.getLaunchIntentForPackage(packageName);
+//                    if (intent != null) {
+//                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//                        startActivity(intent);
+//                    } else {
+//                        // 应用不存在或无法启动
+//                        ToastUtils.showShort("应用不存在或无法启动");
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+                logo.setEnabled(true);
+                handler.removeMessages(SETTING);
+                handler.sendEmptyMessageDelayed(SETTING,2000);
                 return false;
             }
         });
@@ -466,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        OkGo.<String>post(ApiSrevice.baseUrl+ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
+        OkGo.<String>post(ApiSrevice.baseUrl + ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 swipeRefreshLayout.setRefreshing(false);

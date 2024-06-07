@@ -124,6 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <ImageView
+            android:enabled="false"
             android:background="@drawable/logo"
             android:id="@+id/logo"
             app:layout_constraintLeft_toLeftOf="parent"

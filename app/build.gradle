@@ -9,8 +9,8 @@ android {
 //        versionCode 21
 //        versionName "21"
 //
-        versionCode 5  //高
-        versionName "V1.0.5"
+        versionCode 6  //高
+        versionName "V1.0.6"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         multiDexEnabled true
