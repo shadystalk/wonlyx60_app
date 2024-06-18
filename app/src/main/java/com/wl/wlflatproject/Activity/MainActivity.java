@@ -23,6 +23,7 @@ import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -384,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
         });
         createPreviewView();
         servicesIntent = new Intent(this, ComputerServices.class);
-        startService(servicesIntent);
+//        startService(servicesIntent);
         calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -946,7 +947,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        stopCamera();
+//        stopCamera();
     }
 
     @Override
@@ -1617,9 +1618,13 @@ public class MainActivity extends AppCompatActivity {
                     if (isPlaying) {
                         return;
                     }
+                    UsbManager manager = (UsbManager) getSystemService(Context.USB_SERVICE);
+                    //打开视频
+                    Log.e("usb++","deviceList"+deviceList.size());
+                    HashMap<String, UsbDevice> deviceList1 = manager.getDeviceList();
                     int num = Camera.getNumberOfCameras();
                     if (num > 0){
-                        mCameraId = 0;
+                        mCameraId = 1;
                     }else{
                         return;
                     }
@@ -1669,7 +1674,7 @@ public class MainActivity extends AppCompatActivity {
                 stopService(servicesIntent);
                 break;
             case START_SERVICE://开启服务
-                startService(servicesIntent);
+//                startService(servicesIntent);
                 break;
         }
     }

@@ -208,8 +208,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         Log.d(TAG, "onResume");
 
         createPreviewView();
-//        startCamera();
-//        startTrack();
         super.onResume();
 
 
@@ -330,7 +328,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
         if (num > 1){
-            mCameraId = 1;
+            mCameraId = 0;
         }else{
            return false;
         }
