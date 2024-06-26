@@ -2,15 +2,33 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/full_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
-    android:orientation="vertical"
-    android:padding="24dp"
     tools:context=".Activity.MainActivity">
 
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextureView
+            android:id="@+id/video_play_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/full_screen"
+    android:background="@drawable/bg"
+    android:padding="24dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <ImageView
         android:background="@drawable/logo"
@@ -139,17 +157,18 @@
             android:textSize="24sp" />
     </LinearLayout>
 
-   <com.qdong.slide_to_unlock_view.CustomSlideToUnlockView
-       android:layout_marginRight="100dp"
-       android:layout_marginLeft="100dp"
-       android:layout_marginBottom="60dp"
+   <com.wl.wlflatproject.MView.CustomSlideToUnlockView
+       android:layout_marginRight="100px"
+       android:layout_marginLeft="100px"
+       android:layout_marginBottom="60px"
        app:textHint=" "
+       app:viewBackgroundResId="@drawable/slid_bg"
        app:layout_constraintBottom_toTopOf="@+id/door_select_ll"
        app:slideImageViewResId="@drawable/slid"
-       app:slideImageViewWidth="100dp"
+       app:slideImageViewWidth="120px"
        app:layout_constraintLeft_toLeftOf="parent"
        android:layout_width="match_parent"
-       android:layout_height="100dp"/>
+       android:layout_height="120px"/>
 
     <LinearLayout
         app:layout_constraintRight_toRightOf="parent"
@@ -160,7 +179,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:id="@+id/door_select_ll"
         android:layout_width="0dp"
-        android:layout_height="122dp"
+        android:layout_height="142dp"
         android:orientation="horizontal">
 
         <LinearLayout
@@ -176,12 +195,12 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/changKai"
+            android:id="@+id/video_iv"
             android:layout_marginRight="8dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:background="@drawable/changkai"
+            android:background="@drawable/video"
             android:gravity="center"
             android:orientation="vertical">
         </LinearLayout>
@@ -189,12 +208,12 @@
 
 
         <LinearLayout
-            android:layout_marginLeft="8dp"
-            android:id="@+id/video_iv"
+            android:id="@+id/changKai"
+            android:layout_marginLeft="16dp"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:background="@drawable/video"
+            android:background="@drawable/changkai"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -205,4 +224,6 @@
 
 
     </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

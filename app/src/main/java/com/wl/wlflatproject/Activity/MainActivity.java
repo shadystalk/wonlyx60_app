@@ -121,76 +121,76 @@ import butterknife.OnClick;
 import ru.sir.ymodem.YModem;
 
 public class MainActivity extends AppCompatActivity {
-    @BindView(R.id.swipeRefreshLayout)
-    SwipeRefreshLayout swipeRefreshLayout;
+//    @BindView(R.id.swipeRefreshLayout)
+//    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.time)
     TextView time;
-    @BindView(R.id.animation_view)
-    LottieAnimationView animationView;
+//    @BindView(R.id.animation_view)
+//    LottieAnimationView animationView;
     @BindView(R.id.video_play_view)
     TextureView videoPlayView;
-    @BindView(R.id.lock_bt)
-    LinearLayout lockBt;
+//    @BindView(R.id.lock_bt)
+//    LinearLayout lockBt;
     @BindView(R.id.video_iv)
     LinearLayout videoIv;
     @BindView(R.id.full_screen)
     ConstraintLayout fullScreen;
-    @BindView(R.id.video_play_view_cl)
-    ConstraintLayout videoPlayViewCl;
-    @BindView(R.id.location_tv)
-    TextView locationTv;
+//    @BindView(R.id.video_play_view_cl)
+//    ConstraintLayout videoPlayViewCl;
+//    @BindView(R.id.location_tv)
+//    TextView locationTv;
     @BindView(R.id.today_weather_view)
     View todayWeatherView;
     @BindView(R.id.today_temp_tv)
     TextView todayTempTv;
     @BindView(R.id.today_weather_tv)
     TextView todayWeatherTv;
-    @BindView(R.id.second_day_view)
-    View secondDayView;
-    @BindView(R.id.second_day_tv)
-    TextView secondDayTv;
+//    @BindView(R.id.second_day_view)
+//    View secondDayView;
+//    @BindView(R.id.second_day_tv)
+//    TextView secondDayTv;
     @BindView(R.id.wifi_state)
     ImageView wifi_state;
-    @BindView(R.id.third_day_view)
-    View thirdDayView;
-    @BindView(R.id.third_day_tv)
-    TextView thirdDayTv;
-    @BindView(R.id.weather_ll)
-    LinearLayout weatherLl;
+//    @BindView(R.id.third_day_view)
+//    View thirdDayView;
+//    @BindView(R.id.third_day_tv)
+//    TextView thirdDayTv;
+//    @BindView(R.id.weather_ll)
+//    LinearLayout weatherLl;
     @BindView(R.id.date_tv)
     TextView dateTv;
-    @BindView(R.id.message_date)
-    TextView messageDate;
+//    @BindView(R.id.message_date)
+//    TextView messageDate;
     @BindView(R.id.changKai)
     LinearLayout changKai;
-    @BindView(R.id.close_video)
-    LinearLayout closeVideo;
+//    @BindView(R.id.close_video)
+//    LinearLayout closeVideo;
     @BindView(R.id.calendar_cn_tv)
     TextView calendarCnTv;
 
-    @BindView(R.id.today_extent_tv)
-    TextView todayExtentTv;
-    @BindView(R.id.second_weather_tv)
-    TextView secondWeatherTv;
-    @BindView(R.id.third_weather_tv)
-    TextView thirdWeatherTv;
-    @BindView(R.id.test)
-    TextView test;
-    @BindView(R.id.today_temp_ll)
-    LinearLayout todayTempLl;
+//    @BindView(R.id.today_extent_tv)
+//    TextView todayExtentTv;
+//    @BindView(R.id.second_weather_tv)
+//    TextView secondWeatherTv;
+//    @BindView(R.id.third_weather_tv)
+//    TextView thirdWeatherTv;
+//    @BindView(R.id.test)
+//    TextView test;
+//    @BindView(R.id.today_temp_ll)
+//    LinearLayout todayTempLl;
     @BindView(R.id.door_select_ll)
     LinearLayout doorSelectLl;
-    @BindView(R.id.message_edit)
-    EditText messageEdit;
-    @BindView(R.id.message_tv)
-    TextView messageTv;
-    @BindView(R.id.bg)
-    ImageView bg;
-    @BindView(R.id.view_next)
-    ImageView msgReminderNext;
-
-    @BindView(R.id.recycler_msg)
-    RecyclerView msgRecyclerView;
+//    @BindView(R.id.message_edit)
+//    EditText messageEdit;
+//    @BindView(R.id.message_tv)
+//    TextView messageTv;
+//    @BindView(R.id.bg)
+//    ImageView bg;
+//    @BindView(R.id.view_next)
+//    ImageView msgReminderNext;
+//
+//    @BindView(R.id.recycler_msg)
+//    RecyclerView msgRecyclerView;
     @BindView(R.id.logo)
     ImageView logo;
     private SurfaceTexture surfaceTexture;
@@ -268,11 +268,11 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     break;
                 case 13:
-                    animationView.cancelAnimation();
-                    animationView.setVisibility(View.GONE);
-                    bg.setVisibility(View.GONE);
+//                    animationView.cancelAnimation();
+//                    animationView.setVisibility(View.GONE);
+//                    bg.setVisibility(View.GONE);
 //                    dialogTime.dismiss();
-                    closeVideo.setVisibility(View.VISIBLE);
+//                    closeVideo.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;
@@ -312,7 +312,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main1);
         ButterKnife.bind(this);
         initData();
         initCalendar();
@@ -357,14 +357,14 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
-        messageEdit.setCursorVisible(false);
+//        messageEdit.setCursorVisible(false);
         initListener();
         String messageS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE, "");
         String messageDateS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE_DATE, "");
-        if (!TextUtils.isEmpty(messageDateS)) {
-            messageEdit.setText(messageS);
-            messageDate.setText(messageDateS);
-        }
+//        if (!TextUtils.isEmpty(messageDateS)) {
+//            messageEdit.setText(messageS);
+//            messageDate.setText(messageDateS);
+//        }
         boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate",false);
         if(systemUpDate){
             String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "update.zip";
@@ -375,51 +375,51 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         initMsgData();
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                // 执行刷新操作，比如重新加载数据
-                initMsgData();
-            }
-        });
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                // 执行刷新操作，比如重新加载数据
+//                initMsgData();
+//            }
+//        });
         createPreviewView();
-        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (test.getVisibility() == View.VISIBLE) {
-                    test.setVisibility(View.GONE);
-                } else {
-                    test.setVisibility(View.VISIBLE);
-                }
-                return false;
-            }
-        });
-        settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
-        switch (settingParam) {
-            case 0:
-                test.setText("正式服");
-                break;
-            case 1:
-                test.setText("测试服");
-                break;
-        }
-        test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(BuildConfig.DEBUG){
-                    switch (settingParam) {
-                        case 0:
-                            settingParam = 1;
-                            break;
-                        case 1:
-                            settingParam = 0;
-                            break;
-                    }
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                }
-            }
-        });
+//        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                if (test.getVisibility() == View.VISIBLE) {
+//                    test.setVisibility(View.GONE);
+//                } else {
+//                    test.setVisibility(View.VISIBLE);
+//                }
+//                return false;
+//            }
+//        });
+//        settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
+//        switch (settingParam) {
+//            case 0:
+//                test.setText("正式服");
+//                break;
+//            case 1:
+//                test.setText("测试服");
+//                break;
+//        }
+//        test.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if(BuildConfig.DEBUG){
+//                    switch (settingParam) {
+//                        case 0:
+//                            settingParam = 1;
+//                            break;
+//                        case 1:
+//                            settingParam = 0;
+//                            break;
+//                    }
+//                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
+//                    android.os.Process.killProcess(android.os.Process.myPid());
+//                }
+//            }
+//        });
         logo.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -445,7 +445,7 @@ public class MainActivity extends AppCompatActivity {
         OkGo.<String>post(ApiSrevice.baseUrl+ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
-                swipeRefreshLayout.setRefreshing(false);
+//                swipeRefreshLayout.setRefreshing(false);
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
                 if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
@@ -472,9 +472,9 @@ public class MainActivity extends AppCompatActivity {
                         };
                         layoutManager.setAutoMeasureEnabled(true);
                         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-                        msgRecyclerView.setLayoutManager(layoutManager);
-                        // 设置主RecyclerView的适配器
-                        msgRecyclerView.setAdapter(adapter);
+//                        msgRecyclerView.setLayoutManager(layoutManager);
+//                        // 设置主RecyclerView的适配器
+//                        msgRecyclerView.setAdapter(adapter);
                     }
                 } else {
                     Toast.makeText(MainActivity.this, infoBean.getMsg(), Toast.LENGTH_SHORT).show();
@@ -483,7 +483,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(Response<String> response) {
-                swipeRefreshLayout.setRefreshing(false);
+//                swipeRefreshLayout.setRefreshing(false);
                 super.onError(response);
             }
         });
@@ -491,135 +491,135 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        messageTv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (clearPopupWindow == null) {
-                    View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
-                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
-                    inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            messageEdit.setText("");
-                            messageDate.setText("");
-                            clearPopupWindow.dismiss();
-                        }
-                    });
-                }
-                clearPopupWindow.showAsDropDown(changKai, 40, -22);
-
-                return false;
-            }
-        });
-        messageEdit.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (messageEdit.getText().toString().length() != 0) {
-                    String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
-                    messageDate.setText(s);
-                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE, messageEdit.getText().toString());
-                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE, s);
-                    if (messageEdit.getText().toString().length() == 55) {
-                        ToastUtils.showShort("字数超限制");
-                    }
-                } else {
-                    messageDate.setText("");
-                }
-            }
-        });
+//        messageTv.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                if (clearPopupWindow == null) {
+//                    View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
+//                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
+//                    inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View view) {
+//                            messageEdit.setText("");
+//                            messageDate.setText("");
+//                            clearPopupWindow.dismiss();
+//                        }
+//                    });
+//                }
+//                clearPopupWindow.showAsDropDown(changKai, 40, -22);
+//
+//                return false;
+//            }
+//        });
+//        messageEdit.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable editable) {
+//                if (messageEdit.getText().toString().length() != 0) {
+//                    String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
+//                    messageDate.setText(s);
+//                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE, messageEdit.getText().toString());
+//                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE, s);
+//                    if (messageEdit.getText().toString().length() == 55) {
+//                        ToastUtils.showShort("字数超限制");
+//                    }
+//                } else {
+//                    messageDate.setText("");
+//                }
+//            }
+//        });
 
     }
 
 
-    @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
-            R.id.weather_ll, R.id.video_iv, R.id.view_next})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.setting:
-                Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.lock_bt://开门
-                dialogTime.show();
-                serialPort.sendDate("+COPEN:1\r\n".getBytes());
-                break;
-            case R.id.video_iv:
-                if (!isFastClick()) {
-                    return;
-                }
-                if (!isPlaying) {
-                    //打开视频
-                    Log.e("usb++", "deviceList" + deviceList.size());
-                    if (deviceList.size() == 0) {
-                        deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
-                    }
-                    if (deviceList.size() == 0) {
-                        Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    startCamera();
-                    animationView.setVisibility(View.VISIBLE);
-                    animationView.playAnimation();
-                }
-                break;
-            case R.id.close_video:
-                stopCamera();
-                break;
-            case R.id.changKai:
-                if (changkaiFlag == 1) {
-                    dialogTime.show();
-                    serialPort.sendDate("+ALWAYSOPEN\r\n".getBytes());
-                } else if (changkaiFlag == 2) {
-                    dialogTime.show();
-                    serialPort.sendDate("+CLOSEALWAYSOPEN\r\n".getBytes());
-                }
-                break;
-//            case R.id.weather_ll:
-//                ConnectivityManager connectivityManager
-//                        = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-//                NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-//                if (info != null && info.isAvailable()) {
-//                    watherClick = true;
-//                    mLocationUtils.startLocation();
-//
-//                } else {
-//                    Toast.makeText(this, "WiFi不可用或已断开", Toast.LENGTH_SHORT).show();
+//    @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
+//            R.id.weather_ll, R.id.video_iv, R.id.view_next})
+//    public void onViewClicked(View view) {
+//        switch (view.getId()) {
+//            case R.id.setting:
+//                Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
+//                startActivity(intent);
+//                break;
+//            case R.id.lock_bt://开门
+//                dialogTime.show();
+//                serialPort.sendDate("+COPEN:1\r\n".getBytes());
+//                break;
+//            case R.id.video_iv:
+//                if (!isFastClick()) {
+//                    return;
+//                }
+//                if (!isPlaying) {
+//                    //打开视频
+//                    Log.e("usb++", "deviceList" + deviceList.size());
+//                    if (deviceList.size() == 0) {
+//                        deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
+//                    }
+//                    if (deviceList.size() == 0) {
+//                        Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
+//                        return;
+//                    }
+//                    startCamera();
+////                    animationView.setVisibility(View.VISIBLE);
+////                    animationView.playAnimation();
 //                }
 //                break;
-            case R.id.date_tv:
-            case R.id.calendar_cn_tv:
-                //日历
-                if (mAMapLocation == null) {
-                    Toast.makeText(this, "数据获取中...", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                CalendarParam calendarParam = new CalendarParam();
-                calendarParam.temp = todayTempTv.getText().toString();
-                calendarParam.weather = todayWeatherTv.getText().toString();
-                String city = mAMapLocation.getCity();
-                String district = mAMapLocation.getDistrict();
-                calendarParam.location = district == null ? city : district;
-                CalendarActivity.start(this, calendarParam);
-                break;
-            case R.id.view_next:
-                intent = new Intent(MainActivity.this, SettingMainActivity.class);
-                intent.putExtra(POSITION_PARAM_KEY, 3);
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
-    }
+//            case R.id.close_video:
+//                stopCamera();
+//                break;
+//            case R.id.changKai:
+//                if (changkaiFlag == 1) {
+//                    dialogTime.show();
+//                    serialPort.sendDate("+ALWAYSOPEN\r\n".getBytes());
+//                } else if (changkaiFlag == 2) {
+//                    dialogTime.show();
+//                    serialPort.sendDate("+CLOSEALWAYSOPEN\r\n".getBytes());
+//                }
+//                break;
+////            case R.id.weather_ll:
+////                ConnectivityManager connectivityManager
+////                        = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+////                NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+////                if (info != null && info.isAvailable()) {
+////                    watherClick = true;
+////                    mLocationUtils.startLocation();
+////
+////                } else {
+////                    Toast.makeText(this, "WiFi不可用或已断开", Toast.LENGTH_SHORT).show();
+////                }
+////                break;
+//            case R.id.date_tv:
+//            case R.id.calendar_cn_tv:
+//                //日历
+//                if (mAMapLocation == null) {
+//                    Toast.makeText(this, "数据获取中...", Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//                CalendarParam calendarParam = new CalendarParam();
+//                calendarParam.temp = todayTempTv.getText().toString();
+//                calendarParam.weather = todayWeatherTv.getText().toString();
+//                String city = mAMapLocation.getCity();
+//                String district = mAMapLocation.getDistrict();
+//                calendarParam.location = district == null ? city : district;
+//                CalendarActivity.start(this, calendarParam);
+//                break;
+//            case R.id.view_next:
+//                intent = new Intent(MainActivity.this, SettingMainActivity.class);
+//                intent.putExtra(POSITION_PARAM_KEY, 3);
+//                startActivity(intent);
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 
     /**
      * 服务器socket
@@ -1050,7 +1050,7 @@ public class MainActivity extends AppCompatActivity {
             if (district != null) {
                 locationBuffer.append(district);
             }
-            locationTv.setText(locationBuffer);
+//            locationTv.setText(locationBuffer);
             //今日天气
             //ICON Text
             mTodayCode = setWeatherIcon(todayWeatherView, livesBean.getWeather());
@@ -1081,11 +1081,11 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putString("param", locationBuffer.toString());
                 bundle.putString("param1", livesBean.getTemperature());
                 bundle.putString("param2", todayWeatherTv.getText().toString());
-                bundle.putString("param3", todayExtentTv.getText().toString());
-                bundle.putString("param4", secondWeatherTv.getText().toString());
-                bundle.putString("param5", secondDayTv.getText().toString());
-                bundle.putString("param6", thirdWeatherTv.getText().toString());
-                bundle.putString("param7", thirdDayTv.getText().toString());
+//                bundle.putString("param3", todayExtentTv.getText().toString());
+//                bundle.putString("param4", secondWeatherTv.getText().toString());
+//                bundle.putString("param5", secondDayTv.getText().toString());
+//                bundle.putString("param6", thirdWeatherTv.getText().toString());
+//                bundle.putString("param7", thirdDayTv.getText().toString());
                 bundle.putString("param8", mTodayCode);
                 bundle.putString("param9", mSecondCode);
                 bundle.putString("param10", mThirdCode);
@@ -1102,25 +1102,25 @@ public class MainActivity extends AppCompatActivity {
             boolean night = dateUtils.isNight();
             //当前天气
             GDFutureWeatherBean.ForecastsBean.CastsBean todayWeather = beanCasts.get(0);
-            todayExtentTv.setText("最高 " + todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
+//            todayExtentTv.setText("最高 " + todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
 
             //后两天天气
             GDFutureWeatherBean.ForecastsBean.CastsBean secondWeather = beanCasts.get(1);
-            mSecondCode = setWeatherIcon(secondDayView, night ? secondWeather.getNightweather() : secondWeather.getDayweather());
-            setWeatherText(secondDayTv,
-                    secondWeatherTv,
-                    "明天",
-                    night ? secondWeather.getNightweather() : secondWeather.getDayweather(),
-                    secondWeather.getDaytemp(),
-                    secondWeather.getNighttemp());
-            GDFutureWeatherBean.ForecastsBean.CastsBean thirdWeather = beanCasts.get(2);
-            mThirdCode = setWeatherIcon(thirdDayView, night ? thirdWeather.getNightweather() : thirdWeather.getDayweather());
-            setWeatherText(thirdDayTv,
-                    thirdWeatherTv,
-                    "后天",
-                    night ? thirdWeather.getNightweather() : thirdWeather.getDayweather(),
-                    thirdWeather.getDaytemp(),
-                    thirdWeather.getNighttemp());
+//            mSecondCode = setWeatherIcon(secondDayView, night ? secondWeather.getNightweather() : secondWeather.getDayweather());
+//            setWeatherText(secondDayTv,
+//                    secondWeatherTv,
+//                    "明天",
+//                    night ? secondWeather.getNightweather() : secondWeather.getDayweather(),
+//                    secondWeather.getDaytemp(),
+//                    secondWeather.getNighttemp());
+//            GDFutureWeatherBean.ForecastsBean.CastsBean thirdWeather = beanCasts.get(2);
+//            mThirdCode = setWeatherIcon(thirdDayView, night ? thirdWeather.getNightweather() : thirdWeather.getDayweather());
+//            setWeatherText(thirdDayTv,
+//                    thirdWeatherTv,
+//                    "后天",
+//                    night ? thirdWeather.getNightweather() : thirdWeather.getDayweather(),
+//                    thirdWeather.getDaytemp(),
+//                    thirdWeather.getNighttemp());
         }
     };
 
@@ -1653,8 +1653,8 @@ public class MainActivity extends AppCompatActivity {
             mCamera0.release();
             mCamera0 = null;
             isPlaying = false;
-            bg.setVisibility(View.VISIBLE);
-            closeVideo.setVisibility(View.GONE);
+//            bg.setVisibility(View.VISIBLE);
+//            closeVideo.setVisibility(View.GONE);
         }
     }
 

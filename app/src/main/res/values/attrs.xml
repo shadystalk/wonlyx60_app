@@ -22,4 +22,14 @@
         <attr name="dottedLineColor" format="color" />
         <attr name="dottedLineSize" format="dimension" />
     </declare-styleable>
+    <declare-styleable name="SlideToUnlockView">
+        <attr format="dimension" name="slideImageViewWidth"/>
+        <attr format="reference" name="slideImageViewResId"/>
+        <attr format="reference" name="slideImageViewResIdAfter"/>
+        <attr format="reference" name="viewBackgroundResId"/>
+        <attr format="string" name="textHint"/>
+        <attr format="color" name="textColorResId"/>
+        <attr format="float" name="slideThreshold"/>
+    </declare-styleable>
+
 </resources>

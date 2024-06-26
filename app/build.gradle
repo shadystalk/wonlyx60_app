@@ -9,7 +9,7 @@ android {
 //        versionCode 21
 //        versionName "21"
 //
-        versionCode 4  //高
+        versionCode 60  //高
         versionName "V1.0.4"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -114,7 +114,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.7.2'
     implementation "com.github.bumptech.glide:glide:4.16.0"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.16.0'
-    implementation 'com.linklink.views:slide_to_unlock_view:1.0.0'
+    implementation 'com.github.florent37:viewanimator:1.1.0'
 //    implementation 'com.google.android.exoplayer:exoplayer:2.18.5'
 //    implementation 'com.google.android.exoplayer:exoplayer-ui:2.5.1'
 }
