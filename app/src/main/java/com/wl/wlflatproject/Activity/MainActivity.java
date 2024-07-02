@@ -32,23 +32,21 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,11 +54,6 @@ import androidx.annotation.RawRes;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
-import com.airbnb.lottie.LottieAnimationView;
 import com.amap.api.location.AMapLocation;
 import com.blankj.utilcode.util.ToastUtils;
 import com.google.gson.Gson;
@@ -70,7 +63,6 @@ import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
-import com.wl.wlflatproject.Adapter.AlarmMsgParentViewAdapter;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
 import com.wl.wlflatproject.Bean.CalendarParam;
@@ -88,6 +80,7 @@ import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
 import com.wl.wlflatproject.MUtils.DateUtils;
+import com.wl.wlflatproject.MUtils.DpUtils;
 import com.wl.wlflatproject.MUtils.GsonUtils;
 import com.wl.wlflatproject.MUtils.LocationUtils;
 import com.wl.wlflatproject.MUtils.LunarUtils;
@@ -95,6 +88,7 @@ import com.wl.wlflatproject.MUtils.RbMqUtils;
 import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
 import com.wl.wlflatproject.MUtils.VersionUtils;
+import com.wl.wlflatproject.MView.CustomSlideToUnlockView;
 import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 import com.yanzhenjie.permission.Action;
@@ -121,16 +115,14 @@ import butterknife.OnClick;
 import ru.sir.ymodem.YModem;
 
 public class MainActivity extends AppCompatActivity {
-//    @BindView(R.id.swipeRefreshLayout)
-//    SwipeRefreshLayout swipeRefreshLayout;
     @BindView(R.id.time)
     TextView time;
-//    @BindView(R.id.animation_view)
-//    LottieAnimationView animationView;
     @BindView(R.id.video_play_view)
     TextureView videoPlayView;
-//    @BindView(R.id.lock_bt)
-//    LinearLayout lockBt;
+    @BindView(R.id.lock_sl)
+    CustomSlideToUnlockView lockSl;
+    @BindView(R.id.lock_bt)
+    ImageView lockBt;
     @BindView(R.id.video_iv)
     LinearLayout videoIv;
     @BindView(R.id.full_screen)
@@ -151,22 +143,26 @@ public class MainActivity extends AppCompatActivity {
 //    TextView secondDayTv;
     @BindView(R.id.wifi_state)
     ImageView wifi_state;
+    @BindView(R.id.msg_iv)
+    ImageView msgIv;
 //    @BindView(R.id.third_day_view)
 //    View thirdDayView;
 //    @BindView(R.id.third_day_tv)
 //    TextView thirdDayTv;
-//    @BindView(R.id.weather_ll)
-//    LinearLayout weatherLl;
+    @BindView(R.id.weather_ll)
+    LinearLayout weatherLl;
     @BindView(R.id.date_tv)
     TextView dateTv;
-//    @BindView(R.id.message_date)
-//    TextView messageDate;
+    @BindView(R.id.message_date)
+    TextView messageDate;
     @BindView(R.id.changKai)
     LinearLayout changKai;
-//    @BindView(R.id.close_video)
-//    LinearLayout closeVideo;
+    @BindView(R.id.close_video)
+    ImageView closeVideo;
     @BindView(R.id.calendar_cn_tv)
     TextView calendarCnTv;
+    @BindView(R.id.msg_rl)
+    RelativeLayout msgRl;
 
 //    @BindView(R.id.today_extent_tv)
 //    TextView todayExtentTv;
@@ -180,17 +176,20 @@ public class MainActivity extends AppCompatActivity {
 //    LinearLayout todayTempLl;
     @BindView(R.id.door_select_ll)
     LinearLayout doorSelectLl;
-//    @BindView(R.id.message_edit)
-//    EditText messageEdit;
-//    @BindView(R.id.message_tv)
-//    TextView messageTv;
-//    @BindView(R.id.bg)
-//    ImageView bg;
-//    @BindView(R.id.view_next)
-//    ImageView msgReminderNext;
-//
-//    @BindView(R.id.recycler_msg)
-//    RecyclerView msgRecyclerView;
+    @BindView(R.id.message_edit)
+    EditText messageEdit;
+    @BindView(R.id.message_tv)
+    TextView messageTv;
+    @BindView(R.id.bg)
+    ConstraintLayout bg;
+    @BindView(R.id.alarm_tv)
+    TextView alarm_tv;
+    @BindView(R.id.alarm_date)
+    TextView alarm_date;
+    @BindView(R.id.view_next)
+    ConstraintLayout view_next;
+    @BindView(R.id.alarm_msg)
+    TextView alarmMsg;
     @BindView(R.id.logo)
     ImageView logo;
     private SurfaceTexture surfaceTexture;
@@ -208,7 +207,6 @@ public class MainActivity extends AppCompatActivity {
     private boolean watherClick = false;
     private long lastClickTime;
     private long mWorkerThreadID = -1;
-    private Surface mPreviewSurface;
     Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
         @Override
@@ -268,11 +266,7 @@ public class MainActivity extends AppCompatActivity {
                     initSerialPort();
                     break;
                 case 13:
-//                    animationView.cancelAnimation();
-//                    animationView.setVisibility(View.GONE);
-//                    bg.setVisibility(View.GONE);
-//                    dialogTime.dismiss();
-//                    closeVideo.setVisibility(View.VISIBLE);
+                    bg.setVisibility(View.VISIBLE);
                     break;
                 default:
                     break;
@@ -306,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
     private String devType;
     private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
-    private int settingParam;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -327,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
         PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
         wakeLock.acquire();
+
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
         if (deviceList == null || deviceList.size() < 1) {
@@ -357,14 +351,19 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
-//        messageEdit.setCursorVisible(false);
+        messageEdit.setCursorVisible(false);
         initListener();
         String messageS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE, "");
         String messageDateS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE_DATE, "");
-//        if (!TextUtils.isEmpty(messageDateS)) {
-//            messageEdit.setText(messageS);
-//            messageDate.setText(messageDateS);
-//        }
+        if (!TextUtils.isEmpty(messageDateS)) {
+            messageEdit.setText(messageS);
+            messageDate.setText(messageDateS);
+        }
+        if(TextUtils.isEmpty(messageEdit.getText().toString().trim())){
+            msgRl.setVisibility(View.GONE);
+        }else{
+            msgIv.setVisibility(View.GONE);
+        }
         boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate",false);
         if(systemUpDate){
             String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "update.zip";
@@ -375,13 +374,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         initMsgData();
-//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-//            @Override
-//            public void onRefresh() {
-//                // 执行刷新操作，比如重新加载数据
-//                initMsgData();
-//            }
-//        });
         createPreviewView();
 //        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
 //            @Override
@@ -420,14 +412,14 @@ public class MainActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
-        logo.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                Intent intent = new Intent(Settings.ACTION_SETTINGS);
-                startActivity(intent);
-                return false;
-            }
-        });
+//        logo.setOnLongClickListener(new View.OnLongClickListener() {
+//            @Override
+//            public boolean onLongClick(View view) {
+//                Intent intent = new Intent(Settings.ACTION_SETTINGS);
+//                startActivity(intent);
+//                return false;
+//            }
+//        });
     }
 
     /**
@@ -451,30 +443,11 @@ public class MainActivity extends AppCompatActivity {
                 if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
                     if (data != null) {
-                        // 创建主RecyclerView的适配器
-                        AlarmMsgParentViewAdapter adapter = new AlarmMsgParentViewAdapter(MainActivity.this, data) {
-                            @Override
-                            public void onBindViewHolder(ViewHolder holder, int position) {
-                                super.onBindViewHolder(holder, position);
-                                //适配器跟设置的设备动态页面是共用的，但是首页这边的有个偏移，特殊处理
-                                ConstraintLayout.LayoutParams layoutParams = (ConstraintLayout.LayoutParams) holder.dateTv.getLayoutParams();
-                                layoutParams.leftMargin = 10;
-                                holder.dateTv.setLayoutParams(layoutParams);
-                            }
-                        };
+                        view_next.setVisibility(View.VISIBLE);
+                        alarmMsg.setVisibility(View.VISIBLE);
+                        alarm_date.setText(data.get(0).getAlarmMsgList().get(0).getShowDate());
+                        alarm_tv.setText(data.get(0).getAlarmMsgList().get(0).getAlarmDescribe());
 
-                        // 设置主RecyclerView的布局管理器，这里是为了二级的recycle能够正常展示做的适配
-                        LinearLayoutManager layoutManager = new LinearLayoutManager(MainActivity.this) {
-                            @Override
-                            public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-                                return new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                            }
-                        };
-                        layoutManager.setAutoMeasureEnabled(true);
-                        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-//                        msgRecyclerView.setLayoutManager(layoutManager);
-//                        // 设置主RecyclerView的适配器
-//                        msgRecyclerView.setAdapter(adapter);
                     }
                 } else {
                     Toast.makeText(MainActivity.this, infoBean.getMsg(), Toast.LENGTH_SHORT).show();
@@ -491,135 +464,154 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-//        messageTv.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                if (clearPopupWindow == null) {
-//                    View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
-//                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
-//                    inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View view) {
-//                            messageEdit.setText("");
-//                            messageDate.setText("");
-//                            clearPopupWindow.dismiss();
-//                        }
-//                    });
-//                }
-//                clearPopupWindow.showAsDropDown(changKai, 40, -22);
-//
-//                return false;
-//            }
-//        });
-//        messageEdit.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                if (messageEdit.getText().toString().length() != 0) {
-//                    String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
-//                    messageDate.setText(s);
-//                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE, messageEdit.getText().toString());
-//                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE, s);
-//                    if (messageEdit.getText().toString().length() == 55) {
-//                        ToastUtils.showShort("字数超限制");
-//                    }
-//                } else {
-//                    messageDate.setText("");
-//                }
-//            }
-//        });
+        lockSl.setmCallBack(new CustomSlideToUnlockView.CallBack() {
+            @Override
+            public void onSlide(int distance) {
 
+            }
+
+            @Override
+            public void onUnlocked() {
+                dialogTime.show();
+                serialPort.sendDate("+COPEN:1\r\n".getBytes());
+            }
+        });
+        messageTv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (clearPopupWindow == null) {
+                    View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
+                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
+                    inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            messageEdit.setText("");
+                            messageDate.setText("");
+                            clearPopupWindow.dismiss();
+                        }
+                    });
+                }
+                clearPopupWindow.showAsDropDown(changKai, 40, -22);
+
+                return false;
+            }
+        });
+        messageEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (messageEdit.getText().toString().trim().length() != 0) {
+                    msgIv.setVisibility(View.GONE);
+                    String s = DateUtils.getInstance().dateFormat11(System.currentTimeMillis());
+                    messageDate.setText(s);
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE, messageEdit.getText().toString());
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE_DATE, s);
+                    if (messageEdit.getText().toString().length() == 55) {
+                        ToastUtils.showShort("字数超限制");
+                    }
+                } else {
+                    messageDate.setText("");
+                    msgIv.setVisibility(View.VISIBLE);
+                    msgRl.setVisibility(View.GONE);
+                }
+            }
+        });
+        msgIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                msgRl.setVisibility(View.VISIBLE);
+                msgIv.setVisibility(View.GONE);
+            }
+        });
     }
 
 
-//    @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
-//            R.id.weather_ll, R.id.video_iv, R.id.view_next})
-//    public void onViewClicked(View view) {
-//        switch (view.getId()) {
-//            case R.id.setting:
-//                Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
-//                startActivity(intent);
-//                break;
-//            case R.id.lock_bt://开门
-//                dialogTime.show();
-//                serialPort.sendDate("+COPEN:1\r\n".getBytes());
-//                break;
-//            case R.id.video_iv:
-//                if (!isFastClick()) {
-//                    return;
-//                }
-//                if (!isPlaying) {
-//                    //打开视频
-//                    Log.e("usb++", "deviceList" + deviceList.size());
-//                    if (deviceList.size() == 0) {
-//                        deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
-//                    }
-//                    if (deviceList.size() == 0) {
-//                        Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
-//                        return;
-//                    }
-//                    startCamera();
-////                    animationView.setVisibility(View.VISIBLE);
-////                    animationView.playAnimation();
-//                }
-//                break;
-//            case R.id.close_video:
-//                stopCamera();
-//                break;
-//            case R.id.changKai:
-//                if (changkaiFlag == 1) {
-//                    dialogTime.show();
-//                    serialPort.sendDate("+ALWAYSOPEN\r\n".getBytes());
-//                } else if (changkaiFlag == 2) {
-//                    dialogTime.show();
-//                    serialPort.sendDate("+CLOSEALWAYSOPEN\r\n".getBytes());
-//                }
-//                break;
-////            case R.id.weather_ll:
-////                ConnectivityManager connectivityManager
-////                        = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
-////                NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-////                if (info != null && info.isAvailable()) {
-////                    watherClick = true;
-////                    mLocationUtils.startLocation();
-////
-////                } else {
-////                    Toast.makeText(this, "WiFi不可用或已断开", Toast.LENGTH_SHORT).show();
-////                }
-////                break;
-//            case R.id.date_tv:
-//            case R.id.calendar_cn_tv:
-//                //日历
-//                if (mAMapLocation == null) {
-//                    Toast.makeText(this, "数据获取中...", Toast.LENGTH_SHORT).show();
-//                    return;
-//                }
-//                CalendarParam calendarParam = new CalendarParam();
-//                calendarParam.temp = todayTempTv.getText().toString();
-//                calendarParam.weather = todayWeatherTv.getText().toString();
-//                String city = mAMapLocation.getCity();
-//                String district = mAMapLocation.getDistrict();
-//                calendarParam.location = district == null ? city : district;
-//                CalendarActivity.start(this, calendarParam);
-//                break;
-//            case R.id.view_next:
-//                intent = new Intent(MainActivity.this, SettingMainActivity.class);
-//                intent.putExtra(POSITION_PARAM_KEY, 3);
-//                startActivity(intent);
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+    @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
+            R.id.weather_ll, R.id.video_iv, R.id.view_next})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.setting:
+                Intent intent = new Intent(MainActivity.this, SettingMainActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.lock_bt://开门
+                dialogTime.show();
+                serialPort.sendDate("+COPEN:1\r\n".getBytes());
+                break;
+            case R.id.video_iv:
+                if (!isFastClick()) {
+                    return;
+                }
+                if (!isPlaying) {
+                    //打开视频
+                    Log.e("usb++", "deviceList" + deviceList.size());
+                    if (deviceList.size() == 0) {
+                        deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
+                    }
+                    if (deviceList.size() == 0) {
+                        Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    startCamera();
+                }
+                break;
+            case R.id.close_video:
+                stopCamera();
+                break;
+            case R.id.changKai:
+                if (changkaiFlag == 1) {
+                    dialogTime.show();
+                    serialPort.sendDate("+ALWAYSOPEN\r\n".getBytes());
+                } else if (changkaiFlag == 2) {
+                    dialogTime.show();
+                    serialPort.sendDate("+CLOSEALWAYSOPEN\r\n".getBytes());
+                }
+                break;
+            case R.id.weather_ll:
+                ConnectivityManager connectivityManager
+                        = (ConnectivityManager) getApplication().getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+                if (info != null && info.isAvailable()) {
+                    watherClick = true;
+                    mLocationUtils.startLocation();
+
+                } else {
+                    Toast.makeText(this, "WiFi不可用或已断开", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.date_tv:
+            case R.id.calendar_cn_tv:
+                //日历
+                if (mAMapLocation == null) {
+                    Toast.makeText(this, "数据获取中...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                CalendarParam calendarParam = new CalendarParam();
+                calendarParam.temp = todayTempTv.getText().toString();
+                calendarParam.weather = todayWeatherTv.getText().toString();
+                String city = mAMapLocation.getCity();
+                String district = mAMapLocation.getDistrict();
+                calendarParam.location = district == null ? city : district;
+                CalendarActivity.start(this, calendarParam);
+                break;
+            case R.id.view_next:
+                intent = new Intent(MainActivity.this, SettingMainActivity.class);
+                intent.putExtra(POSITION_PARAM_KEY, 3);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+    }
 
     /**
      * 服务器socket
@@ -917,7 +909,7 @@ public class MainActivity extends AppCompatActivity {
     private void initCalendar() {
         DateUtils instance = DateUtils.getInstance();
         //日期
-        String dayOrMonthOrYear = instance.getDayOrMonthOrYear1(System.currentTimeMillis());
+        String dayOrMonthOrYear = instance.getDayOrMonthOrYear11(System.currentTimeMillis());
         dateTv.setText(dayOrMonthOrYear + "  " + instance.getWeekday(System.currentTimeMillis(), true));
         //星期
         //农历
@@ -935,7 +927,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mLocationUtils.startLocation();
-        String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear1(System.currentTimeMillis());
+        String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear11(System.currentTimeMillis());
         String weekday = dateUtils.getWeekday(System.currentTimeMillis(), true);
         dateTv.setText(dayOrMonthOrYear + "  " + weekday);
         hideBottomUIMenu();
@@ -1018,7 +1010,7 @@ public class MainActivity extends AppCompatActivity {
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
                 if (hour == 0) {
                     //日期
-                    String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear1(System.currentTimeMillis());
+                    String dayOrMonthOrYear = dateUtils.getDayOrMonthOrYear11(System.currentTimeMillis());
                     dateTv.setText(dayOrMonthOrYear + "  " + dateUtils.getWeekday(System.currentTimeMillis(), true));
                     //星期
                     //农历
@@ -1653,8 +1645,7 @@ public class MainActivity extends AppCompatActivity {
             mCamera0.release();
             mCamera0 = null;
             isPlaying = false;
-//            bg.setVisibility(View.VISIBLE);
-//            closeVideo.setVisibility(View.GONE);
+            bg.setVisibility(View.GONE);
         }
     }
 

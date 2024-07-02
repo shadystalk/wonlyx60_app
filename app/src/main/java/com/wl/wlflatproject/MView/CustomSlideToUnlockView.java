@@ -126,13 +126,12 @@ public class CustomSlideToUnlockView extends RelativeLayout {
         tv_hint.setTextSize(DensityUtil.sp2px(getContext(), textSize));
         tv_hint.setTextColor(textColorResId);
 //        tv_hint.setText(TextUtils.isEmpty(textHint)? mContext.getString(R.string.hint):textHint);
-
-        //添加滑动监听
-        rl_slide.setOnTouchListener(new OnTouchListener() {
+        iv_slide.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
                 DISTANCE_LIMIT= (int) (CustomSlideToUnlockView.this.getWidth()*THRESHOLD);//默认阈值是控件宽度的一半
+                //添加滑动监听
+                int i = CustomSlideToUnlockView.this.getWidth() - iv_slide.getWidth();
 
                 switch (event.getAction()) {
 
@@ -153,10 +152,10 @@ public class CustomSlideToUnlockView extends RelativeLayout {
                         logI(TAG, "event.getRawX()============================="+event.getRawX());
 
                         int dX = (int) event.getRawX() - mLastX;
-                        logI(TAG, "dX============================="+dX);
+//                        logI(TAG, "dX============================="+dX);
 
                         mSlidedDistance = (int) event.getRawX() - mActionDownX;
-                        logI(TAG, "mSlidedDistance============================="+ mSlidedDistance);
+//                        logI(TAG, "mSlidedDistance============================="+ mSlidedDistance);
 
                         final MarginLayoutParams params = (MarginLayoutParams) v.getLayoutParams();
                         int left = params.leftMargin;
@@ -169,13 +168,12 @@ public class CustomSlideToUnlockView extends RelativeLayout {
                         int leftNew = left + dX;
                         int rightNew =right - dX;
 
-                        if (mSlidedDistance > 0) {//直接通过margin实现滑动
+                        if (mSlidedDistance > 0 &&mSlidedDistance<i) {//直接通过margin实现滑动
                             params.setMargins(leftNew, top, rightNew, bottom);
                             logI(TAG, leftNew + "=============================MOVE");
                             v.setLayoutParams(params);
                             resetTextViewAlpha(mSlidedDistance);
 
-                            //回调
                             if(mCallBack!=null){
                                 mCallBack.onSlide(mSlidedDistance);
                             }
@@ -198,14 +196,11 @@ public class CustomSlideToUnlockView extends RelativeLayout {
 
 
                     case MotionEvent.ACTION_CANCEL:
-//                        try {
-//                            if (vTracker != null) {
-//                                vTracker.recycle();
-//                                vTracker = null;
-//                            }
-//                            vTracker.recycle();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
+//                        logI(TAG, "MotionEvent.ACTION_UP,之前移动的偏移值：" + ViewHelper.getTranslationY(v));
+//                        if (Math.abs(mSlidedDistance) > DISTANCE_LIMIT) {
+//                            scrollToRight(v);//右边
+//                        } else {
+//                            scrollToLeft(v);//左边
 //                        }
 
                         break;
@@ -265,7 +260,7 @@ public class CustomSlideToUnlockView extends RelativeLayout {
 
 
         ViewAnimator
-                .animate( rl_slide)
+                .animate( iv_slide)
                 .translationX(ViewHelper.getTranslationX(v), -params1.leftMargin)
                 .interpolator(new AccelerateInterpolator())
                 .duration(DEAFULT_DURATIN_LONG)
@@ -307,9 +302,9 @@ public class CustomSlideToUnlockView extends RelativeLayout {
 
         //移动到最右端  移动的距离是 父容器宽度-leftMargin
         ViewAnimator
-                .animate( rl_slide)
+                .animate( iv_slide)
                 //.translationX(ViewHelper.getTranslationX(v), ViewHelper.getTranslationX(v)+100)
-                .translationX(ViewHelper.getTranslationX(v), ( rl_slide.getWidth() - params1.leftMargin-slideImageViewWidth))
+                .translationX(ViewHelper.getTranslationX(v), ( iv_slide.getWidth() - params1.leftMargin-slideImageViewWidth))
                 //.translationX(params1.leftMargin, ( rl_slide.getWidth() - params1.leftMargin-100))
                 .interpolator(new AccelerateInterpolator())
                 .duration(DEAFULT_DURATIN_SHORT)
@@ -322,7 +317,7 @@ public class CustomSlideToUnlockView extends RelativeLayout {
                         logI(TAG, "scrollToRight动画结束,ViewHelper.getTranslationX(v):" + ViewHelper.getTranslationX(v));
                         mSlidedDistance = 0;
                         tv_hint.setAlpha(0.0f);
-                        mIsUnLocked=true;
+//                        mIsUnLocked=true;
 
                         if(slideImageViewResIdAfter>0){
                             iv_slide.setImageResource(slideImageViewResIdAfter);//滑块imagview设置资源
@@ -343,7 +338,7 @@ public class CustomSlideToUnlockView extends RelativeLayout {
     public void resetView(){
         mIsUnLocked=false;
         setImageDefault();
-        scrollToLeft(rl_slide);
+        scrollToLeft(iv_slide);
     }
 
     private void setImageDefault() {

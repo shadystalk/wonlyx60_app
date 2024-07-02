@@ -191,6 +191,10 @@ public class DateUtils {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年 MM月 dd日");
         return sdf.format(new Date(time));
     }
+    public String getDayOrMonthOrYear11(long time) {
+        SimpleDateFormat sdf = new SimpleDateFormat("MM月 dd日");
+        return sdf.format(new Date(time));
+    }
 
     /**
      * @param time
