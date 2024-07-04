@@ -4,21 +4,21 @@
     <item>
         <shape android:shape="rectangle">
             <padding
-                android:bottom="16dp"
-                android:left="16dp"
-                android:right="138dp"
-                android:top="16dp" />
+                android:bottom="8dp"
+                android:left="8dp"
+                android:right="78dp"
+                android:top="8dp" />
             <solid android:color="@color/c_2f3241" />
             <corners android:radius="8dp" />
             <size
-                android:width="160dp"
-                android:height="80dp" />
+                android:width="90dp"
+                android:height="50dp" />
         </shape>
     </item>
     <!-- 顶部椭圆 -->
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="4dp" />
+            <corners android:radius="3dp" />
             <solid android:color="@color/white" />
         </shape>
     </item>

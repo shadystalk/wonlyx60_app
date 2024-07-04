@@ -13,13 +13,14 @@ import androidx.annotation.NonNull;
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.SizeUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.lxj.xpopup.core.BasePopupView;
 import com.lxj.xpopup.core.CenterPopupView;
 import com.wl.wlflatproject.R;
 
 /**
  * WiFi密码输入弹窗
  */
-public class WifiInputPopup extends CenterPopupView implements View.OnClickListener {
+public class WifiInputPopup extends BasePopupView implements View.OnClickListener {
     private EditText mPwdEt;
     private TextView mWifiNameTv, mConnectionTv;
     private final StringInputListener mListener;
@@ -59,9 +60,10 @@ public class WifiInputPopup extends CenterPopupView implements View.OnClickListe
     }
 
     @Override
-    protected int getImplLayoutId() {
+    protected int getInnerLayoutId() {
         return R.layout.wifi_input_popup;
     }
+
 
     @Override
     protected int getMaxWidth() {

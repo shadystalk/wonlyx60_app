@@ -1,188 +1,214 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/weather_ll"
-    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/c_203141"
+    android:id="@+id/bg"
+    android:background="@drawable/weather_bg"
+    android:layout_width="match_parent">
+
+    <LinearLayout
+    android:id="@+id/weather_ll"
+    android:layout_width="500px"
+    android:layout_height="340px"
+    android:layout_gravity="center"
+    android:background="@drawable/shape_radius_20_20ffffff"
     android:orientation="vertical"
-    tools:layout_height="@dimen/dp_330"
-    tools:layout_width="@dimen/dp_340">
+    tools:layout_height="match_parent"
+    tools:layout_width="match_parent">
 
-
-    <ImageView
-        android:id="@+id/back"
-        android:layout_width="@dimen/dp_15"
-        android:layout_height="@dimen/dp_30"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="@dimen/dp_20"
-        android:background="@drawable/gray_arrow_icon"
-        android:rotation="180"/>
-
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_15"
-        android:layout_marginTop="@dimen/dp_80"
-        android:layout_marginRight="@dimen/dp_15">
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp">
+
+
+        <ImageView
+            app:layout_constraintBottom_toBottomOf="@+id/location_tv"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/address_icon"
+            android:id="@+id/iv"
+            app:layout_constraintRight_toLeftOf="@+id/location_tv"
+            android:layout_width="12dp"
+            android:layout_height="12dp"/>
 
         <TextView
+            app:layout_constraintTop_toTopOf="@+id/ll"
+            app:layout_constraintRight_toRightOf="parent"
             android:id="@+id/location_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="时代发生的发生"
+            android:text="--"
             android:textColor="@color/white"
-            android:textSize="22dp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:text="今日"
-            android:textColor="@color/white"
-            android:textSize="20dp" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginLeft="@dimen/dp_15"
-        android:layout_marginRight="@dimen/dp_15"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/today_weather_view">
-
-            <TextView
-                android:id="@+id/today_temp_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="11"
-                android:textColor="@color/white"
-                android:textSize="54dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="°"
-                android:textColor="@color/white"
-                android:textSize="31dp" />
-        </LinearLayout>
-
-        <LinearLayout
-
-            android:id="@+id/today_temp_ll"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:gravity="right"
-            android:orientation="vertical">
-
-            <TextView
-
-                android:id="@+id/today_weather_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="晴"
-                android:textColor="@color/white"
-                android:textSize="22dp" />
-
-            <TextView
-                android:id="@+id/today_extent_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/dp_10"
-                android:text="-°/-°"
-                android:textColor="@color/white"
-                android:textSize="22dp" />
-        </LinearLayout>
-
-
+            android:textSize="11sp" />
         <View
+            android:layout_marginTop="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:id="@+id/today_weather_view"
-            android:layout_width="@dimen/dp_100"
-            android:layout_height="@dimen/dp_100"
-            android:layout_centerVertical="true"
-            android:background="@drawable/sun_icon" />
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:background="@drawable/sun_icon"
+            android:layout_centerVertical="true" />
 
-    </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_marginLeft="10dp"
+            app:layout_constraintLeft_toRightOf="@+id/today_weather_view"
+            app:layout_constraintTop_toTopOf="@+id/today_weather_view"
+            app:layout_constraintBottom_toBottomOf="@+id/today_weather_view"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                >
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/today_weather_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="晴"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+                <TextView
+                    android:layout_marginLeft="8dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/today_temp_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text="11"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <TextView
+                    android:layout_gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:includeFontPadding="false"
+                    android:text=" °C"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
+            </LinearLayout>
+            <LinearLayout
+
+                android:id="@+id/today_temp_ll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="right"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true">
+
+
+                <TextView
+                    android:id="@+id/today_extent_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="-°/-°"
+                    android:textSize="12sp"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="@dimen/dp_5" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <RelativeLayout
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/shape_radius_8_20ffffff"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="@dimen/dp_25"
-        android:paddingRight="@dimen/dp_15">
+        android:layout_height="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp">
 
         <TextView
+            android:layout_centerVertical="true"
             android:id="@+id/second_weather_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/second_day_tv"
-            android:layout_toRightOf="@id/second_day_view"
-            android:gravity="center"
-            android:text="- · -"
+            android:text="明天"
             android:textColor="@color/white"
-            android:textSize="22dp" />
+            android:textSize="14sp" />
+
+        <View
+            android:layout_centerVertical="true"
+            android:id="@+id/second_day_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="50dp"
+            android:background="@drawable/sun_icon" />
+
 
         <TextView
+            android:layout_centerVertical="true"
             android:id="@+id/second_day_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:text="-° /  -°"
             android:textColor="@color/white"
-            android:textSize="22dp" />
-
-        <View
-            android:id="@+id/second_day_view"
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="@dimen/dp_50"
-            android:background="@drawable/sun_icon" />
+            android:textSize="12sp" />
     </RelativeLayout>
 
     <RelativeLayout
+        android:background="@drawable/shape_radius_8_20ffffff"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/dp_10"
-        android:layout_marginBottom="@dimen/dp_100"
-        android:paddingLeft="@dimen/dp_25"
-        android:paddingRight="@dimen/dp_15">
-
+        android:layout_height="30dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:layout_marginBottom="16dp"
+        >
         <TextView
+            android:layout_gravity="center_vertical"
             android:id="@+id/third_weather_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/third_day_tv"
-            android:layout_toRightOf="@id/third_day_view"
-            android:gravity="center"
-            android:text="- · -"
+            android:text="后天"
+            android:textSize="14sp"
             android:textColor="@color/white"
-            android:textSize="22dp" />
+            android:layout_centerVertical="true"
+            />
+        <View
+            android:layout_marginLeft="50dp"
+            android:layout_centerVertical="true"
+            android:id="@+id/third_day_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/sun_icon" />
+
 
         <TextView
+            android:layout_marginLeft="16dp"
+            android:layout_gravity="center_vertical"
             android:id="@+id/third_day_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
             android:text="-° /  -°"
+            android:textSize="12sp"
             android:textColor="@color/white"
-            android:textSize="22dp" />
-
-        <View
-            android:id="@+id/third_day_view"
-            android:layout_width="@dimen/dp_50"
-            android:layout_height="@dimen/dp_50"
-            android:background="@drawable/sun_icon" />
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true" />
     </RelativeLayout>
 </LinearLayout>
+</FrameLayout>

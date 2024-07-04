@@ -7,7 +7,9 @@ import static com.wl.wlflatproject.MUtils.HandlerCode.DOWN_LOAD_APK;
 import static com.wl.wlflatproject.MUtils.HandlerCode.GET_DOOR_INFO;
 import static com.wl.wlflatproject.MUtils.HandlerCode.HEARTBEAT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.LEAVE;
+import static com.wl.wlflatproject.MUtils.HandlerCode.MSGGOEN;
 import static com.wl.wlflatproject.MUtils.HandlerCode.PERMISSION;
+import static com.wl.wlflatproject.MUtils.HandlerCode.PLAY;
 import static com.wl.wlflatproject.MUtils.HandlerCode.TIME;
 
 import android.Manifest;
@@ -62,6 +64,7 @@ import com.lzy.okgo.callback.FileCallback;
 import com.lzy.okgo.callback.StringCallback;
 import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
+import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
@@ -161,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
     ImageView closeVideo;
     @BindView(R.id.calendar_cn_tv)
     TextView calendarCnTv;
-    @BindView(R.id.msg_rl)
-    RelativeLayout msgRl;
+    @BindView(R.id.msg_sl)
+    SwipeMenuLayout msgSl;
 
 //    @BindView(R.id.today_extent_tv)
 //    TextView todayExtentTv;
@@ -265,8 +268,11 @@ public class MainActivity extends AppCompatActivity {
                 case CAMERA_INIT:
                     initSerialPort();
                     break;
-                case 13:
+                case PLAY:
                     bg.setVisibility(View.VISIBLE);
+                    break;
+                case MSGGOEN:
+                    messageEdit.setText("");
                     break;
                 default:
                     break;
@@ -360,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
             messageDate.setText(messageDateS);
         }
         if(TextUtils.isEmpty(messageEdit.getText().toString().trim())){
-            msgRl.setVisibility(View.GONE);
+            msgSl.setVisibility(View.GONE);
         }else{
             msgIv.setVisibility(View.GONE);
         }
@@ -519,16 +525,17 @@ public class MainActivity extends AppCompatActivity {
                         ToastUtils.showShort("字数超限制");
                     }
                 } else {
+                    SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MESSAGE, "");
                     messageDate.setText("");
                     msgIv.setVisibility(View.VISIBLE);
-                    msgRl.setVisibility(View.GONE);
+                    msgSl.setVisibility(View.GONE);
                 }
             }
         });
         msgIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                msgRl.setVisibility(View.VISIBLE);
+                msgSl.setVisibility(View.VISIBLE);
                 msgIv.setVisibility(View.GONE);
             }
         });
@@ -536,7 +543,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
-            R.id.weather_ll, R.id.video_iv, R.id.view_next})
+            R.id.weather_ll, R.id.video_iv, R.id.view_next,R.id.msg_clear})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
@@ -566,6 +573,10 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.close_video:
                 stopCamera();
+                break;
+            case R.id.msg_clear:
+                msgSl.smoothClose();
+                handler.sendEmptyMessageDelayed(MSGGOEN,1000);
                 break;
             case R.id.changKai:
                 if (changkaiFlag == 1) {
@@ -771,6 +782,10 @@ public class MainActivity extends AppCompatActivity {
                                     case 16://设备型号
                                         devType = split[1];
                                         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVTYPE, devType);
+                                        break;
+                                    case 18://开门机版本号
+                                        String machine = split[1];
+                                        SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.MACHINE, machine);
                                         break;
                                     default:
                                         break;
@@ -1026,6 +1041,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private GDFutureWeatherBean.ForecastsBean.CastsBean todayWeather;
+    private GDFutureWeatherBean.ForecastsBean.CastsBean secondWeather;
+    private GDFutureWeatherBean.ForecastsBean.CastsBean thirdWeather;
     /**
      * 定位工具类
      */
@@ -1073,11 +1091,12 @@ public class MainActivity extends AppCompatActivity {
                 bundle.putString("param", locationBuffer.toString());
                 bundle.putString("param1", livesBean.getTemperature());
                 bundle.putString("param2", todayWeatherTv.getText().toString());
-//                bundle.putString("param3", todayExtentTv.getText().toString());
+
+                bundle.putString("param3","最高 " + todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
 //                bundle.putString("param4", secondWeatherTv.getText().toString());
-//                bundle.putString("param5", secondDayTv.getText().toString());
+                bundle.putString("param5", secondWeather.getDaytemp() + "/"+secondWeather.getNighttemp() + "c°");
 //                bundle.putString("param6", thirdWeatherTv.getText().toString());
-//                bundle.putString("param7", thirdDayTv.getText().toString());
+                bundle.putString("param7", thirdWeather.getDaytemp() + "/"+thirdWeather.getNighttemp() + "c°");
                 bundle.putString("param8", mTodayCode);
                 bundle.putString("param9", mSecondCode);
                 bundle.putString("param10", mThirdCode);
@@ -1093,11 +1112,11 @@ public class MainActivity extends AppCompatActivity {
             DateUtils dateUtils = DateUtils.getInstance();
             boolean night = dateUtils.isNight();
             //当前天气
-            GDFutureWeatherBean.ForecastsBean.CastsBean todayWeather = beanCasts.get(0);
+            todayWeather = beanCasts.get(0);
 //            todayExtentTv.setText("最高 " + todayWeather.getDaytemp() + "c°" + "   最低 " + todayWeather.getNighttemp() + "c°");
 
             //后两天天气
-            GDFutureWeatherBean.ForecastsBean.CastsBean secondWeather = beanCasts.get(1);
+            secondWeather = beanCasts.get(1);
 //            mSecondCode = setWeatherIcon(secondDayView, night ? secondWeather.getNightweather() : secondWeather.getDayweather());
 //            setWeatherText(secondDayTv,
 //                    secondWeatherTv,
@@ -1105,7 +1124,7 @@ public class MainActivity extends AppCompatActivity {
 //                    night ? secondWeather.getNightweather() : secondWeather.getDayweather(),
 //                    secondWeather.getDaytemp(),
 //                    secondWeather.getNighttemp());
-//            GDFutureWeatherBean.ForecastsBean.CastsBean thirdWeather = beanCasts.get(2);
+            thirdWeather = beanCasts.get(2);
 //            mThirdCode = setWeatherIcon(thirdDayView, night ? thirdWeather.getNightweather() : thirdWeather.getDayweather());
 //            setWeatherText(thirdDayTv,
 //                    thirdWeatherTv,
@@ -1626,7 +1645,7 @@ public class MainActivity extends AppCompatActivity {
                         mCamera0.setDisplayOrientation(90);
                         mCamera0.startPreview();
                         isPlaying = true;
-                        handler.sendEmptyMessageDelayed(13, 500);
+                        handler.sendEmptyMessageDelayed(PLAY, 500);
                         handler.removeMessages(LEAVE);
                         handler.sendEmptyMessageDelayed(LEAVE, 120 * 1000);
                     } catch (Exception e) {

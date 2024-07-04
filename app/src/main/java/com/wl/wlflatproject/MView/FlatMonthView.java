@@ -38,7 +38,7 @@ public class FlatMonthView extends MonthView {
     @Override
     protected void onPreviewHook() {
         //适用于本平板
-        mRadius = 34;
+        mRadius = 17;
         mSolarTermTextPaint.setTextSize(mCurMonthLunarTextPaint.getTextSize());
     }
 

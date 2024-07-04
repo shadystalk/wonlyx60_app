@@ -1,31 +1,29 @@
-package com.wl.wlflatproject.Fragment;
+package com.wl.wlflatproject.Activity;
 
 import static android.media.AudioManager.STREAM_MUSIC;
 import static com.wl.wlflatproject.Constant.Constant.RINGTONES_KEY;
 
+import android.app.Activity;
+import android.graphics.Color;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Process;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.BrightnessUtils;
 import com.blankj.utilcode.util.ScreenUtils;
@@ -43,13 +41,8 @@ import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
-/**
- * 系统设置
- */
-public class SystemSettingFragment extends Fragment {
-    private Unbinder unbinder;
+public class SystemSettingActivity extends AppCompatActivity {
 
     @BindView(R.id.brightness_value)
     TextView brightnessTv;
@@ -81,6 +74,8 @@ public class SystemSettingFragment extends Fragment {
     LinearLayout generalSettingsLl;
     @BindView(R.id.stop_power_cl)
     ConstraintLayout stopPowerCl;
+    @BindView(R.id.back_iv)
+    View backIv;
     private PasswardDialog passwardDialog;
     private int openPower = 1;
     private String stopPower = "1";
@@ -93,26 +88,27 @@ public class SystemSettingFragment extends Fragment {
     private MyHandler myHandler;
 
     static class MyHandler extends Handler {
-        private final WeakReference<Fragment> mFragment;
+        private final WeakReference<Activity> mActivity;
 
-        MyHandler(Fragment fragment) {
-            mFragment = new WeakReference<>(fragment);
+        MyHandler(Activity activity) {
+            mActivity = new WeakReference<>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            SystemSettingFragment fragment = (SystemSettingFragment) mFragment.get();
-            if (fragment != null&&fragment.dataListener!=null) {
+            SystemSettingActivity activity = (SystemSettingActivity) mActivity.get();
+            if (activity != null&&activity.dataListener!=null) {
+                activity.hideBottomUIMenu();
                 switch (msg.what){
                     case 0:
-                        fragment.dialogTime.dismiss();
-                        ToastUtils.showShort(showString,Toast.LENGTH_LONG);
+                        activity.dialogTime.dismiss();
+                        ToastUtils.showShort(showString, Toast.LENGTH_LONG);
                         break;
                     case 9:
-                        fragment.initOpenPower();
+                        activity.initOpenPower();
                         break;
                     case 11:
-                        fragment.stopPowerTv.setText(fragment.stopPower);
+                        activity.stopPowerTv.setText(activity.stopPower);
                         break;
                     default:
                         break;
@@ -120,14 +116,13 @@ public class SystemSettingFragment extends Fragment {
             }
         }
     }
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.sys_setting_fragment, container, false);
-        unbinder = ButterKnife.bind(this, view);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.sys_setting_fragment);
+        ButterKnife.bind(this);
         myHandler = new MyHandler(this);
         serialPort = SerialPortUtil.getInstance();
-        passwardDialog = new PasswardDialog(getContext(), R.style.mDialog);
+        passwardDialog = new PasswardDialog(this, R.style.mDialog);
         initBrightness();
         initDisplay();
         initVolume();
@@ -135,9 +130,7 @@ public class SystemSettingFragment extends Fragment {
         initOpenPower();
 
         initListener();
-        return view;
     }
-
     private void initOpenPower() {
         switch (openPower) {
             case 1:
@@ -168,7 +161,7 @@ public class SystemSettingFragment extends Fragment {
                     setSelect(true);
                     passwardDialog.dismiss();
                 } else {
-                    Toast.makeText(getContext(), "密码错误", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SystemSettingActivity.this, "密码错误", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -176,7 +169,7 @@ public class SystemSettingFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (dialogTime == null){
-                    dialogTime = new WaitDialogTime(getContext(), android.R.style.Theme_Translucent_NoTitleBar);
+                    dialogTime = new WaitDialogTime(SystemSettingActivity.this, android.R.style.Theme_Translucent_NoTitleBar);
                 }
 
                 passwardDialog.setEdit("");
@@ -190,11 +183,17 @@ public class SystemSettingFragment extends Fragment {
             }
         });
 
+        backIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         stopPowerCl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (setDialog == null) {
-                    setDialog = new SetDialog(getContext(), R.style.mDialog);
+                    setDialog = new SetDialog(SystemSettingActivity.this, R.style.mDialog);
                     setDialog.setListener(selectListener);
                 }
                 setDialog.show(22,stopPower);
@@ -432,7 +431,7 @@ public class SystemSettingFragment extends Fragment {
                 .build();
         mediaPlayer.setAudioAttributes(audioAttributes);
 
-        int select = SPUtil.getInstance(getContext()).getSettingParam(RINGTONES_KEY, 0);
+        int select = SPUtil.getInstance(this).getSettingParam(RINGTONES_KEY, 0);
         switch (select) {
             case 0:
                 ringtonesGroup.check(R.id.ringtones_rb);
@@ -449,15 +448,15 @@ public class SystemSettingFragment extends Fragment {
         ringtonesGroup.setOnCheckedChangeListener((group, checkedId) -> {
             switch (checkedId) {
                 case R.id.ringtones_rb:
-                    SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 0);
+                    SPUtil.getInstance(this).setSettingParam(RINGTONES_KEY, 0);
                     playAudio(Constant.RINGTONES_RES[0]);
                     break;
                 case R.id.ringtones1_rb:
-                    SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 1);
+                    SPUtil.getInstance(this).setSettingParam(RINGTONES_KEY, 1);
                     playAudio(Constant.RINGTONES_RES[1]);
                     break;
                 case R.id.ringtones2_rb:
-                    SPUtil.getInstance(getContext()).setSettingParam(RINGTONES_KEY, 2);
+                    SPUtil.getInstance(this).setSettingParam(RINGTONES_KEY, 2);
                     playAudio(Constant.RINGTONES_RES[2]);
                     break;
                 default:
@@ -480,17 +479,32 @@ public class SystemSettingFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        serialPort.removeListener(dataListener);
+        dataListener=null;
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
     }
 
+
     @Override
-    public void onDestroyView() {
-        unbinder.unbind();
-        serialPort.removeListener(dataListener);
-        dataListener=null;
-        super.onDestroyView();
+    protected void onResume() {
+        super.onResume();
+        hideBottomUIMenu();
+    }
+
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 16) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+            getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        }
     }
 }

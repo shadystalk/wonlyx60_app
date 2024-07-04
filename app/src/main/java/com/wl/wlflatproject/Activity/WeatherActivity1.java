@@ -3,6 +3,7 @@ package com.wl.wlflatproject.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -39,8 +40,10 @@ public class WeatherActivity1 extends AppCompatActivity {
     View thirdDayView;
     @BindView(R.id.third_day_tv)
     TextView thirdDayTv;
-    @BindView(R.id.back)
-    ImageView back;
+    @BindView(R.id.bg)
+    FrameLayout bg;
+//    @BindView(R.id.back)
+//    ImageView back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,9 +59,9 @@ public class WeatherActivity1 extends AppCompatActivity {
         String param1 = bundle.getString("param1");
         String param2 = bundle.getString("param2");
         String param3 = bundle.getString("param3");
-        String param4 = bundle.getString("param4");
+//        String param4 = bundle.getString("param4");
         String param5 = bundle.getString("param5");
-        String param6 = bundle.getString("param6");
+//        String param6 = bundle.getString("param6");
         String param7 = bundle.getString("param7");
         String param8 = bundle.getString("param8");
         String param9 = bundle.getString("param9");
@@ -67,16 +70,22 @@ public class WeatherActivity1 extends AppCompatActivity {
         todayTempTv.setText(param1 + "");
         todayWeatherTv.setText(param2 + "");
         todayExtentTv.setText(param3 + "");
-        secondWeatherTv.setText(param4);
+//        secondWeatherTv.setText(param4);
         secondDayTv.setText(param5);
-        thirdWeatherTv.setText(param6);
+//        thirdWeatherTv.setText(param6);
         thirdDayTv.setText(param7);
         setWeatherIcon(todayWeatherView, param8);
         setWeatherIcon(secondDayView, param9);
         setWeatherIcon(thirdDayView, param10);
-        back.setOnClickListener(new View.OnClickListener() {
+//        back.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                finish();
+//            }
+//        });
+        bg.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 finish();
             }
         });

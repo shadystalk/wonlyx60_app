@@ -1,21 +1,20 @@
-package com.wl.wlflatproject.Fragment;
+package com.wl.wlflatproject.Activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.wl.wlflatproject.MUtils.SerialPortUtil;
@@ -23,14 +22,13 @@ import com.wl.wlflatproject.MView.SetDialog;
 import com.wl.wlflatproject.MView.WaitDialogTime;
 import com.wl.wlflatproject.R;
 
-
 import java.lang.ref.WeakReference;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
-public class OpenMachineFragment extends Fragment {
+public class OpenMachineActivity extends AppCompatActivity {
+
     @BindView(R.id.open_degree_radio_group)
     RadioGroup openDegreeGroup;
     @BindView(R.id.open_speed_group)
@@ -45,6 +43,8 @@ public class OpenMachineFragment extends Fragment {
     TextView openDegreeRepairTv;
     @BindView(R.id.close_time_tv)
     TextView closeTimeTv;
+    @BindView(R.id.back_iv)
+    View backIv;
     private int open_degree = 90;
     private int open_speed = 8;
     private int close_speed = 4;
@@ -53,7 +53,6 @@ public class OpenMachineFragment extends Fragment {
     private SerialPortUtil serialPort;
     private SerialPortUtil.DataListener dataListener;
     private WaitDialogTime dialogTime;
-    private Unbinder unbinder;
     private SetDialog setDialog;
     private SetDialog.ResultListener listener;
     public static String showString = "";
@@ -61,35 +60,36 @@ public class OpenMachineFragment extends Fragment {
 
     @SuppressLint("HandlerLeak")
     static class MyHandler extends Handler {
-        private final WeakReference<Fragment> mFragment;
+        private final WeakReference<Activity> mActivity;
 
-        MyHandler(Fragment fragment) {
-            mFragment = new WeakReference<>(fragment);
+        MyHandler(Activity activity) {
+            mActivity = new WeakReference<>(activity);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            OpenMachineFragment fragment = (OpenMachineFragment) mFragment.get();
-            if (fragment != null &&fragment.dataListener!=null) {
+            OpenMachineActivity activity = (OpenMachineActivity) mActivity.get();
+            if (activity != null &&activity.dataListener!=null) {
+                activity.hideBottomUIMenu();
                 switch (msg.what) {
                     case 0:
-                        fragment.dialogTime.dismiss();
-                        ToastUtils.showShort(showString,Toast.LENGTH_LONG);
+                        activity.dialogTime.dismiss();
+                        ToastUtils.showShort(showString, Toast.LENGTH_LONG);
                         break;
                     case 1://开门角度
-                        fragment.initOpenDegree();
+                        activity.initOpenDegree();
                         break;
                     case 2://开门等待时间
-                        fragment.closeTimeTv.setText(fragment.closeTime);
+                        activity.closeTimeTv.setText(activity.closeTime);
                         break;
                     case 3://开门速度
-                        fragment.initOpenSpeed();
+                        activity.initOpenSpeed();
                         break;
                     case 4://关门速度
-                        fragment.initCloseSpeed();
+                        activity.initCloseSpeed();
                         break;
                     case 17://开门角度修复值
-                        fragment.openDegreeRepairTv.setText(fragment.openDegreeRepair);
+                        activity.openDegreeRepairTv.setText(activity.openDegreeRepair);
                         break;
                     default:
                         break;
@@ -98,19 +98,17 @@ public class OpenMachineFragment extends Fragment {
         }
     }
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.open_machine_fragment, container, false);
-        unbinder = ButterKnife.bind(this, view);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.open_machine_fragment);
+        ButterKnife.bind(this);
         initData();
-        return view;
     }
-
     public void initData() {
         myHandler = new MyHandler(this);
         serialPort = SerialPortUtil.getInstance();
-        dialogTime = new WaitDialogTime(getContext(), android.R.style.Theme_Translucent_NoTitleBar);
+        dialogTime = new WaitDialogTime(this, android.R.style.Theme_Translucent_NoTitleBar);
         initOpenDegree();
         initOpenSpeed();
         initCloseSpeed();
@@ -203,25 +201,25 @@ public class OpenMachineFragment extends Fragment {
         int count = openDegreeGroup.getChildCount();
         for (int i=0;i<count;i++) {
             View o = openDegreeGroup.getChildAt(i);
-                o.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialogTime.show();
-                        switch (v.getId()) {
-                            case R.id.open_degree_90:
-                                serialPort.sendDate(("+OPENANGLE:90\r\n").getBytes());
-                                break;
-                            case R.id.open_degree_100:
-                                serialPort.sendDate(("+OPENANGLE:100\r\n").getBytes());
-                                break;
-                            case R.id.open_degree_110:
-                                serialPort.sendDate(("+OPENANGLE:110\r\n").getBytes());
-                                break;
-                            default:
-                                break;
-                        }
+            o.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogTime.show();
+                    switch (v.getId()) {
+                        case R.id.open_degree_90:
+                            serialPort.sendDate(("+OPENANGLE:90\r\n").getBytes());
+                            break;
+                        case R.id.open_degree_100:
+                            serialPort.sendDate(("+OPENANGLE:100\r\n").getBytes());
+                            break;
+                        case R.id.open_degree_110:
+                            serialPort.sendDate(("+OPENANGLE:110\r\n").getBytes());
+                            break;
+                        default:
+                            break;
                     }
-                });
+                }
+            });
         }
         int count1 = openSpeedGroup.getChildCount();
         for (int i=0;i<count1;i++) {
@@ -249,25 +247,25 @@ public class OpenMachineFragment extends Fragment {
         int count2 = closeSpeedGroup.getChildCount();
         for (int i=0;i<count2;i++) {
             View o = closeSpeedGroup.getChildAt(i);
-                o.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialogTime.show();
-                        switch (v.getId()) {
-                            case R.id.close_speed_low:
-                                serialPort.sendDate(("+CLOSESPEED:4\r\n").getBytes());
-                                break;
-                            case R.id.close_speed_mid:
-                                serialPort.sendDate(("+CLOSESPEED:8\r\n").getBytes());
-                                break;
-                            case R.id.close_speed_high:
-                                serialPort.sendDate(("+CLOSESPEED:12\r\n").getBytes());
-                                break;
-                            default:
-                                break;
-                        }
+            o.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialogTime.show();
+                    switch (v.getId()) {
+                        case R.id.close_speed_low:
+                            serialPort.sendDate(("+CLOSESPEED:4\r\n").getBytes());
+                            break;
+                        case R.id.close_speed_mid:
+                            serialPort.sendDate(("+CLOSESPEED:8\r\n").getBytes());
+                            break;
+                        case R.id.close_speed_high:
+                            serialPort.sendDate(("+CLOSESPEED:12\r\n").getBytes());
+                            break;
+                        default:
+                            break;
                     }
-                });
+                }
+            });
         }
 
 
@@ -275,19 +273,24 @@ public class OpenMachineFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if (setDialog == null) {
-                    setDialog = new SetDialog(getContext(), R.style.mDialog);
+                    setDialog = new SetDialog(OpenMachineActivity.this, R.style.mDialog);
                     setDialog.setListener(listener);
                 }
                 setDialog.show(12, openDegreeRepair);
             }
         });
 
-
+        backIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         closeTimeCl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (setDialog == null) {
-                    setDialog = new SetDialog(getContext(), R.style.mDialog);
+                    setDialog = new SetDialog(OpenMachineActivity.this, R.style.mDialog);
                     setDialog.setListener(listener);
                 }
                 setDialog.show(4, closeTime);
@@ -377,9 +380,28 @@ public class OpenMachineFragment extends Fragment {
 
     @Override
     public void onDestroy() {
-        unbinder.unbind();
         serialPort.removeListener(dataListener);
         dataListener=null;
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideBottomUIMenu();
+    }
+
+    public void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 16) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+            getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        }
     }
 }

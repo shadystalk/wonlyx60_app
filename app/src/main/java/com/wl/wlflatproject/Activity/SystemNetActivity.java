@@ -1,8 +1,7 @@
-package com.wl.wlflatproject.Fragment;
+package com.wl.wlflatproject.Activity;
 
 import static com.blankj.utilcode.util.NetworkUtils.getWifiEnabled;
 
-import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,21 +13,19 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -51,12 +48,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-/**
- * 网络设置
- */
-@SuppressLint("MissingPermission")
-public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnItemClickListener {
-    private Unbinder unbinder;
+public class SystemNetActivity extends AppCompatActivity implements BaseQuickAdapter.OnItemClickListener{
 
     @BindView(R.id.wifi_list)
     RecyclerView wifiRv;
@@ -95,22 +87,12 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
     private WifiManager wifiManager;
     private BasePopupView basePopup;
 
-    private Context mContext;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        this.mContext = context;
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.sys_net_fragment, container, false);
-        unbinder = ButterKnife.bind(this, view);
-        wifiManager = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.sys_net_fragment);
+        ButterKnife.bind(this);
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         initView();
-        return view;
     }
 
     private void initView() {
@@ -122,7 +104,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         }
         wifiAdapter = new WifiAdapter(new ArrayList<>());
         wifiAdapter.setOnItemClickListener(this);
-        wifiRv.setLayoutManager(new LinearLayoutManager(mContext));
+        wifiRv.setLayoutManager(new LinearLayoutManager(this));
         wifiRv.setAdapter(wifiAdapter);
 
         sendReceiver();
@@ -145,26 +127,21 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         });
     }
 
-//    @OnLongClick(R.id.net_settings)
-//    public boolean onLongClick(View view) {
-//        //系统网络设置
-//        NetworkUtils.openWirelessSettings();
-//        return false;
-//    }
-
-
-    @OnClick({R.id.wifi_list_refresh, R.id.wifi_info_iv})
+    @OnClick({R.id.wifi_list_refresh, R.id.wifi_info_iv,R.id.back_iv})
     public void onViewClick(View view) {
         switch (view.getId()) {
             case R.id.wifi_list_refresh:
                 //刷新
                 updateWifiList();
                 break;
+            case R.id.back_iv:
+                finish();
+                break;
             case R.id.wifi_info_iv:
                 //WiFi信息
-                new XPopup.Builder(mContext)
+                new XPopup.Builder(this)
                         .dismissOnTouchOutside(true)
-                        .asCustom(new WifiInfoPopup(mContext, wifiManager.getConnectionInfo(), mCapabilities, ssid -> {
+                        .asCustom(new WifiInfoPopup(this, wifiManager.getConnectionInfo(), mCapabilities, ssid -> {
                             //忽略网络
                             forgetWifiNetwork(removeQuotes(ssid));
                             wifiManager.disconnect();
@@ -211,11 +188,10 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
     }
 
     @Override
-    public void onDestroyView() {
-        unbinder.unbind();
+    protected void onDestroy() {
         stopReceiver();
         handler.removeCallbacksAndMessages(null);
-        super.onDestroyView();
+        super.onDestroy();
     }
 
     private String mCapabilities = "[WPA2-PSK-CCMP][ESS][WPS]";
@@ -232,7 +208,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         } else {
             if (isSecured(scanResult)) {
                 //弹窗输入密码
-                new XPopup.Builder(mContext).asCustom(new WifiInputPopup(mContext, scanResult, (mScanResult, inputString) -> {
+                new XPopup.Builder(this).asCustom(new WifiInputPopup(this, scanResult, (mScanResult, inputString) -> {
                     connectToWifi(mScanResult, inputString);
                     wifiAdapter.getData().remove(mScanResult);
                 })).show();
@@ -296,7 +272,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         filter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         wifiStateReceiver = new WifiStateReceiver();
-        mContext.registerReceiver(wifiStateReceiver, filter);
+        registerReceiver(wifiStateReceiver, filter);
     }
 
     /**
@@ -304,7 +280,7 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
      */
     private void stopReceiver() {
         if (wifiStateReceiver != null) {
-            mContext.unregisterReceiver(wifiStateReceiver);
+            unregisterReceiver(wifiStateReceiver);
             wifiStateReceiver = null;
         }
     }
@@ -341,9 +317,9 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                         if (supplicantError == WifiManager.ERROR_AUTHENTICATING) {
                             // 密码错误
                             if (basePopup == null || basePopup.isDismiss()) {
-                                basePopup = new XPopup.Builder(mContext)
+                                basePopup = new XPopup.Builder(SystemNetActivity.this)
                                         .dismissOnTouchOutside(false)
-                                        .asCustom(new AlarmPopup(mContext, "密码错误", "知道了"));
+                                        .asCustom(new AlarmPopup(SystemNetActivity.this, "密码错误", "知道了"));
                                 basePopup.show();
                             }
                             if (!TextUtils.isEmpty(connectionSsid)) {
@@ -452,12 +428,12 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
                 mCurrentWifiCl.setVisibility(View.VISIBLE);
                 mWifiName.setText(removeQuotes(wifiInfo.getSSID()));
 
-                if ((wifiInfo.getIpAddress() == 0) && (isNetworkAvailable(mContext) == 2)) {
+                if ((wifiInfo.getIpAddress() == 0) && (isNetworkAvailable(this) == 2)) {
                     //正在连接
                     linksPb.setVisibility(View.VISIBLE);
                     mConnectIcon.setVisibility(View.GONE);
                 } else {
-                    if (isNetworkAvailable(mContext) == 2) {
+                    if (isNetworkAvailable(this) == 2) {
                         //已连接
                         mConnectIcon.setVisibility(View.VISIBLE);
                         linksPb.setVisibility(View.GONE);
@@ -514,4 +490,23 @@ public class SystemNetFragment extends Fragment implements BaseQuickAdapter.OnIt
         wifiRefreshView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideBottomUIMenu();
+    }
+
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 16) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+            getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        }
+    }
 }

@@ -16,6 +16,10 @@ public class Constant {
      */
     public static final String FVER = "fVer";
     /**
+     * 开门机版本号
+     */
+    public static final String MACHINE = "machine";
+    /**
      * 后板版本号
      */
     public static final String BVER = "bVer";

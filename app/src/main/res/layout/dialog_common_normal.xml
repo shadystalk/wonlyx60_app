@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/dp_24"
         android:layout_marginRight="@dimen/dp_24"
-        android:background="@drawable/shape_normal_dialog"
+        android:background="@drawable/device_313132_d14"
         android:orientation="vertical">
 
         <TextView

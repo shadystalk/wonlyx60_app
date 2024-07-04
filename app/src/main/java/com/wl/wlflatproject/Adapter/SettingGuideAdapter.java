@@ -18,7 +18,7 @@ public class SettingGuideAdapter extends BaseQuickAdapter<SettingGuideAdapter.Gu
     @Override
     protected void convert(BaseViewHolder baseViewHolder, GuideBean guideBean) {
         baseViewHolder.setText(R.id.item_title, guideBean.getTitle())
-                .setBackgroundRes(R.id.item_bg, guideBean.isSelect() ? R.drawable.bg_guide_select : R.color.transparent)
+//                .setBackgroundRes(R.id.item_bg, guideBean.isSelect() ? R.drawable.bg_guide_select : R.color.transparent)
                 .setImageResource(R.id.item_image, guideBean.getImage());
     }
 

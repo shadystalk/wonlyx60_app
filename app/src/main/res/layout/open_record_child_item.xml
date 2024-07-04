@@ -19,13 +19,13 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="6dp"
         android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textColor="#ffffffff"
-        android:textSize="16sp"
+        android:textSize="13sp"
         app:layout_constraintStart_toEndOf="@+id/img_type"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="远程开锁" />
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         tools:text="19:20"
         android:textColor="#99ffffff"
-        android:textSize="14sp"
+        android:textSize="11sp"
         app:layout_constraintStart_toStartOf="@+id/tv_title"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
@@ -46,7 +46,7 @@
         android:gravity="center"
         android:drawableStart="@mipmap/icon_user"
         android:id="@+id/tv_name"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -54,6 +54,6 @@
         android:layout_height="wrap_content"
         tools:text="沈长菊"
         android:textColor="#e6ffffff"
-        android:textSize="16sp"
+        android:textSize="13sp"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>

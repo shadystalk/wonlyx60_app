@@ -123,10 +123,10 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
                     for(int x=0;x<79;x++){
                         TextView textView = new TextView(CalendarActivity.this);
                         textView.setGravity(Gravity.CENTER);
-                        textView.setWidth(172);
+                        textView.setWidth(142);
                         textView.setHeight(77);
                         textView.setText(data+"");
-                        textView.setTextSize(32);
+                        textView.setTextSize(14);
                         textView.setTextColor(Color.parseColor("#4e5969"));
                         textView.setOnClickListener(new View.OnClickListener() {
                             @Override
@@ -139,7 +139,7 @@ public class CalendarActivity extends AppCompatActivity implements CalendarView.
                         data++;
                         ll.addView(textView);
                     }
-                    popupWindow = new PopupWindow(inflate, 202,440, true);
+                    popupWindow = new PopupWindow(inflate, 172,440, true);
                 }
                 TextView textView= (TextView) ll.getChildAt(currentYear-1971);
                 textView.setTextColor(Color.parseColor("#1d2129"));

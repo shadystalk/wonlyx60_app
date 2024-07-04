@@ -20,7 +20,16 @@
             android:theme="@style/DialogActivity" />
 
         <activity android:name=".Activity.WeatherActivity" />
+
+
         <activity android:name=".Activity.WeatherActivity1" />
+        <activity android:name=".Activity.DeviceInfoActivity" />
+        <activity android:name=".Activity.SystemNetActivity" />
+        <activity android:name=".Activity.BindActivity" />
+        <activity android:name=".Activity.AfterSaleActivity" />
+        <activity android:name=".Activity.SystemSettingActivity" />
+        <activity android:name=".Activity.OpenMachineActivity" />
+        <activity android:name=".Activity.DeviceDynamicsActivity" />
         <activity
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"

@@ -3,22 +3,22 @@
     <!-- 底部椭圆 -->
     <item>
         <shape android:shape="rectangle">
-            <padding android:top="16dp"
-                android:bottom="16dp"
-                android:left="138dp"
-                android:right="16dp"
+            <padding android:top="8dp"
+                android:bottom="8dp"
+                android:left="78dp"
+                android:right="8dp"
                 />
             <solid android:color="@color/c_306fff" />
             <corners android:radius="8dp" />
             <size
-                android:width="160dp"
-                android:height="80dp" />
+                android:width="90dp"
+                android:height="50dp" />
         </shape>
     </item>
     <!-- 顶部椭圆 -->
     <item>
         <shape android:shape="rectangle">
-            <corners android:radius="4dp" />
+            <corners android:radius="3dp" />
             <solid android:color="@color/white" />
         </shape>
     </item>

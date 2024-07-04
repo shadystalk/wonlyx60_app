@@ -3,5 +3,5 @@
     <!-- 设置背景颜色 -->
     <solid android:color="@color/childBgColor" />
 
-    <corners android:radius="8dp" />
+    <corners android:radius="4dp" />
 </shape>

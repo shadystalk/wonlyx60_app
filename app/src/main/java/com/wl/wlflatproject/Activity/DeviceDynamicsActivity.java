@@ -1,48 +1,46 @@
-package com.wl.wlflatproject.Fragment;
+package com.wl.wlflatproject.Activity;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.wl.wlflatproject.Adapter.PagerAdapter;
+import com.wl.wlflatproject.Fragment.AlarmMsgFragment;
+import com.wl.wlflatproject.Fragment.OpenRecordFragment;
 import com.wl.wlflatproject.R;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
-/**
- * 设备动态页面
- *  * @Author zhuobaolian
- *  * @Date 15:17
- */
-public class DeviceDynamicsFragment extends Fragment {
-    @BindView(R.id.device_tablayout)
+public class DeviceDynamicsActivity extends AppCompatActivity {
     TabLayout tabLayout;
-    @BindView(R.id.view_pager)
     ViewPager2 viewPager;
+    View backIv;
 
-    private final static String[] FRAGMENT_TITLE={"开门记录","告警消息"};
-    private Unbinder unbinder;
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.device_dynamic_fragment, container, false);
-        unbinder = ButterKnife.bind(this, view);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.device_dynamic_fragment);
+        viewPager=findViewById(R.id.view_pager);
+        backIv=findViewById(R.id.back_iv);
+        tabLayout=findViewById(R.id.device_tablayout);
         TabLayout.Tab tab = tabLayout.newTab();
         tabLayout.addTab(tab.setText(FRAGMENT_TITLE[0]));
         tab = tabLayout.newTab();
         tabLayout.addTab(tab.setText(FRAGMENT_TITLE[1]));
 
         // 创建适配器
-        PagerAdapter adapter = new PagerAdapter(getActivity());
+        PagerAdapter adapter = new PagerAdapter(this);
 
         // 添加 Fragment 到适配器
         adapter.addFragment( new OpenRecordFragment());
@@ -52,6 +50,12 @@ public class DeviceDynamicsFragment extends Fragment {
         //预加载
         viewPager.setOffscreenPageLimit(1);
         viewPager.setSaveEnabled(false);
+        backIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -72,8 +76,9 @@ public class DeviceDynamicsFragment extends Fragment {
         });
         //禁止fragment滑动
         viewPager.setUserInputEnabled(false);
-        return view;
     }
+
+    private final static String[] FRAGMENT_TITLE={"开门记录","告警消息"};
 
 
     @Override
@@ -84,11 +89,27 @@ public class DeviceDynamicsFragment extends Fragment {
         viewPager.setCurrentItem(0);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideBottomUIMenu();
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        unbinder.unbind();
     }
-
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 16) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+            getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        }
+    }
 }

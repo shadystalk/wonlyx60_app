@@ -2,18 +2,38 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/bind_tv"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="13dp"
-        android:text="设备绑定"
-        android:textSize="27sp"
-        android:textColor="@color/white"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+
+        <View
+            android:id="@+id/back_iv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+        <ImageView
+            android:layout_width="33dp"
+            android:layout_height="20dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/setting_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/setting_title" />
+
+        <TextView
+            android:id="@+id/setting_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="设备绑定"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
 
     <TextView
@@ -22,8 +42,8 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:layout_marginTop="100dp"
-        android:text="请使用爱感全屋智能APP扫描下方二维码绑定设备"
-        android:textSize="20sp"
+        android:text="请使用爱感全屋智能APP\n扫描下方二维码绑定设备"
+        android:textSize="14sp"
         android:textColor="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
@@ -36,35 +56,37 @@
         app:layout_constraintTop_toBottomOf="@+id/tv"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:layout_width="338dp"
-        android:layout_height="338dp"/>
+        android:layout_width="200dp"
+        android:layout_height="200dp"/>
 
 
 
     <LinearLayout
         android:visibility="gone"
-        android:id="@+id/bind_ll"
         android:paddingLeft="20dp"
-        android:gravity="center_vertical"
         android:background="@drawable/shape_radius_3_232324"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintTop_toTopOf="parent"
+        android:id="@+id/bind_ll"
+        android:gravity="center_vertical"
         app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_marginTop="27dp"
-        app:layout_constraintTop_toBottomOf="@+id/bind_tv"
+        android:layout_marginTop="100dp"
         android:orientation="vertical"
-        android:layout_width="402dp"
+        android:layout_width="match_parent"
         android:layout_height="108dp">
 
         <TextView
-            android:textColor="#90ffffff"
-            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             android:text="绑定账号"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
             android:id="@+id/bind_num"
-            android:layout_marginTop="20dp"
-            android:textColor="#70ffffff"
-            android:textSize="20sp"
+            android:layout_marginTop="25dp"
+            android:textColor="@color/white"
+            android:textSize="16sp"
             android:text="--"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -73,12 +95,13 @@
 
     <TextView
         android:visibility="gone"
+        android:layout_marginLeft="10dp"
         android:id="@+id/tv1"
         android:layout_marginTop="14dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bind_ll"
-        android:textColor="#50ffffff"
-        android:textSize="20sp"
+        android:textColor="#70ffffff"
+        android:textSize="14sp"
         android:text="如需解绑设备，请前往爱感全屋智能App进行操作"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>

@@ -8,11 +8,11 @@
         android:id="@+id/wifi_name_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
         android:textColor="@color/white_tran90"
-        android:textSize="20sp"
+        android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,9 +20,9 @@
 
     <ImageView
         android:id="@+id/wifi_state_item_iv"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginEnd="34dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginEnd="24dp"
         android:src="@mipmap/ic_wifi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

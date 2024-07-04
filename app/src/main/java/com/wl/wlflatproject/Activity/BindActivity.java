@@ -1,18 +1,16 @@
-package com.wl.wlflatproject.Fragment;
+package com.wl.wlflatproject.Activity;
 
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.callback.StringCallback;
@@ -32,7 +30,8 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
-public class BindFragment extends Fragment {
+
+public class BindActivity extends AppCompatActivity {
     @BindView(R.id.code_view)
     ImageView codeView;
     @BindView(R.id.tv)
@@ -41,27 +40,31 @@ public class BindFragment extends Fragment {
     TextView tv1;
     @BindView(R.id.bind_num)
     TextView bindNum;
+    @BindView(R.id.back_iv)
+    View backIv;
     @BindView(R.id.bind_ll)
     LinearLayout bindLL;
-    private Unbinder unbinder;
     private String devId;
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.bind_fragment, container, false);
-        unbinder = ButterKnife.bind(this, view);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.bind_fragment);
+        ButterKnife.bind(this);
         initData();
-        return view;
     }
 
     public void initData() {
         EventBus.getDefault().register(this);
-        devId = SPUtil.getInstance(getContext()).getSettingParam(Constant.DEVID, "");
-        String devType = SPUtil.getInstance(getContext()).getSettingParam(Constant.DEVTYPE, "");
-        Bitmap code = DpUtils.getTowCode(getContext(), devType + "-" + devId);
+        devId = SPUtil.getInstance(this).getSettingParam(Constant.DEVID, "");
+        String devType = SPUtil.getInstance(this).getSettingParam(Constant.DEVTYPE, "");
+        Bitmap code = DpUtils.getTowCode(this, devType + "-" + devId);
         codeView.setImageBitmap(code);
         getInfo();
+        backIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(InfoBean bean) {
@@ -76,7 +79,7 @@ public class BindFragment extends Fragment {
         if(TextUtils.isEmpty(devId)){
             return;
         }
-        OkGo.<String>get(ApiSrevice.baseUrl+ApiSrevice.searchInfo).tag(this).headers(ApiSrevice.getHeads(getContext())).execute(new StringCallback() {
+        OkGo.<String>get(ApiSrevice.baseUrl+ApiSrevice.searchInfo).tag(this).headers(ApiSrevice.getHeads(this)).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 String s = response.body().toString();
@@ -91,6 +94,11 @@ public class BindFragment extends Fragment {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        hideBottomUIMenu();
+    }
 
     public void bindVisi(boolean isBind){
         if(isBind){
@@ -109,7 +117,19 @@ public class BindFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
-        unbinder.unbind();
         OkGo.getInstance().cancelTag(this);
+    }
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 16) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+            getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        }
     }
 }

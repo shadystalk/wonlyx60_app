@@ -1,226 +1,230 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="24dp"
+    android:background="#000000"
+    android:paddingStart="16dp"
+    android:scrollbars="none"
     android:paddingEnd="24dp">
 
-    <TextView
-        android:id="@+id/dev_info_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="设备信息"
-        android:textColor="@color/white_tran90"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+<LinearLayout
+
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <View
+            android:id="@+id/back_iv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_width="60dp"
+            android:layout_height="60dp"/>
+        <ImageView
+            android:layout_width="33dp"
+            android:layout_height="20dp"
+            android:paddingStart="14dp"
+            android:paddingEnd="14dp"
+            android:scaleType="centerCrop"
+            android:src="@mipmap/ic_back"
+            app:layout_constraintBottom_toBottomOf="@id/setting_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/setting_title" />
+
+        <TextView
+            android:id="@+id/setting_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:text="设备信息"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
         android:id="@+id/dev_info_image"
-        android:layout_width="0dp"
-        android:layout_height="288dp"
-        android:layout_marginTop="32dp"
+        android:layout_width="match_parent"
+        android:layout_height="168dp"
         android:scaleType="centerCrop"
-        android:src="@mipmap/setting_dev_img"
-        app:layout_constraintEnd_toStartOf="@id/model_layout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/dev_info_title" />
+        android:src="@mipmap/setting_dev_img" />
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/model_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:background="@drawable/bg_guide_select"
+    <LinearLayout
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintBottom_toTopOf="@id/mac_layout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/dev_info_image"
-        app:layout_constraintTop_toTopOf="@id/dev_info_image">
+        android:layout_marginTop="20dp"
+        android:id="@+id/model_layout"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/shape_radius_8_232324">
 
         <TextView
             android:id="@+id/model_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="产品型号"
             android:textColor="@color/white_tran90"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/model_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textSize="14sp" />
 
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/model_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="@color/white_tran70"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/model_title" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="123456"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:layout_marginTop="10dp"
         android:id="@+id/mac_layout"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
         android:background="@drawable/bg_guide_select"
-        android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintBottom_toBottomOf="@id/dev_info_image"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/dev_info_image"
-        app:layout_constraintTop_toBottomOf="@id/model_layout">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/mac_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MAC"
-            android:textColor="@color/white_tran90"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/mac_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/mac_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="- -"
-            android:textColor="@color/white_tran70"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/mac_title" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
         android:id="@+id/software_version_layout"
-        android:layout_width="0dp"
-        android:layout_height="128dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_guide_select"
-        android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintEnd_toEndOf="@id/dev_info_image"
-        app:layout_constraintStart_toStartOf="@id/dev_info_image"
-        app:layout_constraintTop_toBottomOf="@id/dev_info_image">
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/shape_radius_8_232324"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/software_version_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="软件版本"
-            android:textColor="@color/white_tran90"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/software_version_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/white"
+            android:textSize="12sp" />
 
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/software_version_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--"
-            android:textColor="@color/white_tran70"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/software_version_title" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:layout_marginTop="10dp"
         android:id="@+id/previous_version_layout"
-        android:layout_width="0dp"
-        android:layout_height="128dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_guide_select"
-        android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/software_version_layout"
-
-        app:layout_constraintTop_toBottomOf="@id/dev_info_image">
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/shape_radius_8_232324"
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/previous_version_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="前板版本号"
-            android:textColor="@color/white_tran90"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/previous_version_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/previous_version_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--"
-            android:textColor="@color/white_tran70"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/previous_version_title" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textColor="@color/white"
+            android:textSize="14sp"
+        />
+    </LinearLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
         android:id="@+id/after_version_layout"
-        android:layout_width="0dp"
-        android:layout_height="128dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/bg_guide_select"
         android:orientation="vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="12dp"
-        app:layout_constraintEnd_toEndOf="@id/software_version_layout"
-        app:layout_constraintStart_toStartOf="@id/software_version_layout"
-        app:layout_constraintTop_toBottomOf="@id/software_version_layout">
+>
 
         <TextView
             android:id="@+id/after_version_title"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="后板版本号"
-            android:textColor="@color/white_tran90"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toTopOf="@id/after_version_text"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
         <TextView
+            android:layout_marginTop="5dp"
             android:id="@+id/after_version_text"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--"
-            android:textColor="@color/white_tran70"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/after_version_title" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_marginBottom="20dp"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:id="@+id/machine_version_layout"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/bg_guide_select"
+        android:orientation="vertical"
+        >
 
+        <TextView
+            android:id="@+id/machine_version_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="开门机版本"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:layout_marginTop="5dp"
+            android:id="@+id/machine_version_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="--"
+            android:textColor="@color/white"
+            android:textSize="12sp" />
+    </LinearLayout>
+</LinearLayout>
+</ScrollView>

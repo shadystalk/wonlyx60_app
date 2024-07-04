@@ -4,38 +4,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
-import com.wl.wlflatproject.Fragment.AfterSaleFragment;
-import com.wl.wlflatproject.Fragment.BindFragment;
-import com.wl.wlflatproject.Fragment.DeviceDynamicsFragment;
-import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
-import com.wl.wlflatproject.Fragment.OpenMachineFragment;
-import com.wl.wlflatproject.Fragment.SystemNetFragment;
-import com.wl.wlflatproject.Fragment.SystemSettingFragment;
-import com.wl.wlflatproject.Fragment.SystemUpdateFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
+import com.wl.wlflatproject.MView.NormalDialog;
 import com.wl.wlflatproject.R;
-
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -49,7 +40,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务", "系统升级"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","智能防夹", "工程模式","设备重启"};
     /**
      * tag默认key
      */
@@ -57,11 +48,11 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
-            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales, R.mipmap.ic_sys_setting};
+            R.mipmap.ic_door_opener,R.mipmap.ic_after_sales, R.mipmap.fangjia, R.mipmap.ic_sys_setting,R.mipmap.ic_device_state};
 
-    private Fragment[] fragments = new Fragment[title.length];
 
     private int tabPosition = 0;
+    private NormalDialog normalDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +85,6 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         }
         guideRv.setAdapter(mGuideAdapter);
         guideRv.setLayoutManager(new LinearLayoutManager(this));
-        //设置默认打开的tag
-        switchFragment(tabPosition);
     }
 
     @Override
@@ -105,7 +94,88 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         ((SettingGuideAdapter.GuideBean) baseQuickAdapter.getData().get(position)).setSelect(true);
         baseQuickAdapter.notifyItemChanged(position);
         tabPosition = position;
-        switchFragment(position);
+        switch (position){
+            case 0:
+                Intent intent=new Intent(SettingMainActivity.this,DeviceInfoActivity.class);
+                startActivity(intent);
+                break;
+            case 1:
+                Intent intent1=new Intent(SettingMainActivity.this,SystemNetActivity.class);
+                startActivity(intent1);
+                break;
+            case 2:
+                Intent intent2=new Intent(SettingMainActivity.this,BindActivity.class);
+                startActivity(intent2);
+                break;
+            case 3:
+                Intent intent3=new Intent(SettingMainActivity.this,DeviceDynamicsActivity.class);
+                startActivity(intent3);
+                break;
+            case 4:
+                Intent intent4=new Intent(SettingMainActivity.this,SystemSettingActivity.class);
+                startActivity(intent4);
+                break;
+            case 5:
+                Intent intent6=new Intent(SettingMainActivity.this,OpenMachineActivity.class);
+                startActivity(intent6);
+                break;
+            case 6:
+                Intent intent7=new Intent(SettingMainActivity.this,AfterSaleActivity.class);
+                startActivity(intent7);
+                break;
+            case 7:
+                boolean a = QtimesServiceManager.instance().getAntiPinchStatus();
+                if (normalDialog == null)
+                    normalDialog = new NormalDialog(this, R.style.mDialog);
+                normalDialog.show();
+                normalDialog.setTitleText("防夹");
+                if(a){
+                    normalDialog.setContentText("点击关闭防夹");
+                }else {
+                    normalDialog.setContentText("点击开启防夹");
+                }
+                normalDialog.getConfirmTv().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        normalDialog.dismiss();
+                        if (!QtimesServiceManager.instance().isServerActive()) {
+                            QtimesServiceManager.instance().connect(SettingMainActivity.this);
+                        }
+                        boolean b = QtimesServiceManager.instance().resetAntiPinch();
+                    }
+                });
+                break;
+            case 8:
+                try {
+                    if (!QtimesServiceManager.instance().isServerActive()) {
+                        QtimesServiceManager.instance().connect(this);
+                    }
+                    QtimesServiceManager instance = QtimesServiceManager.instance();
+                    instance.recoveryMode();
+                } catch (Exception e) {
+                    String s = e.toString();
+                    Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case 9:
+                if (normalDialog == null)
+                    normalDialog = new NormalDialog(this, R.style.mDialog);
+                normalDialog.show();
+                normalDialog.setTitleText("系统重启");
+                normalDialog.setContentText("点击确定系统重启");
+                normalDialog.getConfirmTv().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        normalDialog.dismiss();
+                        if (!QtimesServiceManager.instance().isServerActive()) {
+                            QtimesServiceManager.instance().connect(SettingMainActivity.this);
+                        }
+                        QtimesServiceManager.instance().reboot();
+                    }
+                });
+                break;
+
+        }
     }
 
     @Override
@@ -117,6 +187,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         filter.addAction(Intent.ACTION_TIMEZONE_CHANGED);
         filter.addAction(Intent.ACTION_TIME_TICK);
         registerReceiver(timeReceiver, filter);
+        hideBottomUIMenu();
     }
 
     @Override
@@ -134,68 +205,6 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
         timeTv.setText(timeString);
     }
 
-    /**
-     * 切换fragment
-     *
-     * @param position
-     */
-    private void switchFragment(int position) {
-        Fragment fragment = fragments[position];
-        if (fragment == null) {
-            switch (position) {
-                case 0:
-                    // 设备信息
-                    fragment = new DeviceInfoFragment();
-                    Bundle bundle = new Bundle();
-                    fragment.setArguments(bundle);
-                    fragments[position] = fragment;
-                    break;
-                case 1:
-                    // 网络设置
-                    fragment = new SystemNetFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 2:
-                    // 设备绑定
-                    fragment = new BindFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 3:
-                    // 设备动态
-                    fragment = new DeviceDynamicsFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 4:
-                    // 系统设置
-                    fragment = new SystemSettingFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 5:
-                    // 开门机设置
-                    fragment = new OpenMachineFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 6:
-                    // 售后服务
-                    fragment = new AfterSaleFragment();
-                    fragments[position] = fragment;
-                    break;
-                case 7:
-                    //系统升级
-                    fragment = new SystemUpdateFragment();
-                    fragments[position] = fragment;
-                    break;
-                default:
-                    break;
-            }
-        }
-        if (fragment != null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.setting_content, fragment);
-            fragmentTransaction.commit();
-        }
-    }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(TimeEvent bean) {
@@ -225,5 +234,17 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     public static class TimeEvent {
     }
-
+    protected void hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT < 16) {
+            this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else {
+            int uiFlags = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN //hide statusBar
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION; //hide navigationBar
+            getWindow().getDecorView().setSystemUiVisibility(uiFlags);
+        }
+    }
 }
