@@ -9,6 +9,7 @@ import static com.rockchip.gpadc.demo.yolo.PostProcess.INPUT_CHANNEL;
 import static java.lang.Thread.sleep;
 
 import android.app.Activity;
+import android.app.XzjhSystemManager;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -40,6 +41,7 @@ import com.rockchip.gpadc.demo.rga.RGA;
 import com.rockchip.gpadc.demo.utils.SerialPortUtil;
 import com.rockchip.gpadc.demo.yolo.InferenceWrapper;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -130,6 +132,10 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         fileDirPath = getCacheDir().getAbsolutePath();
         platform = getPlatform();
         Log.d(TAG, "get soc platform:" + platform);
+        XzjhSystemManager mMamager = null;
+        mMamager = (XzjhSystemManager)getSystemService("xzjh_server");
+
+        setGpioDirection();
 
         if (platform.equals("rk3588")) {
             createFile(mModelName, R.raw.yolov5s_rk3588);
@@ -328,7 +334,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
         if (num > 1){
-            mCameraId = 0;
+            mCameraId = 1;
         }else{
            return false;
         }
@@ -661,12 +667,10 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
     private void handleGpio(boolean detectedInterestedObject) {
         if (detectedInterestedObject) {
-            long currentTimeMillis = System.currentTimeMillis();
-            if(currentTimeMillis-lastDetectionTime>2000){
-                serialPort.sendDate("+COPEN:1\r\n".getBytes());
-                Log.e("Activity防夹--","发送开门");
-                lastDetectionTime = System.currentTimeMillis();
-            }
+//            setGpioHigh();
+            lastDetectionTime = System.currentTimeMillis();
+        } else if (System.currentTimeMillis() - lastDetectionTime > DETECTION_TIMEOUT) {
+//            setGpioLow();
         }
     }
 
@@ -717,5 +721,60 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         });
         return true;
     }
+    private void setGpioDirection() {
+        try {
+            // Execute the command to set the GPIO direction
+            Process process = Runtime.getRuntime().exec("su");
+            DataOutputStream os = new DataOutputStream(process.getOutputStream());
+
+            // Write the command to set the GPIO direction
+            os.writeBytes("echo out > /sys/class/gpio/gpio33/direction\n");
+            os.writeBytes("exit\n");
+            os.flush();
+
+            // Close the stream and wait for the process to complete
+            os.close();
+            process.waitFor();
+//            XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
+//            mManager.xzjhSetGpioDirction(4, 1);
+        } catch (IOException | InterruptedException e) {
+            Log.e(TAG, "Error setting GPIO direction", e);
+        }
+    }
+
+//    private void writeToFile(String path, String value) {
+//        try {
+//            // Start a process with superuser privileges
+//            Process process = Runtime.getRuntime().exec("su");
+//            DataOutputStream os = new DataOutputStream(process.getOutputStream());
+//
+//            // Write the command to set the GPIO value
+//            os.writeBytes("echo " + value + " > " + path + "\n");
+//            os.writeBytes("exit\n");
+//            os.flush();
+//
+//            // Close the stream and wait for the process to complete
+//            os.close();
+//            process.waitFor();
+//        } catch (IOException e) {
+//            Log.e(TAG, "Error in writing to file: " + path, e);
+//        } catch (InterruptedException e) {
+//            Log.e(TAG, "Interrupted exception", e);
+//        }
+//    }
+
+//    private void setGpioHigh() {
+//        writeToFile("/sys/class/gpio/gpio33/value", "1");
+//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
+//        mManager.xzjhSetGpioValue(4, 1);
+//        Log.d(TAG, "GPIO set to High");
+//    }
+
+//    private void setGpioLow() {
+//        writeToFile("/sys/class/gpio/gpio33/value", "0");
+//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
+//        mManager.xzjhSetGpioValue(4, 0);
+//        Log.d(TAG, "GPIO set to Low");
+//    }
 
 }

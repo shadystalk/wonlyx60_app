@@ -385,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
         });
         createPreviewView();
         servicesIntent = new Intent(this, ComputerServices.class);
-//        startService(servicesIntent);
+        startService(servicesIntent);
         calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
@@ -947,7 +947,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        stopCamera();
+        stopCamera();
     }
 
     @Override
@@ -1624,7 +1624,7 @@ public class MainActivity extends AppCompatActivity {
                     HashMap<String, UsbDevice> deviceList1 = manager.getDeviceList();
                     int num = Camera.getNumberOfCameras();
                     if (num > 0){
-                        mCameraId = 1;
+                        mCameraId = 0;
                     }else{
                         return;
                     }
@@ -1674,7 +1674,7 @@ public class MainActivity extends AppCompatActivity {
                 stopService(servicesIntent);
                 break;
             case START_SERVICE://开启服务
-//                startService(servicesIntent);
+                startService(servicesIntent);
                 break;
         }
     }
