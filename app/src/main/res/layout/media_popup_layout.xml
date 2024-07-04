@@ -4,7 +4,7 @@
     android:id="@+id/popup_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/BLACK">
+    android:background="#000000">
 
     <ImageView
         android:id="@+id/pic_iv"

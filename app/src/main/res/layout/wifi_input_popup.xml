@@ -4,7 +4,7 @@
     android:layout_marginTop="100dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/BLACK">
+    android:background="#000000">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/top_layout"

@@ -216,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case HEARTBEAT://心跳包
+                    hideBottomUIMenu();
                     try {
                         if (wifiManager == null)
                             wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
@@ -270,6 +271,11 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case PLAY:
                     bg.setVisibility(View.VISIBLE);
+                    lockBt.setVisibility(View.VISIBLE);
+                    closeVideo.setVisibility(View.VISIBLE);
+                    fullScreen.setVisibility(View.GONE);
+                    dialogTime.dismiss();
+                    hideBottomUIMenu();
                     break;
                 case MSGGOEN:
                     messageEdit.setText("");
@@ -448,7 +454,7 @@ public class MainActivity extends AppCompatActivity {
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
                 if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
                     List<AlarmMsgBean.AlarmMsgDataDTO> data = infoBean.getData();
-                    if (data != null) {
+                    if (data != null &&data.size()>0) {
                         view_next.setVisibility(View.VISIBLE);
                         alarmMsg.setVisibility(View.VISIBLE);
                         alarm_date.setText(data.get(0).getAlarmMsgList().get(0).getShowDate());
@@ -615,7 +621,7 @@ public class MainActivity extends AppCompatActivity {
                 CalendarActivity.start(this, calendarParam);
                 break;
             case R.id.view_next:
-                intent = new Intent(MainActivity.this, SettingMainActivity.class);
+                intent = new Intent(MainActivity.this, DeviceDynamicsActivity.class);
                 intent.putExtra(POSITION_PARAM_KEY, 3);
                 startActivity(intent);
                 break;
@@ -1586,11 +1592,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
                 MainActivity.this.surfaceTexture = surfaceTexture;
-                Matrix matrix = videoPlayView.getTransform(new Matrix());
-                matrix.setScale(-1, 1);
-                int width = videoPlayView.getWidth();
-                matrix.postTranslate(width, 0);
-                videoPlayView.setTransform(matrix);
+//                Matrix matrix = videoPlayView.getTransform(new Matrix());
+//                matrix.setScale(-1, 1);
+//                int width = videoPlayView.getWidth();
+//                matrix.postTranslate(width, 0);
+//                videoPlayView.setTransform(matrix);
             }
 
             @Override
@@ -1616,7 +1622,7 @@ public class MainActivity extends AppCompatActivity {
     int mCameraId = -1;
 
     private void startCamera() {
-//        dialogTime.show();
+        dialogTime.show();
         if (runnable == null) {
             runnable = new Runnable() {
                 @Override
@@ -1626,8 +1632,8 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
                     int num = Camera.getNumberOfCameras();
-                    if (num > 2)
-                        mCameraId = 2;
+                    if (num > 1)
+                        mCameraId = 1;
                     else
                         mCameraId = 0;
                     Camera.CameraInfo camInfo = new Camera.CameraInfo();
@@ -1642,7 +1648,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     try {
                         mCamera0.setPreviewTexture(surfaceTexture);
-                        mCamera0.setDisplayOrientation(90);
+                        mCamera0.setDisplayOrientation(270);
                         mCamera0.startPreview();
                         isPlaying = true;
                         handler.sendEmptyMessageDelayed(PLAY, 500);
@@ -1665,6 +1671,7 @@ public class MainActivity extends AppCompatActivity {
             mCamera0 = null;
             isPlaying = false;
             bg.setVisibility(View.GONE);
+            fullScreen.setVisibility(View.VISIBLE);
         }
     }
 
