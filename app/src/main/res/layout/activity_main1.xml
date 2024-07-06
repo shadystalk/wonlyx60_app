@@ -53,6 +53,17 @@
     android:background="@drawable/bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/test"
+        android:textSize="20sp"
+        android:layout_marginTop="80dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="环境"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
     <ImageView
         android:id="@+id/msg_iv"
         android:layout_marginTop="15dp"

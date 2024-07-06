@@ -189,6 +189,8 @@ public class MainActivity extends AppCompatActivity {
     TextView alarm_tv;
     @BindView(R.id.alarm_date)
     TextView alarm_date;
+    @BindView(R.id.test)
+    TextView test;
     @BindView(R.id.view_next)
     ConstraintLayout view_next;
     @BindView(R.id.alarm_msg)
@@ -312,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
     private String devType;
     private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
+    private int settingParam;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -387,43 +390,43 @@ public class MainActivity extends AppCompatActivity {
         }
         initMsgData();
         createPreviewView();
-//        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
-//            @Override
-//            public boolean onLongClick(View view) {
-//                if (test.getVisibility() == View.VISIBLE) {
-//                    test.setVisibility(View.GONE);
-//                } else {
-//                    test.setVisibility(View.VISIBLE);
-//                }
-//                return false;
-//            }
-//        });
-//        settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
-//        switch (settingParam) {
-//            case 0:
-//                test.setText("正式服");
-//                break;
-//            case 1:
-//                test.setText("测试服");
-//                break;
-//        }
-//        test.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(BuildConfig.DEBUG){
-//                    switch (settingParam) {
-//                        case 0:
-//                            settingParam = 1;
-//                            break;
-//                        case 1:
-//                            settingParam = 0;
-//                            break;
-//                    }
-//                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
-//                    android.os.Process.killProcess(android.os.Process.myPid());
-//                }
-//            }
-//        });
+        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (test.getVisibility() == View.VISIBLE) {
+                    test.setVisibility(View.GONE);
+                } else {
+                    test.setVisibility(View.VISIBLE);
+                }
+                return false;
+            }
+        });
+        settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
+        switch (settingParam) {
+            case 0:
+                test.setText("正式服");
+                break;
+            case 1:
+                test.setText("测试服");
+                break;
+        }
+        test.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(BuildConfig.DEBUG){
+                    switch (settingParam) {
+                        case 0:
+                            settingParam = 1;
+                            break;
+                        case 1:
+                            settingParam = 0;
+                            break;
+                    }
+                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            }
+        });
 //        logo.setOnLongClickListener(new View.OnLongClickListener() {
 //            @Override
 //            public boolean onLongClick(View view) {
