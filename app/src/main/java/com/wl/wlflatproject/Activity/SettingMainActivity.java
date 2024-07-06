@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SimpleItemAnimator;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
@@ -40,7 +41,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","智能防夹", "工程模式","设备重启"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","防夹激活","智能防夹", "工程模式","设备重启"};
     /**
      * tag默认key
      */
@@ -48,7 +49,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
-            R.mipmap.ic_door_opener,R.mipmap.ic_after_sales, R.mipmap.fangjia, R.mipmap.ic_sys_setting,R.mipmap.ic_device_state};
+            R.mipmap.ic_door_opener,R.mipmap.ic_after_sales,R.mipmap.fangjia, R.mipmap.fangjia, R.mipmap.ic_sys_setting,R.mipmap.ic_device_state};
 
 
     private int tabPosition = 0;
@@ -116,14 +117,22 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                 startActivity(intent4);
                 break;
             case 5:
-                Intent intent6=new Intent(SettingMainActivity.this,OpenMachineActivity.class);
-                startActivity(intent6);
+                Intent intent5=new Intent(SettingMainActivity.this,OpenMachineActivity.class);
+                startActivity(intent5);
                 break;
             case 6:
-                Intent intent7=new Intent(SettingMainActivity.this,AfterSaleActivity.class);
-                startActivity(intent7);
+                Intent intent6=new Intent(SettingMainActivity.this,AfterSaleActivity.class);
+                startActivity(intent6);
                 break;
             case 7:
+                if (!QtimesServiceManager.instance().isServerActive()) {
+                    QtimesServiceManager.instance().connect(SettingMainActivity.this);
+                }
+                Intent intent7 = new Intent();
+                intent7.setClassName("com.qtimes.wonly", "com.qtimes.wonly.activity.device.DevACActivity");
+                startActivity(intent7);
+                break;
+            case 8:
                 boolean a = QtimesServiceManager.instance().getAntiPinchStatus();
                 if (normalDialog == null)
                     normalDialog = new NormalDialog(this, R.style.mDialog);
@@ -145,7 +154,12 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     }
                 });
                 break;
-            case 8:
+            case 9:
+                boolean a1 = QtimesServiceManager.instance().getAntiPinchStatus();
+                if(!a1){
+                    ToastUtils.showShort("智能防夹已关闭");
+                    return;
+                }
                 try {
                     if (!QtimesServiceManager.instance().isServerActive()) {
                         QtimesServiceManager.instance().connect(this);
@@ -157,7 +171,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case 9:
+            case 10:
                 if (normalDialog == null)
                     normalDialog = new NormalDialog(this, R.style.mDialog);
                 normalDialog.show();

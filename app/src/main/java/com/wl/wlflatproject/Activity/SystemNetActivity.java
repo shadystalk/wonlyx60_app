@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.NetworkUtils;
+import com.blankj.utilcode.util.ToastUtils;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.lxj.xpopup.XPopup;
 import com.lxj.xpopup.core.BasePopupView;
@@ -420,9 +421,12 @@ public class SystemNetActivity extends AppCompatActivity implements BaseQuickAda
      */
     private void updateWifiConnection() {
         WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+//        String s = wifiInfo.toString();
         if (!TextUtils.isEmpty(wifiInfo.getSSID())) {
             //获取到连接的信息
-            if (wifiInfo.getSSID().contains("unknown")) {
+            String ssid = wifiInfo.getSSID();
+//            ToastUtils.showShort(s+"");
+            if (wifiInfo.getSSID().contains("unknown")||wifiInfo.getNetworkId()==-1) {
                 mCurrentWifiCl.setVisibility(View.GONE);
             } else {
                 mCurrentWifiCl.setVisibility(View.VISIBLE);

@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.lock_sl)
     CustomSlideToUnlockView lockSl;
     @BindView(R.id.lock_bt)
-    ImageView lockBt;
+    LinearLayout lockBt;
     @BindView(R.id.video_iv)
     LinearLayout videoIv;
     @BindView(R.id.full_screen)
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.changKai)
     LinearLayout changKai;
     @BindView(R.id.close_video)
-    ImageView closeVideo;
+    LinearLayout closeVideo;
     @BindView(R.id.calendar_cn_tv)
     TextView calendarCnTv;
     @BindView(R.id.msg_sl)

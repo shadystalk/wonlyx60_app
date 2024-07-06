@@ -2,6 +2,8 @@ package com.wl.wlflatproject.MView;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -42,7 +44,12 @@ public class CustomSlideToUnlockView extends RelativeLayout {
     private String textHint;//文本
     private int textSize;//单位是sp,只拿数值
     private int textColorResId;//颜色,@color
-
+    public Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            scrollToRight(iv_slide);
+        }
+    };
 
     public CustomSlideToUnlockView(Context mContext) {
         super(mContext);
@@ -129,9 +136,10 @@ public class CustomSlideToUnlockView extends RelativeLayout {
         iv_slide.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                DISTANCE_LIMIT= (int) (CustomSlideToUnlockView.this.getWidth()*THRESHOLD);//默认阈值是控件宽度的一半
                 //添加滑动监听
                 int i = CustomSlideToUnlockView.this.getWidth() - iv_slide.getWidth();
+//                DISTANCE_LIMIT= (int) (CustomSlideToUnlockView.this.getWidth()*THRESHOLD);//默认阈值是控件宽度的一半
+                DISTANCE_LIMIT= i-30;//默认阈值是控件宽度的一半
 
                 switch (event.getAction()) {
 
@@ -188,7 +196,8 @@ public class CustomSlideToUnlockView extends RelativeLayout {
                     case MotionEvent.ACTION_UP:
                         logI(TAG, "MotionEvent.ACTION_UP,之前移动的偏移值：" + ViewHelper.getTranslationY(v));
                         if (Math.abs(mSlidedDistance) > DISTANCE_LIMIT) {
-                            scrollToRight(v);//右边
+//                            scrollToRight(v);//右边
+                            handler.sendEmptyMessageDelayed(0,500);
                         } else {
                             scrollToLeft(v);//左边
                         }
