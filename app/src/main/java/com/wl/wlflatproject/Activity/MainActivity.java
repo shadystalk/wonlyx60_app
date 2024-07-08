@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaplayer;
     private PopupWindow clearPopupWindow;
     private String devType;
-    private PowerManager.WakeLock wakeLock;
+//    private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
     private int settingParam;
 
@@ -331,9 +331,9 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
         new ApiSrevice(this);
         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
-        wakeLock.acquire();
+//        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
+//        wakeLock.acquire();
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
         if (deviceList == null || deviceList.size() < 1) {
