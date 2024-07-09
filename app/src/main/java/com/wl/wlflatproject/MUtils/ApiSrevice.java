@@ -44,7 +44,7 @@ public class ApiSrevice {
         String versionName = VersionUtils.getVersionName(context);
         HttpHeaders headers = new HttpHeaders();
         headers.put("clientId", devId);
-        headers.put("appId", "wonly_screen_10");
+        headers.put("appId", "wonly_screen_7");
         headers.put("appVersion", versionName);
         long l = System.currentTimeMillis();
         headers.put("timestamp", l + "");
