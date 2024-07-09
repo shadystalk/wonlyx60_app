@@ -34,13 +34,13 @@
                 android:visibility="gone"
                 android:id="@+id/lock_bt"
                 android:orientation="vertical"
-                android:layout_width="68dp"
+                android:layout_width="58dp"
                 android:layout_height="107dp">
                 <ImageView
                     android:layout_marginRight="30dp"
                     android:background="@drawable/main_lock"
-                    android:layout_width="68dp"
-                    android:layout_height="68dp"/>
+                    android:layout_width="58dp"
+                    android:layout_height="58dp"/>
                 <TextView
                     android:layout_marginTop="10dp"
                     android:layout_gravity="center_horizontal"
@@ -55,12 +55,12 @@
             android:id="@+id/close_video"
             android:layout_marginLeft="30dp"
             android:orientation="vertical"
-            android:layout_width="68dp"
+            android:layout_width="58dp"
             android:layout_height="107dp">
             <ImageView
-                android:background="@drawable/main_hang_up"
-                android:layout_width="68dp"
-                android:layout_height="68dp"/>
+                android:background="@drawable/close_video"
+                android:layout_width="58dp"
+                android:layout_height="58dp"/>
 
 
             <TextView
