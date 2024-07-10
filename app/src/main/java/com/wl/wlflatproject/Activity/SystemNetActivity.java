@@ -410,7 +410,6 @@ public class SystemNetActivity extends AppCompatActivity implements BaseQuickAda
             } else if (result.SSID.equals(removeQuotes(info.getSSID()))) {
                 if(mCurrentWifiCl.getVisibility()!=View.GONE){
                     mCapabilities = result.capabilities;
-                    ToastUtils.showShort("移除"+result.SSID);
                     resultIterator.remove();
                 }
             }

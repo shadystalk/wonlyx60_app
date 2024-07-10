@@ -40,8 +40,10 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -66,6 +68,10 @@ import com.lzy.okgo.model.Progress;
 import com.lzy.okgo.model.Response;
 import com.mcxtzhang.swipemenulib.SwipeMenuLayout;
 import com.qtimes.service.wonly.client.QtimesServiceManager;
+import com.serenegiant.usb.IButtonCallback;
+import com.serenegiant.usb.IStatusCallback;
+import com.serenegiant.usb.USBMonitor;
+import com.serenegiant.usb.UVCCamera;
 import com.wl.wlflatproject.Bean.AlarmMsgBean;
 import com.wl.wlflatproject.Bean.BaseBean;
 import com.wl.wlflatproject.Bean.CalendarParam;
@@ -106,9 +112,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -315,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
     private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
     private int settingParam;
+    private USBMonitor mUSBMonitor;
 
     @SuppressLint("InvalidWakeLockTag")
     @Override
@@ -332,9 +341,6 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
         new ApiSrevice(this);
         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
-        wakeLock.acquire();
 
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
@@ -379,6 +385,8 @@ public class MainActivity extends AppCompatActivity {
         }else{
             msgIv.setVisibility(View.GONE);
         }
+        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
+        mUSBMonitor.register();
         boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate",false);
         if(systemUpDate){
             String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "update.zip";
@@ -427,6 +435,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        videoPlayView.postDelayed(() -> {
+            int width = videoPlayView.getMeasuredWidth();
+            int height = videoPlayView.getMeasuredHeight();
+//            videoPlayView.setAspectRatio(width, height);
+            ViewGroup.LayoutParams params = videoPlayView.getLayoutParams();
+            params.width = height;
+            params.height = width;
+            videoPlayView.setLayoutParams(params);
+            videoPlayView.setRotation(-90f);
+        }, 1000);
 //        logo.setOnLongClickListener(new View.OnLongClickListener() {
 //            @Override
 //            public boolean onLongClick(View view) {
@@ -569,15 +587,16 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (!isPlaying) {
                     //打开视频
-                    Log.e("usb++", "deviceList" + deviceList.size());
-                    if (deviceList.size() == 0) {
+                    if(deviceList.size()==0){
                         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
                     }
                     if (deviceList.size() == 0) {
                         Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    startCamera();
+                    Set<Integer> set = deviceList.keySet();
+                    set.iterator().next();
+                    mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
                 }
                 break;
             case R.id.close_video:
@@ -826,7 +845,18 @@ public class MainActivity extends AppCompatActivity {
                                 if (!isFastClick()) {
                                     return;
                                 }
-                                startCamera();
+                                if(deviceList.size()==0){
+                                    return;
+                                }
+                                if (!isPlaying) {
+                                    if (!isFastClick()) {
+                                        return;
+                                    }
+                                    Set<Integer> set = deviceList.keySet();
+                                    set.iterator().next();
+                                    mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
+                                }
+
                             }
 
                         } else if (data.contains("AT+CDECT=")) {
@@ -848,7 +878,18 @@ public class MainActivity extends AppCompatActivity {
                                             if (!isFastClick()) {
                                                 return;
                                             }
-                                            startCamera();
+                                            if(deviceList.size()==0){
+                                                return;
+                                            }
+                                            if (!isPlaying) {
+                                                if (!isFastClick()) {
+                                                    return;
+                                                }
+                                                Set<Integer> set = deviceList.keySet();
+                                                set.iterator().next();
+                                                mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
+                                            }
+
                                         }
                                     }
                                     break;
@@ -926,6 +967,75 @@ public class MainActivity extends AppCompatActivity {
         serialPort.readCode(dataListener);
     }
 
+    private UVCCamera camera;
+    private Surface mPreviewSurface;
+    private final USBMonitor.OnDeviceConnectListener mOnDeviceConnectListener = new USBMonitor.OnDeviceConnectListener() {
+        @Override
+        public void onAttach(final UsbDevice device) {
+//            Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onConnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock, final boolean createNew) {
+            queueEvent(new Runnable() {
+                @Override
+                public void run() {
+                    camera = new UVCCamera();
+                    camera.setStatusCallback(new IStatusCallback() {
+                        @Override
+                        public void onStatus(final int statusClass, final int event, final int selector,
+                                             final int statusAttribute, final ByteBuffer data) {
+                            Toast.makeText(MainActivity.this, "视像头初始化失败，请检测摄像头是否链接", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    camera.setButtonCallback(new IButtonCallback() {
+                        @Override
+                        public void onButton(final int button, final int state) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                }
+                            });
+                        }
+                    });
+                    int i = camera.open(ctrlBlock);
+                    if (i != 0) {
+                        return;
+                    }
+                    if (mPreviewSurface != null) {
+                        mPreviewSurface.release();
+                        mPreviewSurface = null;
+                    }
+                    final SurfaceTexture st = videoPlayView.getSurfaceTexture();
+                    if (st != null) {
+                        mPreviewSurface = new Surface(st);
+                        camera.setPreviewDisplay(mPreviewSurface);
+                        camera.startPreview();
+                    }
+                    isPlaying = true;
+                    handler.sendEmptyMessageDelayed(PLAY, 500);
+                    handler.removeMessages(LEAVE);
+                    handler.sendEmptyMessageDelayed(LEAVE, 120 * 1000);
+//                    wakeLock.acquire();
+                }
+            }, 0);
+        }
+
+        @Override
+        public void onDisconnect(final UsbDevice device, final USBMonitor.UsbControlBlock ctrlBlock) {
+            // XXX you should check whether the coming device equal to camera device that currently using
+
+        }
+
+        @Override
+        public void onDettach(final UsbDevice device) {
+            Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onCancel(final UsbDevice device) {
+        }
+    };
 
     /**
      * 初始化日历
@@ -1624,57 +1734,37 @@ public class MainActivity extends AppCompatActivity {
     private Camera mCamera0 = null;
     int mCameraId = -1;
 
-    private void startCamera() {
-        dialogTime.show();
-        if (runnable == null) {
-            runnable = new Runnable() {
-                @Override
-                public void run() {
-                    Log.e("start", "开启摄像头");
-                    if (isPlaying) {
-                        return;
-                    }
-                    int num = Camera.getNumberOfCameras();
-                    if (num > 1)
-                        mCameraId = 1;
-                    else
-                        mCameraId = 0;
-                    Camera.CameraInfo camInfo = new Camera.CameraInfo();
-                    try {
-                        Camera.getCameraInfo(mCameraId, camInfo);
-                        if (mCameraId != -1) {
-                            mCamera0 = Camera.open(mCameraId);
-                        } else {
-                            mCamera0 = Camera.open();
-                        }
-                    } catch (RuntimeException e) {
-                    }
-                    try {
-                        mCamera0.setPreviewTexture(surfaceTexture);
-                        mCamera0.setDisplayOrientation(270);
-                        mCamera0.startPreview();
-                        isPlaying = true;
-                        handler.sendEmptyMessageDelayed(PLAY, 500);
-                        handler.removeMessages(LEAVE);
-                        handler.sendEmptyMessageDelayed(LEAVE, 120 * 1000);
-                    } catch (Exception e) {
-                        mCamera0.release();
-                    }
-                }
-            };
-        }
-        threads.execute(runnable);
-    }
 
     private void stopCamera() {
         if (isPlaying) {
-            mCamera0.setPreviewCallback(null);
-            mCamera0.stopPreview();
-            mCamera0.release();
-            mCamera0 = null;
-            isPlaying = false;
             bg.setVisibility(View.GONE);
             fullScreen.setVisibility(View.VISIBLE);
+            Log.e("测试1", "---yingc");
+            if (!isPlaying) {
+                return;
+            }
+            threads.execute(new Runnable() {
+                @Override
+                public void run() {
+                    if (camera != null) {
+                        try {
+                            camera.setStatusCallback(null);
+                            camera.setButtonCallback(null);
+                            camera.close();
+                            camera.destroy();
+                            camera = null;
+                        } catch (final Exception e) {
+                            //
+                        }
+                    }
+                    if (mPreviewSurface != null) {
+                        mPreviewSurface.release();
+                        mPreviewSurface = null;
+                    }
+                    isPlaying = false;
+                    Log.e("测试", "---yingc");
+                }
+            });
         }
     }
 
