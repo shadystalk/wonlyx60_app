@@ -249,22 +249,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </RelativeLayout>
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/msg_clear"
-            android:layout_marginTop="20dp"
-            android:layout_marginLeft="5dp"
-            android:layout_width="120dp"
-            android:layout_height="85dp">
-            <View
-                android:background="@drawable/clear"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_width="match_parent"
-                android:layout_marginLeft="20dp"
-                android:layout_height="55dp"/>
-            
-        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </com.mcxtzhang.swipemenulib.SwipeMenuLayout>
 
 
@@ -333,16 +318,13 @@
 
 
 
-   <com.wl.wlflatproject.MView.CustomSlideToUnlockView
+   <View
        android:id="@+id/lock_sl"
        android:layout_marginRight="60dp"
        android:layout_marginLeft="60dp"
        android:layout_marginBottom="20dp"
-       app:textHint=" "
-       app:viewBackgroundResId="@drawable/slid_bg"
+       android:background="@drawable/lock_bg"
        app:layout_constraintBottom_toTopOf="@+id/door_select_ll"
-       app:slideImageViewResId="@drawable/slid"
-       app:slideImageViewWidth="50dp"
        app:layout_constraintLeft_toLeftOf="parent"
        android:layout_width="match_parent"
        android:layout_height="50dp"/>

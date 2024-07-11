@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.video_play_view)
     TextureView videoPlayView;
     @BindView(R.id.lock_sl)
-    CustomSlideToUnlockView lockSl;
+    View lockSl;
     @BindView(R.id.lock_bt)
     LinearLayout lockBt;
     @BindView(R.id.video_iv)
@@ -223,6 +223,10 @@ public class MainActivity extends AppCompatActivity {
     public static String videOldWIfi;
     private boolean watherClick = false;
     private long lastClickTime;
+    /**
+     * 最后一次刷新告警消息的时间
+     */
+    private long mLastRefreshMsgTime;
     private long mWorkerThreadID = -1;
     Handler handler = new Handler() {
         @RequiresApi(api = Build.VERSION_CODES.KITKAT_WATCH)
@@ -326,6 +330,7 @@ public class MainActivity extends AppCompatActivity {
     private HashMap<Integer, UsbDevice> deviceList;
     private MediaPlayer mediaplayer;
     private PopupWindow clearPopupWindow;
+    private PopupWindow alarmPopupWindow;
     private String devType;
     private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
@@ -493,6 +498,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSuccess(Response<String> response) {
 //                swipeRefreshLayout.setRefreshing(false);
+                mLastRefreshMsgTime = System.currentTimeMillis();
                 String s = response.body();
                 AlarmMsgBean infoBean = GsonUtils.GsonToBean(s, AlarmMsgBean.class);
                 if (infoBean.getCode() == Constant.SUCCESS_CODE && infoBean.getData() != null) {
@@ -519,14 +525,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initListener() {
-        lockSl.setmCallBack(new CustomSlideToUnlockView.CallBack() {
+        lockSl.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onSlide(int distance) {
-
-            }
-
-            @Override
-            public void onUnlocked() {
+            public void onClick(View view) {
                 dialogTime.show();
                 serialPort.sendDate("+COPEN:1\r\n".getBytes());
             }
@@ -536,17 +537,19 @@ public class MainActivity extends AppCompatActivity {
             public boolean onLongClick(View view) {
                 if (clearPopupWindow == null) {
                     View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
-                    clearPopupWindow = new PopupWindow(inflate, 150, 65, true);
+                    clearPopupWindow = new PopupWindow(inflate, 128, 75, true);
                     inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
                             messageEdit.setText("");
                             messageDate.setText("");
+                            msgSl.smoothClose();
+                            handler.sendEmptyMessageDelayed(MSGGOEN,1000);
                             clearPopupWindow.dismiss();
                         }
                     });
                 }
-                clearPopupWindow.showAsDropDown(changKai, 40, -22);
+                clearPopupWindow.showAsDropDown(messageTv, 105, -120);
 
                 return false;
             }
@@ -588,11 +591,29 @@ public class MainActivity extends AppCompatActivity {
                 msgIv.setVisibility(View.GONE);
             }
         });
+        view_next.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (alarmPopupWindow == null) {
+                    View inflate = View.inflate(MainActivity.this, R.layout.message_clear, null);
+                    alarmPopupWindow = new PopupWindow(inflate, 128, 75, true);
+                    inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+
+                            alarmPopupWindow.dismiss();
+                        }
+                    });
+                }
+                alarmPopupWindow.showAsDropDown(view_next, 105, -120);
+                return false;
+            }
+        });
     }
 
 
     @OnClick({R.id.close_video, R.id.date_tv, R.id.calendar_cn_tv, R.id.changKai, R.id.setting, R.id.lock_bt,
-            R.id.weather_ll, R.id.video_iv, R.id.view_next,R.id.msg_clear})
+            R.id.weather_ll, R.id.video_iv, R.id.view_next})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.setting:
@@ -624,10 +645,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.close_video:
                 stopCamera();
                 break;
-            case R.id.msg_clear:
-                msgSl.smoothClose();
-                handler.sendEmptyMessageDelayed(MSGGOEN,1000);
-                break;
+//            case R.id.msg_clear:
+//                msgSl.smoothClose();
+//                handler.sendEmptyMessageDelayed(MSGGOEN,1000);
+//                break;
             case R.id.changKai:
                 if (changkaiFlag == 1) {
                     dialogTime.show();
@@ -704,6 +725,20 @@ public class MainActivity extends AppCompatActivity {
                             InfoBean infoBean = new InfoBean();
                             infoBean.setCode(baseBean.getBind());
                             EventBus.getDefault().post(infoBean);
+                            break;
+                        case 0x20:
+                        case 0x22:
+                        case 0x24:
+                        case 0x26:
+                        case 0x27:
+                        case 0x2A:
+                        case 0x39:
+                            //非法操作报警、强拆报警、假锁报警、门未关报警、燃气报警、低压报警 人体感应报警告警
+                            if (System.currentTimeMillis() - mLastRefreshMsgTime < 1000) {
+                                //控制刷新频率大于1s
+                                return;
+                            }
+                            initMsgData();
                             break;
                         default:
                             break;
