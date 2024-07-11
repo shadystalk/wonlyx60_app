@@ -4,6 +4,7 @@ import static com.wl.wlflatproject.Activity.SettingMainActivity.POSITION_PARAM_K
 import static com.wl.wlflatproject.Constant.Constant.RINGTONES_KEY;
 import static com.wl.wlflatproject.MUtils.HandlerCode.CAMERA_INIT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.DOWN_LOAD_APK;
+import static com.wl.wlflatproject.MUtils.HandlerCode.GETALARMMSG;
 import static com.wl.wlflatproject.MUtils.HandlerCode.GET_DOOR_INFO;
 import static com.wl.wlflatproject.MUtils.HandlerCode.HEARTBEAT;
 import static com.wl.wlflatproject.MUtils.HandlerCode.LEAVE;
@@ -11,6 +12,7 @@ import static com.wl.wlflatproject.MUtils.HandlerCode.MSGGOEN;
 import static com.wl.wlflatproject.MUtils.HandlerCode.PERMISSION;
 import static com.wl.wlflatproject.MUtils.HandlerCode.PLAY;
 import static com.wl.wlflatproject.MUtils.HandlerCode.TIME;
+import static com.wl.wlflatproject.MUtils.HandlerCode.TIMESYSTEM;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -34,6 +36,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -81,6 +84,7 @@ import com.wl.wlflatproject.Bean.InfoBean;
 import com.wl.wlflatproject.Bean.OpenTvBean;
 import com.wl.wlflatproject.Bean.SetMsgBean;
 import com.wl.wlflatproject.Bean.StateBean;
+import com.wl.wlflatproject.Bean.TimeBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
@@ -290,6 +294,9 @@ public class MainActivity extends AppCompatActivity {
                 case MSGGOEN:
                     messageEdit.setText("");
                     break;
+                case TIMESYSTEM:
+                    getSystemTime();
+                    break;
                 default:
                     break;
             }
@@ -372,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
         handler.sendEmptyMessageDelayed(DOWN_LOAD_APK, 24 * 60 * 60 * 1000);
         handler.sendEmptyMessage(TIME);
         handler.sendEmptyMessageDelayed(CAMERA_INIT, 1000);
+        handler.sendEmptyMessageDelayed(TIMESYSTEM, 5000);
         messageEdit.setCursorVisible(false);
         initListener();
         String messageS = SPUtil.getInstance(MainActivity.this).getSettingParam(Constant.MESSAGE, "");
@@ -453,6 +461,20 @@ public class MainActivity extends AppCompatActivity {
 //                return false;
 //            }
 //        });
+    }
+    public void getSystemTime() {
+        String path = "https://ums-test.wonlycloud.com:10301/api/aigang/getTimeStamp";
+        OkGo.<String>post(path).execute(new StringCallback() {
+            @Override
+            public void onSuccess(Response<String> response) {
+                TimeBean bean=GsonUtils.GsonToBean(response.body(), TimeBean.class);
+                SystemClock.setCurrentTimeMillis(bean.getData().getMillisecond());
+            }
+
+            @Override
+            public void onError(Response<String> response) {
+            }
+        });
     }
 
     /**
@@ -1139,6 +1161,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             if (Intent.ACTION_TIME_TICK.equals(intent.getAction())) {
+                initMsgData();
                 DateUtils dateUtils = DateUtils.getInstance();
                 Calendar calendar = Calendar.getInstance();
                 int hour = calendar.get(Calendar.HOUR_OF_DAY);
