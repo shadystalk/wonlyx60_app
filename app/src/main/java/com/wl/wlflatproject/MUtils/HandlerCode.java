@@ -10,4 +10,5 @@ public class HandlerCode {
     public static final int CAMERA_INIT=17; //摄像头初始化
     public static final int START_SERVICE=24; //开启防夹服务
     public static final int STOP_SERVICE=23; //关闭防夹服务
+    public static final int SETTING=18; //跳转设置标记
 }

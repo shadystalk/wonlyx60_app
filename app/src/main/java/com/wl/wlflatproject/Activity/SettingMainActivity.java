@@ -30,6 +30,7 @@ import com.wl.wlflatproject.Fragment.DeviceInfoFragment;
 import com.wl.wlflatproject.Fragment.OpenMachineFragment;
 import com.wl.wlflatproject.Fragment.SystemNetFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
+import com.wl.wlflatproject.Fragment.SystemUpdateFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
 import com.wl.wlflatproject.MView.NormalDialog;
 import com.wl.wlflatproject.R;
@@ -54,6 +55,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务", "系统升级"};
     private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","工程模式"};
     /**
      * tag默认key
@@ -62,8 +64,10 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
+            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales};
+    private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
+            , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
             R.mipmap.ic_door_opener, R.mipmap.ic_after_sales,R.mipmap.ic_sys_setting};
-
     private Fragment[] fragments = new Fragment[title.length];
 
     private int tabPosition = 0;
@@ -184,6 +188,11 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                 case 6:
                     // 售后服务
                     fragment = new AfterSaleFragment();
+                    fragments[position] = fragment;
+                    break;
+                case 7:
+                    //系统升级
+                    fragment = new SystemUpdateFragment();
                     fragments[position] = fragment;
                     break;
                 case 7:

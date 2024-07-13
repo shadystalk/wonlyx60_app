@@ -10,15 +10,18 @@ import static com.wl.wlflatproject.MUtils.HandlerCode.LEAVE;
 import static com.wl.wlflatproject.MUtils.HandlerCode.PERMISSION;
 import static com.wl.wlflatproject.MUtils.HandlerCode.START_SERVICE;
 import static com.wl.wlflatproject.MUtils.HandlerCode.STOP_SERVICE;
+import static com.wl.wlflatproject.MUtils.HandlerCode.SETTING;
 import static com.wl.wlflatproject.MUtils.HandlerCode.TIME;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
@@ -27,10 +30,12 @@ import android.hardware.usb.UsbManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -62,6 +67,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.airbnb.lottie.BuildConfig;
 import com.airbnb.lottie.LottieAnimationView;
 import com.amap.api.location.AMapLocation;
 import com.blankj.utilcode.util.ToastUtils;
@@ -88,7 +94,6 @@ import com.wl.wlflatproject.Bean.StateBean;
 import com.wl.wlflatproject.Bean.UpdataJsonBean;
 import com.wl.wlflatproject.Bean.UpdateAppBean;
 import com.wl.wlflatproject.Bean.WeatherBean;
-import com.wl.wlflatproject.BuildConfig;
 import com.wl.wlflatproject.Constant.Constant;
 import com.wl.wlflatproject.MUtils.ApiSrevice;
 import com.wl.wlflatproject.MUtils.CMDUtils;
@@ -280,6 +285,9 @@ public class MainActivity extends AppCompatActivity {
 //                    dialogTime.dismiss();
                     closeVideo.setVisibility(View.VISIBLE);
                     break;
+                case SETTING:
+                    logo.setEnabled(false);
+                    break;
                 default:
                     break;
             }
@@ -310,7 +318,7 @@ public class MainActivity extends AppCompatActivity {
     private MediaPlayer mediaplayer;
     private PopupWindow clearPopupWindow;
     private String devType;
-    private PowerManager.WakeLock wakeLock;
+//    private PowerManager.WakeLock wakeLock;
     private Runnable runnable;
     private Intent servicesIntent;
     private int settingParam;
@@ -332,12 +340,10 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
         new ApiSrevice(this);
         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
-        wakeLock.acquire();
+//        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+//        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
+//        wakeLock.acquire();
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
-//        mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
-//        mUSBMonitor.register();
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
         if (deviceList == null || deviceList.size() < 1) {
             Toast.makeText(MainActivity.this, "未检测到摄像头", Toast.LENGTH_SHORT).show();
@@ -375,6 +381,15 @@ public class MainActivity extends AppCompatActivity {
             messageEdit.setText(messageS);
             messageDate.setText(messageDateS);
         }
+        boolean systemUpDate = SPUtil.getInstance(this).getSettingParam("SystemUpDate", false);
+        if (systemUpDate) {
+            String file = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "update.zip";
+            File f = new File(file);
+            if (null != f && f.exists()) {
+                f.delete();
+                SPUtil.getInstance(this).setSettingParam("SystemUpDate", true);
+            }
+        }
         initMsgData();
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -386,17 +401,6 @@ public class MainActivity extends AppCompatActivity {
         createPreviewView();
         servicesIntent = new Intent(this, ComputerServices.class);
         startService(servicesIntent);
-        calendarCnTv.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (test.getVisibility() == View.VISIBLE) {
-                    test.setVisibility(View.GONE);
-                } else {
-                    test.setVisibility(View.VISIBLE);
-                }
-                return false;
-            }
-        });
         settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
         switch (settingParam) {
             case 0:
@@ -409,25 +413,50 @@ public class MainActivity extends AppCompatActivity {
         test.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(BuildConfig.DEBUG){
-                    switch (settingParam) {
-                        case 0:
-                            settingParam = 1;
-                            break;
-                        case 1:
-                            settingParam = 0;
-                            break;
-                    }
-                    SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
-                    android.os.Process.killProcess(android.os.Process.myPid());
+//                int a=0;
+//                if(BuildConfig.DEBUG){
+                switch (settingParam) {
+                    case 0:
+                        settingParam = 1;
+                        break;
+                    case 1:
+                        settingParam = 0;
+                        break;
                 }
+                SPUtil.getInstance(MainActivity.this).setSettingParam("test", settingParam);
+                android.os.Process.killProcess(android.os.Process.myPid());
+//                }
             }
         });
-        logo.setOnLongClickListener(new View.OnLongClickListener() {
+        logo.setEnabled(false);
+        logo.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
+            public void onClick(View view) {
                 Intent intent = new Intent(Settings.ACTION_SETTINGS);
                 startActivity(intent);
+
+            }
+        });
+        wifi_state.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+//                String packageName = "com.antutu.ABenchMark"; // 替换为目标应用的包名
+//                try {
+//                    PackageManager pm = getPackageManager();
+//                    Intent intent = pm.getLaunchIntentForPackage(packageName);
+//                    if (intent != null) {
+//                        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+//                        startActivity(intent);
+//                    } else {
+//                        // 应用不存在或无法启动
+//                        ToastUtils.showShort("应用不存在或无法启动");
+//                    }
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+                logo.setEnabled(true);
+                handler.removeMessages(SETTING);
+                handler.sendEmptyMessageDelayed(SETTING,2000);
                 return false;
             }
         });
@@ -445,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        OkGo.<String>post(ApiSrevice.baseUrl+ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
+        OkGo.<String>post(ApiSrevice.baseUrl + ApiSrevice.queryAlarmMsg).headers(ApiSrevice.getHeads(this)).upJson(requestBody).execute(new StringCallback() {
             @Override
             public void onSuccess(Response<String> response) {
                 swipeRefreshLayout.setRefreshing(false);

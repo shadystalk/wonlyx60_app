@@ -1,10 +1,13 @@
 package com.wl.wlflatproject;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Environment;
 import android.util.Log;
+
+import androidx.multidex.MultiDex;
 
 import com.lzy.okgo.OkGo;
 import com.lzy.okgo.cache.CacheEntity;
@@ -56,7 +59,11 @@ public class AppContext extends Application {
         crashHandler = new CrashHandler(this);
         Thread.setDefaultUncaughtExceptionHandler(crashHandler);
     }
-
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
     /**
      * 初始化OkGo
      */
