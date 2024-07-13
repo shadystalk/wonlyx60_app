@@ -353,7 +353,8 @@ public class MainActivity extends AppCompatActivity {
     private void initData() {
         new ApiSrevice(this);
         SPUtil.getInstance(MainActivity.this).setSettingParam(Constant.DEVID, "");
-
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "MyTag");
         mediaplayer = MediaPlayer.create(this, R.raw.alarm);
         deviceList = QtimesServiceManager.getCameraList(MainActivity.this, QtimesServiceManager.DoorEyeCamera);
         if (deviceList == null || deviceList.size() < 1) {
@@ -600,12 +601,12 @@ public class MainActivity extends AppCompatActivity {
                     inflate.findViewById(R.id.clear_message).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-
+                            view_next.setVisibility(View.GONE);
                             alarmPopupWindow.dismiss();
                         }
                     });
                 }
-                alarmPopupWindow.showAsDropDown(view_next, 105, -120);
+                alarmPopupWindow.showAsDropDown(view_next, 205, -150);
                 return false;
             }
         });
@@ -899,16 +900,10 @@ public class MainActivity extends AppCompatActivity {
                                 return;
                             }
                             if (!isPlaying) {
-                                if (!isFastClick()) {
-                                    return;
-                                }
                                 if(deviceList.size()==0){
                                     return;
                                 }
                                 if (!isPlaying) {
-                                    if (!isFastClick()) {
-                                        return;
-                                    }
                                     Set<Integer> set = deviceList.keySet();
                                     set.iterator().next();
                                     mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
@@ -932,16 +927,10 @@ public class MainActivity extends AppCompatActivity {
                                             return;
                                         }
                                         if (!isPlaying) {
-                                            if (!isFastClick()) {
-                                                return;
-                                            }
                                             if(deviceList.size()==0){
                                                 return;
                                             }
                                             if (!isPlaying) {
-                                                if (!isFastClick()) {
-                                                    return;
-                                                }
                                                 Set<Integer> set = deviceList.keySet();
                                                 set.iterator().next();
                                                 mUSBMonitor.requestPermission(deviceList.get( set.iterator().next()));
@@ -1073,7 +1062,7 @@ public class MainActivity extends AppCompatActivity {
                     handler.sendEmptyMessageDelayed(PLAY, 500);
                     handler.removeMessages(LEAVE);
                     handler.sendEmptyMessageDelayed(LEAVE, 120 * 1000);
-//                    wakeLock.acquire();
+                    wakeLock.acquire();
                 }
             }, 0);
         }
@@ -1820,6 +1809,7 @@ public class MainActivity extends AppCompatActivity {
                         mPreviewSurface = null;
                     }
                     isPlaying = false;
+                    wakeLock.release();
                     Log.e("测试", "---yingc");
                 }
             });

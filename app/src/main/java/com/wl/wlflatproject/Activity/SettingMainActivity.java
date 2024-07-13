@@ -41,7 +41,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","防夹激活","智能防夹", "工程模式","设备重启"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","防夹激活","智能防夹", "工程模式","系统信息","设备重启"};
     /**
      * tag默认key
      */
@@ -49,7 +49,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
-            R.mipmap.ic_door_opener,R.mipmap.ic_after_sales,R.mipmap.fangjia, R.mipmap.fangjia, R.mipmap.ic_sys_setting,R.mipmap.ic_device_state};
+            R.mipmap.ic_door_opener,R.mipmap.ic_after_sales,R.mipmap.fangjia, R.mipmap.fangjia, R.mipmap.ic_sys_setting,R.mipmap.ic_sys_setting,R.mipmap.ic_device_state};
 
 
     private int tabPosition = 0;
@@ -172,6 +172,25 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                 }
                 break;
             case 10:
+                if (normalDialog == null)
+                    normalDialog = new NormalDialog(this, R.style.mDialog);
+                normalDialog.show();
+                normalDialog.setTitleText("系统信息界面");
+                normalDialog.setContentText("点击确定进入系统信息界面");
+                normalDialog.getConfirmTv().setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        normalDialog.dismiss();
+                        if (!QtimesServiceManager.instance().isServerActive()) {
+                            QtimesServiceManager.instance().connect(SettingMainActivity.this);
+                        }
+                        Intent intent2 = new Intent();
+                        intent2.setClassName("com.qtimes.wonly", "com.qtimes.wonly.activity.SystemInfoActivity");
+                        startActivity(intent2);
+                    }
+                });
+                break;
+            case 11:
                 if (normalDialog == null)
                     normalDialog = new NormalDialog(this, R.style.mDialog);
                 normalDialog.show();

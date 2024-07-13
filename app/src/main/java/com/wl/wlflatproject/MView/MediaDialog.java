@@ -73,7 +73,7 @@ public class MediaDialog extends Dialog {
         // 设置对话框的宽高
         Window window = getWindow();
         if (window != null) {
-            window.setLayout(ScreenUtils.getScreenHeight() / 16 * 9, ViewGroup.LayoutParams.MATCH_PARENT);
+            window.setLayout(ScreenUtils.getScreenWidth(),ScreenUtils.getScreenHeight());
         }
     }
 
@@ -98,10 +98,10 @@ public class MediaDialog extends Dialog {
      */
     private void initPicView() {
         imageView.setVisibility(VISIBLE);
-//        if (imgOrientation != 0) {
-//            imageView.setRotation(imgOrientation);
-//        }
-        Glide.with(getContext()).load(mUrl).transform(new RotateTransformation(imgOrientation,Glide.get(mContext).getBitmapPool())).into(imageView);
+        if (imgOrientation != 0) {
+            imageView.setRotation(imgOrientation);
+        }
+        Glide.with(getContext()).load(mUrl).into(imageView);
     }
 
     /**

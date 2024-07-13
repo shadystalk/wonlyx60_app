@@ -7,9 +7,11 @@
     android:background="#000000">
 
     <ImageView
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/pic_iv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="220dp"
         android:scaleType="centerCrop"
         android:visibility="gone" />
 
