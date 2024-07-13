@@ -8,8 +8,8 @@ import static com.rockchip.gpadc.demo.rga.HALDefine.RK_FORMAT_YCrCb_420_SP;
 import static com.rockchip.gpadc.demo.yolo.PostProcess.INPUT_CHANNEL;
 import static java.lang.Thread.sleep;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.XzjhSystemManager;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -26,6 +26,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.topband.ledmanager.LedManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.SurfaceHolder;
@@ -104,7 +105,9 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     private SerialPortUtil serialPort;
     private Rect cropRect;
     private Rect cropRect1;
+    private LedManager ledManager;
 
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,11 +135,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         fileDirPath = getCacheDir().getAbsolutePath();
         platform = getPlatform();
         Log.d(TAG, "get soc platform:" + platform);
-        XzjhSystemManager mMamager = null;
-        mMamager = (XzjhSystemManager)getSystemService("xzjh_server");
-
-        setGpioDirection();
-
+        ledManager = (LedManager) getSystemService(LedManager.SERVICE_NAME);
         if (platform.equals("rk3588")) {
             createFile(mModelName, R.raw.yolov5s_rk3588);
         } else if (platform.equals("rk356x")) {
@@ -667,10 +666,10 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
     private void handleGpio(boolean detectedInterestedObject) {
         if (detectedInterestedObject) {
-//            setGpioHigh();
+            setGpioHigh();
             lastDetectionTime = System.currentTimeMillis();
         } else if (System.currentTimeMillis() - lastDetectionTime > DETECTION_TIMEOUT) {
-//            setGpioLow();
+            setGpioLow();
         }
     }
 
@@ -695,11 +694,11 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
                 CameraPreviewActivity.this.mSurfaceTexture =surfaceTexture;
-                Matrix matrix = textureView.getTransform(new Matrix());
-                matrix.setScale(1, -1);
-                int height = textureView.getHeight();
-                matrix.postTranslate(0, height);
-                textureView.setTransform(matrix);
+//                Matrix matrix = textureView.getTransform(new Matrix());
+//                matrix.setScale(1, -1);
+//                int height = textureView.getHeight();
+//                matrix.postTranslate(0, height);
+//                textureView.setTransform(matrix);
                 startCamera();
                 startTrack();
             }
@@ -721,60 +720,15 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         });
         return true;
     }
-    private void setGpioDirection() {
-        try {
-            // Execute the command to set the GPIO direction
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
 
-            // Write the command to set the GPIO direction
-            os.writeBytes("echo out > /sys/class/gpio/gpio33/direction\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-//            XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//            mManager.xzjhSetGpioDirction(4, 1);
-        } catch (IOException | InterruptedException e) {
-            Log.e(TAG, "Error setting GPIO direction", e);
-        }
+    private void setGpioHigh() {
+        ledManager.turnOn();
+        Log.d(TAG, "GPIO set to High");
     }
 
-//    private void writeToFile(String path, String value) {
-//        try {
-//            // Start a process with superuser privileges
-//            Process process = Runtime.getRuntime().exec("su");
-//            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-//
-//            // Write the command to set the GPIO value
-//            os.writeBytes("echo " + value + " > " + path + "\n");
-//            os.writeBytes("exit\n");
-//            os.flush();
-//
-//            // Close the stream and wait for the process to complete
-//            os.close();
-//            process.waitFor();
-//        } catch (IOException e) {
-//            Log.e(TAG, "Error in writing to file: " + path, e);
-//        } catch (InterruptedException e) {
-//            Log.e(TAG, "Interrupted exception", e);
-//        }
-//    }
-
-//    private void setGpioHigh() {
-//        writeToFile("/sys/class/gpio/gpio33/value", "1");
-//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//        mManager.xzjhSetGpioValue(4, 1);
-//        Log.d(TAG, "GPIO set to High");
-//    }
-
-//    private void setGpioLow() {
-//        writeToFile("/sys/class/gpio/gpio33/value", "0");
-//        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//        mManager.xzjhSetGpioValue(4, 0);
-//        Log.d(TAG, "GPIO set to Low");
-//    }
+    private void setGpioLow() {
+        ledManager.turnOff();
+        Log.d(TAG, "GPIO set to Low");
+    }
 
 }

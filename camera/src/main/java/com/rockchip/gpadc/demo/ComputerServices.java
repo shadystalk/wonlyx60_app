@@ -8,8 +8,8 @@ import static com.rockchip.gpadc.demo.rga.HALDefine.RK_FORMAT_YCrCb_420_SP;
 import static com.rockchip.gpadc.demo.yolo.PostProcess.INPUT_CHANNEL;
 import static java.lang.Thread.sleep;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
-import android.app.XzjhSystemManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.ImageFormat;
@@ -20,6 +20,7 @@ import android.opengl.GLES11Ext;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.topband.ledmanager.LedManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.widget.Toast;
@@ -50,6 +51,7 @@ public class ComputerServices extends Service {
     private SurfaceTexture mSurfaceTexture;
     private int previewFormat;
     private SerialPortUtil serialPort;
+    private LedManager ledManager;
 
     @Override
     public IBinder onBind(Intent arg0) {
@@ -71,15 +73,13 @@ public class ComputerServices extends Service {
     }
 
 
+    @SuppressLint("WrongConstant")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         fileDirPath = getCacheDir().getAbsolutePath();
         serialPort = SerialPortUtil.getInstance();
         platform = getPlatform();
-        XzjhSystemManager mMamager = null;
-        mMamager = (XzjhSystemManager)getSystemService("xzjh_server");
-
-        setGpioDirection();
+        ledManager = (LedManager) getSystemService(LedManager.SERVICE_NAME);
         if (platform.equals("rk3588")) {
             createFile(mModelName, R.raw.yolov5s_rk3588);
         } else if (platform.equals("rk356x")) {
@@ -266,7 +266,7 @@ public class ComputerServices extends Service {
         msg.obj = data;
         mHandler.sendMessage(msg);
     }
-    private void stopTrack() {
+    public void stopTrack() {
 
         mStopInference = true;
         try {
@@ -625,7 +625,7 @@ public class ComputerServices extends Service {
     };
 
 
-    private void stopCamera() {
+    public void stopCamera() {
         if (mIsCameraOpened) {
             mCamera0.setPreviewCallback(null);
             mCamera0.stopPreview();
@@ -636,59 +636,15 @@ public class ComputerServices extends Service {
 
     }
 
-    private void setGpioDirection() {
-        try {
-            // Execute the command to set the GPIO direction
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
 
-            // Write the command to set the GPIO direction
-            os.writeBytes("echo out > /sys/class/gpio/gpio33/direction\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-//            XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-//            mManager.xzjhSetGpioDirction(4, 1);
-        } catch (IOException | InterruptedException e) {
-            Log.e(TAG, "Error setting GPIO direction", e);
-        }
-    }
-
-    private void writeToFile(String path, String value) {
-        try {
-            // Start a process with superuser privileges
-            Process process = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(process.getOutputStream());
-
-            // Write the command to set the GPIO value
-            os.writeBytes("echo " + value + " > " + path + "\n");
-            os.writeBytes("exit\n");
-            os.flush();
-
-            // Close the stream and wait for the process to complete
-            os.close();
-            process.waitFor();
-        } catch (IOException e) {
-            Log.e(TAG, "Error in writing to file: " + path, e);
-        } catch (InterruptedException e) {
-            Log.e(TAG, "Interrupted exception", e);
-        }
-    }
 
     private void setGpioHigh() {
-        writeToFile("/sys/class/gpio/gpio33/value", "1");
-        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-        mManager.xzjhSetGpioValue(4, 1);
+        ledManager.turnOn();
         Log.d(TAG, "GPIO set to High");
     }
 
     private void setGpioLow() {
-        writeToFile("/sys/class/gpio/gpio33/value", "0");
-        XzjhSystemManager mManager = (XzjhSystemManager)getSystemService("xzjh_server");
-        mManager.xzjhSetGpioValue(4, 0);
+        ledManager.turnOff();
         Log.d(TAG, "GPIO set to Low");
     }
 
