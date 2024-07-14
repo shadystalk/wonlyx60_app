@@ -721,6 +721,8 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         return true;
     }
 
+
+
     private void setGpioHigh() {
         ledManager.turnOn();
         Log.d(TAG, "GPIO set to High");

@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.SimpleItemAnimator;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.rockchip.gpadc.demo.CameraPreviewActivity;
+import com.rockchip.gpadc.demo.ComputerServices;
 import com.wl.wlflatproject.Adapter.SettingGuideAdapter;
 import com.wl.wlflatproject.Bean.MainMsgBean;
 import com.wl.wlflatproject.Fragment.AfterSaleFragment;
@@ -32,6 +33,7 @@ import com.wl.wlflatproject.Fragment.SystemNetFragment;
 import com.wl.wlflatproject.Fragment.SystemSettingFragment;
 import com.wl.wlflatproject.Fragment.SystemUpdateFragment;
 import com.wl.wlflatproject.MUtils.DateUtils;
+import com.wl.wlflatproject.MUtils.SPUtil;
 import com.wl.wlflatproject.MView.NormalDialog;
 import com.wl.wlflatproject.R;
 
@@ -55,8 +57,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     private TimeReceiver timeReceiver;
 
     private SettingGuideAdapter mGuideAdapter;
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务", "系统升级"};
-    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务","工程模式"};
+    private String[] title = {"设备信息", "网络设置", "设备绑定", "设备动态", "系统设置", "开门机设置", "售后服务", "智能防夹","工程模式","系统升级"};
     /**
      * tag默认key
      */
@@ -64,10 +65,7 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
 
     private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
             , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
-            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales};
-    private int[] titleIcon = {R.mipmap.ic_device_info, R.mipmap.ic_net_coin, R.mipmap.ic_device_bind
-            , R.mipmap.ic_device_state, R.mipmap.ic_sys_setting,
-            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales,R.mipmap.ic_sys_setting};
+            R.mipmap.ic_door_opener, R.mipmap.ic_after_sales,R.mipmap.fangjia_iv,R.mipmap.ic_sys_setting,R.mipmap.ic_sys_setting};
     private Fragment[] fragments = new Fragment[title.length];
 
     private int tabPosition = 0;
@@ -191,11 +189,29 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                     fragments[position] = fragment;
                     break;
                 case 7:
-                    //系统升级
-                    fragment = new SystemUpdateFragment();
-                    fragments[position] = fragment;
+                    // 智能防夹
+                    if (normalDialog == null)
+                        normalDialog = new NormalDialog(this, R.style.mDialog);
+                    normalDialog.show();
+                    normalDialog.setTitleText("智能防夹");
+                    if(!ComputerServices.mStopInference){
+                        normalDialog.setContentText("关闭防夹");
+                    }else{
+                        normalDialog.setContentText("打开防夹");
+                    }
+                    normalDialog.getConfirmTv().setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if(!ComputerServices.mStopInference){
+                                EventBus.getDefault().post(new MainMsgBean(23));
+                            }else{
+                                EventBus.getDefault().post(new MainMsgBean(24));
+                            }
+                            normalDialog.dismiss();
+                        }
+                    });
                     break;
-                case 7:
+                case 8:
                     // 工程模式
                     if (normalDialog == null)
                         normalDialog = new NormalDialog(this, R.style.mDialog);
@@ -211,7 +227,11 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
                             startActivityForResult(intent3,400);
                         }
                     });
-
+                    break;
+                case 9:
+                    //系统升级
+                    fragment = new SystemUpdateFragment();
+                    fragments[position] = fragment;
                     break;
                 default:
                     break;
@@ -258,7 +278,10 @@ public class SettingMainActivity extends AppCompatActivity implements BaseQuickA
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==400){
-            EventBus.getDefault().post(new MainMsgBean(24));
+            boolean fangJiaIsStop = SPUtil.getInstance(this).getSettingParam("fangJiaIsStop", true);
+            if(!fangJiaIsStop){
+                EventBus.getDefault().post(new MainMsgBean(24));
+            }
         }
     }
 }

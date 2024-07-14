@@ -45,7 +45,7 @@ public class ComputerServices extends Service {
     private InferenceWrapper mInferenceWrapper;
     private InferenceResult mInferenceResult = new InferenceResult();  // detection result
     private ImageBufferQueue mImageBufferQueue;
-    private volatile boolean mStopInference = false;
+    public static volatile boolean mStopInference = true;
     private Thread mInferenceThread;
     String TAG="com.rockchip.gpadc.demo.ComputerServices";
     private SurfaceTexture mSurfaceTexture;
@@ -166,6 +166,7 @@ public class ComputerServices extends Service {
         mInferenceResult.reset();
         mImageBufferQueue = new ImageBufferQueue(3, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT);
         mStopInference = false;
+        SPUtil.getInstance(this).setSettingParam("fangJiaIsStop",false);
         mInferenceThread = new Thread(mInferenceRunnable);
         mInferenceThread.start();
     }
@@ -269,6 +270,7 @@ public class ComputerServices extends Service {
     public void stopTrack() {
 
         mStopInference = true;
+        SPUtil.getInstance(this).setSettingParam("fangJiaIsStop",true);
         try {
             if (mInferenceThread != null) {
                 mInferenceThread.join();

@@ -1,19 +1,19 @@
 {
   "buildFiles": [
-    "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\ndk\\20.0.5594570\\build\\cmake\\android.toolchain.cmake",
-    "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\ndk\\20.0.5594570\\build\\cmake\\platforms.cmake",
-    "E:\\screen-ten\\camera\\CMakeLists.txt"
+    "D:\\sdk\\ndk\\20.0.5594570\\build\\cmake\\platforms.cmake",
+    "D:\\AsProject\\screen-ten\\camera\\CMakeLists.txt",
+    "D:\\sdk\\ndk\\20.0.5594570\\build\\cmake\\android.toolchain.cmake"
   ],
   "cleanCommands": [
-    "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"E:\\screen-ten\\camera\\.cxx\\cmake\\debug\\arm64-v8a\" clean"
+    "D:\\sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AsProject\\screen-ten\\camera\\.cxx\\cmake\\debug\\arm64-v8a\" clean"
   ],
-  "buildTargetsCommand": "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"E:\\screen-ten\\camera\\.cxx\\cmake\\debug\\arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "buildTargetsCommand": "D:\\sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe  -C \"D:\\AsProject\\screen-ten\\camera\\.cxx\\cmake\\debug\\arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
   "libraries": {
     "rknn4j-Debug-arm64-v8a": {
       "artifactName": "rknn4j",
-      "buildCommand": "C:\\Users\\Administrator\\AppData\\Local\\Android\\Sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"E:\\screen-ten\\camera\\.cxx\\cmake\\debug\\arm64-v8a\" rknn4j",
+      "buildCommand": "D:\\sdk\\cmake\\3.10.2.4988404\\bin\\ninja.exe -C \"D:\\AsProject\\screen-ten\\camera\\.cxx\\cmake\\debug\\arm64-v8a\" rknn4j",
       "abi": "arm64-v8a",
-      "output": "E:\\screen-ten\\camera\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a\\librknn4j.so"
+      "output": "D:\\AsProject\\screen-ten\\camera\\build\\intermediates\\cmake\\debug\\obj\\arm64-v8a\\librknn4j.so"
     }
   }
 }

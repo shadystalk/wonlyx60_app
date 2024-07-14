@@ -400,7 +400,10 @@ public class MainActivity extends AppCompatActivity {
         });
         createPreviewView();
         servicesIntent = new Intent(this, ComputerServices.class);
-        startService(servicesIntent);
+        boolean fangJiaIsStop = SPUtil.getInstance(this).getSettingParam("fangJiaIsStop", true);
+        if(!fangJiaIsStop){
+            startService(servicesIntent);
+        }
         settingParam = SPUtil.getInstance(MainActivity.this).getSettingParam("test", 0);
         switch (settingParam) {
             case 0:
