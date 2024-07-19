@@ -70,6 +70,7 @@ public class ComputerServices extends Service {
         super.onDestroy();
         stopTrack();
         stopCamera();
+
     }
 
 
@@ -221,8 +222,8 @@ public class ComputerServices extends Service {
                 }
                 updateMainUI(1, 0);
             }
-
             mInferenceWrapper.deinit();
+            setGpioLow();
         }
     };
     private Handler mHandler = new Handler()

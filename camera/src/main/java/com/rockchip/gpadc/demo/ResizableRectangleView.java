@@ -60,9 +60,9 @@ public class ResizableRectangleView extends View {
 
         // 计算起始点，使得框位于屏幕中心
         oneLeft = 100;
-        oneTop = 100;
+        oneTop = screenHeight / 4;
         oneRight = screenWidth - oneLeft;
-        oneBottom = screenHeight - oneTop;
+        oneBottom = screenHeight * 3 / 4;
 
         rect = new Rect(oneLeft, oneTop, oneRight, oneBottom);
         paint = new Paint();
@@ -71,9 +71,9 @@ public class ResizableRectangleView extends View {
         paint.setStrokeWidth(5);
 
 
-        verticalStartX = screenWidth / 2 - 100;
+        verticalStartX = screenWidth / 4;
         verticalStartY = 0;
-        verticalEndX = screenWidth / 2 + 100;;
+        verticalEndX = screenWidth *3 / 4;;
         verticalEndY = screenHeight;
         rect1 = new Rect(verticalStartX, verticalStartY, verticalEndX, verticalEndY);
 

@@ -827,6 +827,14 @@ public class MainActivity extends AppCompatActivity {
                                 dialogTime.dismiss();
                             changKai.setBackgroundResource(R.drawable.cancel_changkai);
                             ToastUtils.showShort("门已常开");
+                        }else if (data.contains("AT+DOORSTATUS=0")) {
+                            if(ComputerServices.mStopInference){
+                                startService(servicesIntent);
+                            }
+                        }else if (data.contains("AT+DOORSTATUS=1")) {
+                            if(!ComputerServices.mStopInference){
+                                stopService(servicesIntent);
+                            }
                         } else if (data.contains("AT+CLOSEALWAYSOPEN=1")) {//取消常开
                             changkaiFlag = 1;
                             if (dialogTime != null && dialogTime.isShowing())

@@ -101,7 +101,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     private View right1;
     private View down1;
     private Button switchRct;
-    private int flag=0;//矩形切换标识
+    private int flag = 0;//矩形切换标识
     private SerialPortUtil serialPort;
     private Rect cropRect;
     private Rect cropRect1;
@@ -130,7 +130,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         textureView = findViewById(R.id.surfaceViewCamera1);
         // 获取裁剪区域
         rectangleView = findViewById(R.id.ResizableRectangleView);
-        rectangleView.setView(up,left,down,right,up1,left1,down1,right1);
+        rectangleView.setView(up, left, down, right, up1, left1, down1, right1);
         mTrackResultView = (ImageView) findViewById(R.id.canvasView);
         fileDirPath = getCacheDir().getAbsolutePath();
         platform = getPlatform();
@@ -165,13 +165,13 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         switchRct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (flag){
+                switch (flag) {
                     case 0:
-                        flag=1;
+                        flag = 1;
                         switchRct.setText("矩形2");
                         break;
                     case 1:
-                        flag=0;
+                        flag = 0;
                         switchRct.setText("矩形1");
                         break;
                 }
@@ -185,16 +185,16 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     @Override
     protected void onDestroy() {
         Log.d(TAG, "onDestroy");
-        if(cropRect!=null){
-            SPUtil.getInstance(this).setSettingParam("rectLeft",cropRect.left);
-            SPUtil.getInstance(this).setSettingParam("rectTop",cropRect.top);
-            SPUtil.getInstance(this).setSettingParam("rectRight",cropRect.right);
-            SPUtil.getInstance(this).setSettingParam("rectBottom",cropRect.bottom);
-            SPUtil.getInstance(this).setSettingParam("rectLeft1",cropRect1.left);
-            SPUtil.getInstance(this).setSettingParam("rectTop1",cropRect1.top);
-            SPUtil.getInstance(this).setSettingParam("rectRight1",cropRect1.right);
-            SPUtil.getInstance(this).setSettingParam("rectBottom1",cropRect1.bottom);
-            SPUtil.getInstance(this).setSettingParam("haveRect",true);
+        if (cropRect != null) {
+            SPUtil.getInstance(this).setSettingParam("rectLeft", cropRect.left);
+            SPUtil.getInstance(this).setSettingParam("rectTop", cropRect.top);
+            SPUtil.getInstance(this).setSettingParam("rectRight", cropRect.right);
+            SPUtil.getInstance(this).setSettingParam("rectBottom", cropRect.bottom);
+            SPUtil.getInstance(this).setSettingParam("rectLeft1", cropRect1.left);
+            SPUtil.getInstance(this).setSettingParam("rectTop1", cropRect1.top);
+            SPUtil.getInstance(this).setSettingParam("rectRight1", cropRect1.right);
+            SPUtil.getInstance(this).setSettingParam("rectBottom1", cropRect1.bottom);
+            SPUtil.getInstance(this).setSettingParam("haveRect", true);
         }
         super.onDestroy();
     }
@@ -205,7 +205,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         stopTrack();
         stopCamera();
         super.onPause();
-
     }
 
     @Override
@@ -214,29 +213,24 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
         createPreviewView();
         super.onResume();
-
-
     }
 
-
-
-
-    public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect,Rect cropRect1) {
+    public static byte[] cropAndFill(byte[] data, int width, int height, Rect cropRect, Rect cropRect1) {
         byte[] filledData = new byte[width * height * 3 / 2]; // YUV420格式，Y占总像素的一半，UV各占四分之一
         // 先复制整个Y分量
         System.arraycopy(data, 0, filledData, 0, width * height);
         // 填充Y分量之外的区域为黑色
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if(((x<cropRect1.left&&y<cropRect.top)
-                        ||(x>cropRect1.right&&y<cropRect.top)
-                        || (x<cropRect1.left&&y>cropRect.bottom)
-                        ||(x>cropRect1.right&&y>cropRect.bottom)
-                        ||(x<cropRect1.left&&x<cropRect.left)
-                        ||(x>cropRect1.right&&x>cropRect.right)
-                        ||(y<cropRect1.top&&y<cropRect.top)
-                        ||(y>cropRect1.bottom&&y>cropRect.bottom)
-                )){
+                if (((x < cropRect1.left && y < cropRect.top)
+                        || (x > cropRect1.right && y < cropRect.top)
+                        || (x < cropRect1.left && y > cropRect.bottom)
+                        || (x > cropRect1.right && y > cropRect.bottom)
+                        || (x < cropRect1.left && x < cropRect.left)
+                        || (x > cropRect1.right && x > cropRect.right)
+                        || (y < cropRect1.top && y < cropRect.top)
+                        || (y > cropRect1.bottom && y > cropRect.bottom)
+                )) {
                     filledData[y * width + x] = 0; // 裁剪区域外填充黑色
                 }
             }
@@ -267,15 +261,13 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         return filledData;
     }
 
-
-
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        if(cropRect==null){
+        if (cropRect == null) {
             cropRect = rectangleView.getRect();
             cropRect1 = rectangleView.getRect1();
             boolean haveRect = SPUtil.getInstance(this).getSettingParam("haveRect", false);
-            if(haveRect){
+            if (haveRect) {
                 int rectLeft = SPUtil.getInstance(this).getSettingParam("rectLeft", 0);
                 int rectTop = SPUtil.getInstance(this).getSettingParam("rectTop", 0);
                 int rectRight = SPUtil.getInstance(this).getSettingParam("rectRight", 0);
@@ -284,14 +276,14 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
                 int rectTop1 = SPUtil.getInstance(this).getSettingParam("rectTop1", 0);
                 int rectRight1 = SPUtil.getInstance(this).getSettingParam("rectRight1", 0);
                 int rectBottom1 = SPUtil.getInstance(this).getSettingParam("rectBottom1", 0);
-                rectangleView.oneLeft=rectLeft;
-                rectangleView.oneTop=rectTop;
-                rectangleView.oneRight=rectRight;
-                rectangleView.oneBottom=rectBottom;
-                rectangleView.verticalStartX=rectLeft1;
-                rectangleView.verticalStartY=rectTop1;
-                rectangleView.verticalEndX=rectRight1;
-                rectangleView.verticalEndY=rectBottom1;
+                rectangleView.oneLeft = rectLeft;
+                rectangleView.oneTop = rectTop;
+                rectangleView.oneRight = rectRight;
+                rectangleView.oneBottom = rectBottom;
+                rectangleView.verticalStartX = rectLeft1;
+                rectangleView.verticalStartY = rectTop1;
+                rectangleView.verticalEndX = rectRight1;
+                rectangleView.verticalEndY = rectBottom1;
                 cropRect.set(rectLeft, rectTop, rectRight, rectBottom);
                 cropRect1.set(rectLeft1, rectTop1, rectRight1, rectBottom1);
                 rectangleView.invalidate();
@@ -301,7 +293,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
         mCamera0.addCallbackBuffer(data);
         ImageBufferQueue.ImageBuffer imageBuffer = mImageBufferQueue.getFreeBuffer();
-
 
         if (imageBuffer != null) {
             // RK_FORMAT_YCrCb_420_SP -> RK_FORMAT_RGBA_8888
@@ -313,17 +304,14 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
             mImageBufferQueue.postBuffer(imageBuffer);
         }
 
-//
-//            YuvImage yuvimage = new YuvImage(filledData, ImageFormat.NV21, 1280, 720, null);
-//            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//            yuvimage.compressToJpeg(new Rect(0, 0, 1280, 720), 80, baos);
-//            byte[] jdata = baos.toByteArray();
-//
-//            Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
-//            mTrackResultView.setImageBitmap(bmp);
+        // Uncomment the following code if you want to see the preview on the ImageView
+        // YuvImage yuvimage = new YuvImage(filledData, ImageFormat.NV21, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT, null);
+        // ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        // yuvimage.compressToJpeg(new Rect(0, 0, CAMERA_PREVIEW_WIDTH, CAMERA_PREVIEW_HEIGHT), 80, baos);
+        // byte[] jdata = baos.toByteArray();
+        // Bitmap bmp = BitmapFactory.decodeByteArray(jdata, 0, jdata.length);
+        // mTrackResultView.setImageBitmap(bmp);
     }
-
-
 
     private boolean startCamera() {
         if (mIsCameraOpened) {
@@ -332,10 +320,10 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
         //(Camera.CameraInfo.CAMERA_FACING_BACK);
         int num = Camera.getNumberOfCameras();
-        if (num > 1){
+        if (num > 1) {
             mCameraId = 1;
-        }else{
-           return false;
+        } else {
+            return false;
         }
         Log.d(TAG, "mCameraId = " + mCameraId);
         Camera.CameraInfo camInfo = new Camera.CameraInfo();
@@ -363,15 +351,12 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         setCameraParameters();
 
         try {
-//            mCamera0.setPreviewDisplay(mSurfaceHolder);
             int BUFFER_SIZE0 = CAMERA_PREVIEW_WIDTH * CAMERA_PREVIEW_HEIGHT * 3 / 2; // NV21
-            byte[][] mPreviewData0 = new byte[][]{new byte[BUFFER_SIZE0], new byte[BUFFER_SIZE0],new byte[BUFFER_SIZE0]};
-//            //================================
+            byte[][] mPreviewData0 = new byte[][]{new byte[BUFFER_SIZE0], new byte[BUFFER_SIZE0], new byte[BUFFER_SIZE0]};
             for (byte[] buffer : mPreviewData0)
                 mCamera0.addCallbackBuffer(buffer);
             mCamera0.setPreviewCallbackWithBuffer(this);
             mCamera0.setPreviewTexture(mSurfaceTexture);
-            //==================================
             mCamera0.startPreview();
         } catch (Exception e) {
             mCamera0.release();
@@ -405,12 +390,12 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         for (int i = 0; i < sizes.size(); i++) {
             Camera.Size size = sizes.get(i);
 
-            if (Math.abs(size.width-CAMERA_PREVIEW_WIDTH) < nearest_width_value ) {
-                nearest_width_value = Math.abs(size.width-CAMERA_PREVIEW_WIDTH);
+            if (Math.abs(size.width - CAMERA_PREVIEW_WIDTH) < nearest_width_value) {
+                nearest_width_value = Math.abs(size.width - CAMERA_PREVIEW_WIDTH);
                 nearest_width_index = i;
             }
 
-            if ( (size.width == CAMERA_PREVIEW_WIDTH) && (size.height == CAMERA_PREVIEW_HEIGHT)) {
+            if ((size.width == CAMERA_PREVIEW_WIDTH) && (size.height == CAMERA_PREVIEW_HEIGHT)) {
                 checkWH = true;
             }
 
@@ -442,7 +427,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     }
 
     private void stopTrack() {
-
         mStopInference = true;
         try {
             if (mInferenceThread != null) {
@@ -477,13 +461,11 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
                 System.exit(1);
             }
 
-
             while (!mStopInference) {
                 ImageBufferQueue.ImageBuffer buffer = mImageBufferQueue.getReadyBuffer();
 
                 if (buffer == null) {
                     try {
-//                        Log.w(TAG, "buffer is null.");
                         sleep(10);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -502,13 +484,9 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
 
                     float fps = count * 1000.f / (currentTime - oldTime);
 
-//                    Log.d(TAG, "current fps = " + fps);
-
-
                     oldTime = currentTime;
                     count = 0;
                     updateMainUI(0, fps);
-
                 }
 
                 updateMainUI(1, 0);
@@ -551,8 +529,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         }
     }
 
-
-    //    新加的
     private long lastDetectionTime = 0;
     private static final long DETECTION_TIMEOUT = 2000; // 2秒超时
 
@@ -569,10 +545,8 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     }
 
     // UI线程，用于更新处理结果
-    private Handler mHandler = new Handler()
-    {
-        public void handleMessage(Message msg)
-        {
+    private Handler mHandler = new Handler() {
+        public void handleMessage(Message msg) {
             if (msg.what == 0) {
                 float fps = (float) msg.obj;
                 DecimalFormat decimalFormat = new DecimalFormat("00.00");
@@ -600,7 +574,6 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         return (int) (spValue * scale + 0.5f);
     }
 
-
     private void showTrackSelectResults() {
         int width = CAMERA_PREVIEW_WIDTH;
         int height = CAMERA_PREVIEW_HEIGHT;
@@ -617,7 +590,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
             int id = rego.getId();
             if (id == 0 || id == 15 || id == 16 || id == 56 || id == 14) {  // Specific categories
                 detectedInterestedObject = true;
-                Log.e("Activity防夹--","有人");
+                Log.e("Activity防夹--", "有人");
                 drawDetection(rego, width, height);
             }
         }
@@ -652,12 +625,14 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     }
 
     private void drawDetection(InferenceResult.Recognition rego, int width, int height) {
+        // 如果使用前置摄像头，考虑镜像问题
         RectF detection = new RectF(
-                width-rego.getLocation().right * width,
+                rego.getLocation().left * width,
                 rego.getLocation().top * height,
-                width-rego.getLocation().left * width,
+                rego.getLocation().right * width,
                 rego.getLocation().bottom * height
         );
+
         mTrackResultCanvas.drawRect(detection, mTrackResultPaint);
         mTrackResultCanvas.drawText(
                 rego.getTrackId() + " - " + mInferenceResult.mPostProcess.getLabelTitle(rego.getId()),
@@ -665,6 +640,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
     }
 
     private void handleGpio(boolean detectedInterestedObject) {
+//        setGpioHigh();
         if (detectedInterestedObject) {
             setGpioHigh();
             lastDetectionTime = System.currentTimeMillis();
@@ -673,9 +649,7 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         }
     }
 
-
-    private String getPlatform()//取平台版本
-    {
+    private String getPlatform() {
         String platform = null;
         try {
             Class<?> classType = Class.forName("android.os.SystemProperties");
@@ -687,26 +661,26 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         return platform;
     }
 
-
-
     public boolean createPreviewView() {
         textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int i, int i1) {
-                CameraPreviewActivity.this.mSurfaceTexture =surfaceTexture;
-//                Matrix matrix = textureView.getTransform(new Matrix());
-//                matrix.setScale(1, -1);
-//                int height = textureView.getHeight();
-//                matrix.postTranslate(0, height);
-//                textureView.setTransform(matrix);
+                CameraPreviewActivity.this.mSurfaceTexture = surfaceTexture;
+
+                // 设置前置摄像头的镜像效果
+                if (Camera.CameraInfo.CAMERA_FACING_FRONT == mCameraId) {
+                    Matrix matrix = new Matrix();
+                    matrix.setScale(-1, 1);
+                    matrix.postTranslate(textureView.getWidth(), 0);
+                    textureView.setTransform(matrix);
+                }
+
                 startCamera();
                 startTrack();
             }
 
             @Override
-            public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {
-
-            }
+            public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int i, int i1) {}
 
             @Override
             public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
@@ -714,14 +688,10 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
             }
 
             @Override
-            public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
-
-            }
+            public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {}
         });
         return true;
     }
-
-
 
     private void setGpioHigh() {
         ledManager.turnOn();
@@ -732,5 +702,4 @@ public class CameraPreviewActivity extends Activity implements Camera.PreviewCal
         ledManager.turnOff();
         Log.d(TAG, "GPIO set to Low");
     }
-
 }
