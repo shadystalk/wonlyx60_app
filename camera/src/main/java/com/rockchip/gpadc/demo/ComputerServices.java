@@ -243,7 +243,7 @@ public class ComputerServices extends Service {
 
         for (InferenceResult.Recognition rego : recognitions) {
             int id = rego.getId();
-            if (id == 0 || id == 15 || id == 16 || id == 56 || id == 14) {  // Specific categories
+            if (id == 0 || id == 3 || id == 4 || id == 5 || id == 6) {  // Specific categories
                 detectedInterestedObject = true;
                 Log.e("防夹--ser","有人");
             }

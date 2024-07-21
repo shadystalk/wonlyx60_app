@@ -1,10 +1,10 @@
 person
-bicycle
-car
-motorcycle
-airplane
-bus
-train
+door
+doorframe
+leg
+dog
+cat
+hand
 truck
 boat
 traffic light
